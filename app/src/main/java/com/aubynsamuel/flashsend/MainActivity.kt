@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import com.aubynsamuel.flashsend.chatRoom.ChatScreen
+import com.aubynsamuel.flashsend.auth.AuthScreen
 import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,7 +16,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FlashSendTheme {
-                ChatScreen()
+//                ChatScreen()
+                AuthScreen()
             }
         }
     }

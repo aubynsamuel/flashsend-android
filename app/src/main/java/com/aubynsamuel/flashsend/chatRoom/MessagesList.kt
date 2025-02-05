@@ -1,6 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,7 @@ fun MessagesList(
         state = scrollState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         reverseLayout = false,
+        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
     ) {
         items(messages, key = { it.time }) { message ->
             ChatMessage(

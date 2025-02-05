@@ -34,7 +34,7 @@ fun MessageInput(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 5.dp),
+            .padding(top = 3.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
