@@ -99,6 +99,7 @@ fun MyList() {
                         .height(200.dp)
                         .width(200.dp)
                 )
+
                 Text(
                     text = i.toString(),
                     modifier = Modifier
@@ -173,6 +174,34 @@ fun AnimatedListItem(item: ListItem) {
                     .clickable { isExpanded = !isExpanded },
                 contentScale = if (isExpanded) ContentScale.Fit else ContentScale.Crop
             )
+            Image(
+                painter = painterResource(id = item.imageResId),
+                contentDescription = "Image for ${item.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (isExpanded) 300.dp else 150.dp)
+                    .clickable { isExpanded = !isExpanded },
+                contentScale = if (isExpanded) ContentScale.Fit else ContentScale.Crop
+            )
+            Image(
+                painter = painterResource(id = item.imageResId),
+                contentDescription = "Image for ${item.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (isExpanded) 300.dp else 150.dp)
+                    .clickable { isExpanded = !isExpanded },
+                contentScale = if (isExpanded) ContentScale.Fit else ContentScale.Crop
+            )
+            Image(
+                painter = painterResource(id = item.imageResId),
+                contentDescription = "Image for ${item.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (isExpanded) 300.dp else 150.dp)
+                    .clickable { isExpanded = !isExpanded },
+                contentScale = if (isExpanded) ContentScale.Fit else ContentScale.Crop
+            )
+
         }
     }
 }
@@ -181,7 +210,7 @@ fun AnimatedListItem(item: ListItem) {
 @Composable
 fun MainScreen() {
     // Example assuming you have drawable resources named img_1, img_2, etc.
-    val items = List(1000) { index ->
+    val items = List(1000000) { index ->
         ListItem(
             id = index,
             name = "Item $index",

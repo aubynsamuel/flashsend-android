@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.baselineprofile)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -20,7 +22,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -40,6 +43,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.profileinstaller)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)      // Firebase Auth
+    implementation(libs.firebase.firestore.ktx) // Firestore Database
+    implementation(libs.firebase.storage.ktx)   // Firebase Storage
+    androidTestImplementation(libs.androidx.benchmark.macro.junit4)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -54,6 +63,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    "baselineProfile"(project(":baselineprofile"))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

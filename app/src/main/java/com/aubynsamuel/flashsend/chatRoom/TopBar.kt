@@ -14,13 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +37,7 @@ fun HeaderBar(name: String, pic: Int) {
             modifier = Modifier
                 .height(80.dp)
                 .fillMaxWidth(1f)
-                .background(Color.DarkGray)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(top = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -47,14 +47,14 @@ fun HeaderBar(name: String, pic: Int) {
                 contentDescription = "back button",
                 modifier = Modifier
                     .padding(start = 15.dp)
-                    .size(24.dp), tint = Color.White
+                    .size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = name,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(start = 25.dp),
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Image(
                 painter = painterResource(id = pic),
@@ -69,7 +69,7 @@ fun HeaderBar(name: String, pic: Int) {
                 modifier = Modifier
                     .clickable(onClick = { expanded = !expanded })
                     .size(500.dp)
-                    .background(Color.DarkGray),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 alignment = Alignment.Center
             )
         }
