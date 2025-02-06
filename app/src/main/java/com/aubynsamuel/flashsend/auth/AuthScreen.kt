@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -21,10 +22,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
+fun AuthScreen(navController: NavController, authViewModel: AuthViewModel) {
     var isLogin by remember { mutableStateOf(true) }
     val title = if (isLogin) "Login" else "Sign Up"
-    val authState by viewModel.authState.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
 
     LaunchedEffect(authState) {
         if (authState) {
@@ -53,7 +54,7 @@ fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            AuthForm(isLogin, { isLogin = !isLogin }, viewModel)
+            AuthForm(isLogin, { isLogin = !isLogin }, authViewModel)
 
 //            message?.let {
 //                Text(it, color = Color.Red, modifier = Modifier.padding(top = 10.dp))
@@ -64,11 +65,12 @@ fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
 
 
 @Composable
-fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit, viewModel: AuthViewModel) {
+fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
@@ -136,16 +138,22 @@ fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit, viewModel: AuthViewMode
             onClick = {
                 if (email.isNotBlank() && password.isNotBlank()) {
                     if (isLogin) {
-                        viewModel.login(email, password)
+                        authViewModel.login(email, password)
                     } else if (password == confirmPassword) {
-                        viewModel.signUp(email, password)
+                        authViewModel.signUp(email, password)
                     }
                 }
             }, modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp), shape = RoundedCornerShape(20.dp)
         ) {
-            Text(if (isLogin) "Login" else "Sign Up", fontSize = 25.sp)
+            if (isLoggingIn) {
+                CircularProgressIndicator(
+                    color = Color.Black
+                )
+            } else {
+                Text(if (isLogin) "Login" else "Sign Up", fontSize = 25.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))

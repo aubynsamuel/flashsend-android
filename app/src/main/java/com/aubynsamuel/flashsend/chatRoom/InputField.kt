@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -64,7 +65,7 @@ fun MessageInput(
         IconButton(
             onClick = onSend,
             modifier = Modifier
-                .size(48.dp)
+                .size(55.dp)
                 .background(
                     color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
@@ -77,4 +78,10 @@ fun MessageInput(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun PrevInputToolBar() {
+    MessageInput(messageText = "", onMessageChange = {}, onSend = {})
 }

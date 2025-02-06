@@ -5,6 +5,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PopUpMenu(
@@ -32,15 +33,13 @@ fun PopUpMenu(
     }
 }
 
-//@Preview
-//@Composable
-//fun PrevPopUpMenu() {
-//    Box() {
-//        var showPopup by remember { mutableStateOf(true) }
-//        PopUpMenu(
-//            expanded = showPopup,
-//            onDismiss = { showPopup = false },
-//            modifier = Modifier
-//        )
-//    }
-//}
+@Preview
+@Composable
+fun PrevPopUpMenu() {
+    PopUpMenu(
+        expanded = true,
+        onDismiss = { },
+        modifier = Modifier
+    )
+
+}

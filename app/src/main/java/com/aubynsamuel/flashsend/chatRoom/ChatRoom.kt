@@ -33,6 +33,7 @@ fun ChatScreen(
     val currentUserId = auth.currentUser?.uid ?: return
     val chatState by chatViewModel.chatState.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
+//    val messages = generateMockMessages(currentUserId)
 
     val decodedUsername = URLDecoder.decode(username, "UTF-8")
     val decodedProfileUrl = URLDecoder.decode(profileUrl, "UTF-8")

@@ -19,7 +19,7 @@ import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +34,7 @@ import com.aubynsamuel.flashsend.R
 
 @Composable
 fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
     Column {
         Row(
             modifier = Modifier
@@ -81,9 +82,19 @@ fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
 
             }
             Row(modifier = Modifier.padding(end = 12.dp)) {
-                Icon(Icons.Outlined.Call, contentDescription = "", tint = Color.White)
+                Icon(
+                    Icons.Outlined.Call, contentDescription = "", tint = Color.White,
+                    modifier = Modifier.clickable(onClick = {})
+                )
                 Spacer(modifier = Modifier.width(15.dp))
-                Icon(Icons.Outlined.MoreVert, contentDescription = "", tint = Color.White)
+                Icon(
+                    Icons.Outlined.MoreVert, contentDescription = "", tint = Color.White,
+                    modifier = Modifier.clickable(onClick = { expanded = !expanded })
+                )
+                PopUpMenu(
+                    expanded = expanded, { expanded = !expanded },
+                    modifier = Modifier
+                )
             }
         }
     }

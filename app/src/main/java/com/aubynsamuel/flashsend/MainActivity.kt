@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -46,8 +47,7 @@ sealed class Screen(val route: String) {
             deviceToken: String,
             profileUrl: String,
             roomId: String
-        ) =
-            "chatRoom/$username/$userId/$deviceToken/$profileUrl/${roomId}"
+        ) = "chatRoom/$username/$userId/$deviceToken/$profileUrl/${roomId}"
     }
 }
 
@@ -60,29 +60,32 @@ fun ChatAppNavigation() {
     }
     val homeViewModelInstance: HomeViewModel = viewModel()
 
-    NavHost(navController = navController, startDestination = "auth") {
+    NavHost(
+        navController = navController,
+        startDestination = "loadingScreen",
+    ) {
         composable("auth") {
-            AuthScreen(
-                navController, authViewModelInstance
-            )
+            AuthScreen(navController, authViewModelInstance)
         }
-//        composable("signup") { SignupScreen(navController) }
-        composable("home") {
+        composable("loadingScreen") {
+            LoadingScreen(navController, authViewModelInstance)
+        }
+        composable(
+            "home",
+            enterTransition = { slideInHorizontally(initialOffsetX = { -it / 2 }) },
+        ) {
             HomeScreen(
-                navController,
-                homeViewModelInstance,
-                authViewModelInstance
+                navController, homeViewModelInstance, authViewModelInstance
             )
         }
         composable(
             route = Screen.ChatRoom.route,
-            arguments = listOf(
-                navArgument("username") { type = NavType.StringType },
+            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) },
+            arguments = listOf(navArgument("username") { type = NavType.StringType },
                 navArgument("userId") { type = NavType.StringType },
                 navArgument("deviceToken") { type = NavType.StringType },
                 navArgument("profileUrl") { type = NavType.StringType },
-                navArgument("roomId") { type = NavType.StringType }
-            )
+                navArgument("roomId") { type = NavType.StringType })
         ) { backStackEntry ->
             val username = backStackEntry.arguments?.getString("username") ?: ""
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
@@ -99,7 +102,13 @@ fun ChatAppNavigation() {
                 roomId = roomId
             )
         }
-        composable("searchUsers") { SearchUsersScreen(navController) }
+        composable(
+            "searchUsers",
+            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
+            SearchUsersScreen(
+                navController,
+            )
+        }
 //        composable("settings") { SettingsScreen(navController) }
     }
 }
