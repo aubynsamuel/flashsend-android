@@ -43,6 +43,7 @@ fun MessageInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 8.dp),
+
             placeholder = { Text("Type a message...") },
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,

@@ -1,8 +1,6 @@
 package com.aubynsamuel.flashsend.auth
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,28 +12,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun AuthScreen() {
+fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
     var isLogin by remember { mutableStateOf(true) }
     val title = if (isLogin) "Login" else "Sign Up"
+    val authState by viewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        if (authState) {
+            navController.navigate("home") {
+                popUpTo("auth") { inclusive = true }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(20.dp),
-        contentAlignment = Alignment.Center
+            .padding(20.dp), contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 title,
                 fontSize = 35.sp,
@@ -48,21 +53,25 @@ fun AuthScreen() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            AuthForm(isLogin) { isLogin = !isLogin }
+            AuthForm(isLogin, { isLogin = !isLogin }, viewModel)
+
+//            message?.let {
+//                Text(it, color = Color.Red, modifier = Modifier.padding(top = 10.dp))
+//            }
         }
     }
 }
 
+
 @Composable
-fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit) {
+fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit, viewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
             value = email,
@@ -70,11 +79,12 @@ fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit) {
             label = { Text("Email") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Next,
+                capitalization = KeyboardCapitalization.Sentences
             ),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)
-
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp)
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -86,22 +96,23 @@ fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit) {
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = if (isLogin) ImeAction.Done else ImeAction.Next
+                imeAction = if (isLogin) ImeAction.Done else ImeAction.Next,
+                capitalization = KeyboardCapitalization.Sentences
+
             ),
             trailingIcon = {
-                Text(
-                    text = if (passwordVisible) "Hide" else "Show",
+                Text(text = if (passwordVisible) "Hide" else "Show",
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { passwordVisible = !passwordVisible }
-                )
+                    modifier = Modifier.clickable { passwordVisible = !passwordVisible })
             },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp)
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        AnimatedVisibility(visible = !isLogin, enter = fadeIn(), exit = fadeOut()) {
+        AnimatedVisibility(visible = !isLogin) {
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
@@ -109,41 +120,38 @@ fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit) {
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Sentences
+
                 ),
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = { /* Handle Login or Sign Up */ },
-            modifier = Modifier
+            onClick = {
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    if (isLogin) {
+                        viewModel.login(email, password)
+                    } else if (password == confirmPassword) {
+                        viewModel.signUp(email, password)
+                    }
+                }
+            }, modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(20.dp)
+                .height(50.dp), shape = RoundedCornerShape(20.dp)
         ) {
-            Text(
-                if (isLogin) "Login" else "Sign Up",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 25.sp
-            )
+            Text(if (isLogin) "Login" else "Sign Up", fontSize = 25.sp)
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
+        Text(text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { onToggleMode() }
-        )
+            modifier = Modifier.clickable { onToggleMode() })
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAuthScreen() {
-    AuthScreen()
 }

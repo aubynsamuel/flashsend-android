@@ -1,6 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,60 +11,74 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.aubynsamuel.flashsend.R
-import kotlinx.coroutines.delay
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import java.util.*
+import java.net.URLDecoder
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(
+    navController: NavController,
+    username: String,
+    userId: String,
+    deviceToken: String,
+    profileUrl: String,
+    roomId: String,
+) {
+    val chatViewModel: ChatViewModel = viewModel()
+    val auth = FirebaseAuth.getInstance()
+    val currentUserId = auth.currentUser?.uid ?: return
+    val chatState by chatViewModel.chatState.collectAsState()
+    val messages by chatViewModel.messages.collectAsState()
+
+    val decodedUsername = URLDecoder.decode(username, "UTF-8")
+    val decodedProfileUrl = URLDecoder.decode(profileUrl, "UTF-8")
     val context = LocalContext.current
-    var messageList = generateMockMessages()
     var messageText by remember { mutableStateOf("") }
-    val messages = remember { mutableStateListOf(*messageList.toTypedArray()) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Initialize the scroll state so that the last item is visible from the start.
     val initialIndex = if (messages.isNotEmpty()) messages.size - 1 else 0
     val scrollState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
 
-    // Remember the previous count to detect additions
-    var previousMessageCount by remember { mutableIntStateOf(messages.size) }
-
-    // Animate to the bottom only if new messages are added.
-    LaunchedEffect(Unit) {
-//        if (messages.size > previousMessageCount) {
-//            scrollState.animateScrollToItem(messages.size - 1)
-//        }
-//        previousMessageCount = messages.size
-        while (false) {
-            messages.add(
-                Message(
-                    text = "Automatic message sent programmatically",
-                    time = System.currentTimeMillis(),
-                    isFromMe = false
-                )
-            )
-            scrollState.animateScrollToItem(messages.size - 1)
-            vibrateDevice(context)
-            vibrateDevice(context)
-            delay(5000)
+    val showScrollToBottom by remember {
+        derivedStateOf {
+            val lastIndex = messages.size - 1
+            val lastVisibleItem = scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            lastVisibleItem < lastIndex
         }
     }
 
-    Scaffold(modifier = Modifier.background(Color.White),
+    LaunchedEffect(roomId, currentUserId, userId) {
+        Log.d("ChatScreen", "Initializing chat with roomId: $roomId")
+        chatViewModel.initialize(roomId, currentUserId, userId)
+    }
+
+    LaunchedEffect(chatState) {
+        if (chatState is ChatState.Success) {
+            chatViewModel.markMessagesAsRead()
+        }
+    }
+    Log.e("ChatRoom", "ProfileUrl: $decodedProfileUrl, roomId: $roomId")
+    Log.e("ChatRoom", "Messages : $messages")
+    Scaffold(
+        modifier = Modifier.background(Color.White),
         topBar = {
-            HeaderBar(name = "Samuel", pic = R.drawable.ic_launcher_foreground)
+            HeaderBar(
+                name = decodedUsername,
+                pic = decodedProfileUrl
+            ) { navController.popBackStack() }
         },
         floatingActionButton = {
-            ScrollToBottom(onClick = {
-                coroutineScope.launch {
-                    scrollState.animateScrollToItem(messages.size - 1)
+            if (showScrollToBottom) {
+                ScrollToBottom {
+                    coroutineScope.launch {
+                        scrollState.animateScrollToItem(messages.size - 1)
+                    }
                 }
-            })
+            }
         }
     ) { paddingValues ->
         Column(
@@ -78,6 +93,7 @@ fun ChatScreen() {
             ) {
                 MessagesList(
                     messages = messages,
+                    currentUserId = currentUserId,
                     modifier = Modifier.weight(1f),
                     scrollState = scrollState
                 )
@@ -87,673 +103,19 @@ fun ChatScreen() {
                     onMessageChange = { messageText = it },
                     onSend = {
                         if (messageText.isNotBlank()) {
-                            messages.add(
-                                Message(
-                                    text = messageText,
-                                    time = System.currentTimeMillis(),
-                                    isFromMe = true
-                                )
+                            chatViewModel.sendMessage(
+                                content = messageText,
+                                senderName = decodedUsername
                             )
                             messageText = ""
-                            previousMessageCount = messages.size
                             vibrateDevice(context)
-                            coroutineScope.launch { scrollState.animateScrollToItem(messages.size - 1) }
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(messages.size)
+                            }
                         }
                     }
                 )
             }
         }
     }
-}
-
-
-data class Message(
-    val text: String,
-    val time: Long,
-    val isFromMe: Boolean
-)
-
-@RequiresApi(Build.VERSION_CODES.R)
-@Preview(showBackground = true)
-@Composable
-fun PreviewChatScreen() {
-    MaterialTheme {
-        ChatScreen()
-    }
-}
-
-@Preview
-@Composable
-fun PreviewMessageFromMe() {
-    MaterialTheme {
-        ChatMessage(
-            message = Message(
-                text = "Hello! This is my message",
-                time = System.currentTimeMillis(),
-                isFromMe = true
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun PreviewMessageFromOther() {
-    MaterialTheme {
-        ChatMessage(
-            message = Message(
-                text = "Hi! This is a received message",
-                time = System.currentTimeMillis(),
-                isFromMe = false
-            )
-        )
-    }
-}
-
-// Generates realistic mock messages with random timestamps
-fun generateMockMessages(): List<Message> {
-    val messages = mutableListOf<Message>()
-    val baseTime = System.currentTimeMillis()
-    val random = Random(System.currentTimeMillis())
-
-    // Add initial message
-    messages.add(
-        Message(
-            text = "Hey! How are you?",
-            time = baseTime - 3600000, // 1 hour ago
-            isFromMe = false
-        )
-    )
-
-    // Generate conversation-like messages
-    val conversation = listOf(
-        "First Message",
-        "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!",
-        "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!", "I'm doing great, thanks! How about you?",
-        "Pretty good! Any plans for the weekend?",
-        "Not much, maybe go hiking. You?",
-        "Sounds fun! I might check out the new cafe downtown",
-        "Oh which one? The place on Main Street?",
-        "Yes, that's the one! Heard they have great coffee",
-        "We should go together sometime!",
-        "Definitely! How about next Wednesday?",
-        "Works for me! Let's meet at 2pm?",
-        "Perfect 👍 See you then!",
-        "Last Message"
-    )
-
-    var currentTime = baseTime - 1800000 // 30 minutes ago
-    var isFromMe = true
-
-    conversation.forEach { text ->
-        messages.add(
-            Message(
-                text = text,
-                time = currentTime,
-                isFromMe = isFromMe
-            )
-        )
-        currentTime += 60000 * random.nextInt(4) + 1 // Add 1-5 minutes between messages
-        isFromMe = !isFromMe // Alternate sender
-    }
-
-    return messages
 }

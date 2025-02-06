@@ -6,14 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun MessagesList(
-    messages: List<Message>,
+    messages: List<ChatMessage>,
+    currentUserId: String,
     modifier: Modifier = Modifier,
     scrollState: LazyListState
 ) {
@@ -24,14 +24,19 @@ fun MessagesList(
         reverseLayout = false,
         contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
     ) {
-        items(messages, key = { it.time }) { message ->
+        items(
+            count = messages.size,
+            key = { messages[it].id }
+        ) { index ->
+            val message = messages[index]
             ChatMessage(
                 message = message,
+                isFromMe = message.senderId == currentUserId,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = if (message.isFromMe) 30.dp else 0.dp,
-                        end = if (message.isFromMe) 0.dp else 30.dp
+                        start = if (message.senderId == currentUserId) 30.dp else 0.dp,
+                        end = if (message.senderId == currentUserId) 0.dp else 30.dp
                     )
             )
         }

@@ -43,11 +43,13 @@ android {
 }
 
 dependencies {
+    implementation(libs.accompanist.navigation.animation)
     implementation(libs.androidx.profileinstaller)
+    implementation(libs.coil.compose)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx)      // Firebase Auth
-    implementation(libs.firebase.firestore.ktx) // Firestore Database
-    implementation(libs.firebase.storage.ktx)   // Firebase Storage
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
     androidTestImplementation(libs.androidx.benchmark.macro.junit4)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)

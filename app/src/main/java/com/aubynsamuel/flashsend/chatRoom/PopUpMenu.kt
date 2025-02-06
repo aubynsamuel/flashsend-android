@@ -9,28 +9,38 @@ import androidx.compose.ui.Modifier
 @Composable
 fun PopUpMenu(
     expanded: Boolean,
-    onDismiss: () -> Unit, // Callback to update state in the parent
+    onDismiss: () -> Unit,
     modifier: Modifier
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = onDismiss, // Call the dismiss callback here
+        onDismissRequest = onDismiss,
         modifier = modifier
     ) {
         DropdownMenuItem(
             text = { Text("Option 1") },
             onClick = {
-                // Perform action for Option 1, then dismiss the menu
                 onDismiss()
             }
         )
         DropdownMenuItem(
             text = { Text("Option 2") },
             onClick = {
-                // Perform action for Option 2, then dismiss the menu
                 onDismiss()
             }
         )
     }
 }
 
+//@Preview
+//@Composable
+//fun PrevPopUpMenu() {
+//    Box() {
+//        var showPopup by remember { mutableStateOf(true) }
+//        PopUpMenu(
+//            expanded = showPopup,
+//            onDismiss = { showPopup = false },
+//            modifier = Modifier
+//        )
+//    }
+//}

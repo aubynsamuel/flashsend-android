@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chatRoom
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,25 +20,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Date
 
 @Composable
 fun ChatMessage(
-    message: Message,
+    message: ChatMessage,
+    isFromMe: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
     var showPopup by remember { mutableStateOf(false) }
     Row(
         modifier = modifier,
-        horizontalArrangement = if (message.isFromMe) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
     ) {
         Column(
-            horizontalAlignment = if (message.isFromMe) Alignment.End else Alignment.Start
+            horizontalAlignment = if (isFromMe) Alignment.End else Alignment.Start
         ) {
-            // Message Bubble
             Surface(
                 Modifier.clickable { showPopup = !showPopup },
-                color = if (message.isFromMe) MaterialTheme.colorScheme.primary
+                color = if (isFromMe) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -47,37 +46,33 @@ fun ChatMessage(
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
                     Text(
-                        text = message.text,
-                        color = if (message.isFromMe) MaterialTheme.colorScheme.onPrimary
+                        text = message.content,
+                        color = if (isFromMe) MaterialTheme.colorScheme.onPrimary
                         else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp
                     )
 
-                    // Time and read status
                     Row(
                         modifier = Modifier.align(Alignment.End)
                     ) {
                         Text(
-                            text = message.time.toString(),
-                            color = if (message.isFromMe) MaterialTheme.colorScheme.onPrimary.copy(
-                                alpha = 0.7f
-                            )
+                            text = formatMessageTime(message.createdAt),
+                            color = if (isFromMe) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                             else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                             fontSize = 10.sp,
                             softWrap = true
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (message.isFromMe) "✓✓" else "",
+                            text = if (isFromMe) {
+                                if (message.read) "✓✓" else "✓"
+                            } else "",
                             fontSize = 10.sp
                         )
                     }
-                    AnimatedVisibility(expanded) {
-                        Text(text = "JetPack Compose")
-                    }
                 }
             }
-            // Pass the state and a lambda to update it on dismissal
+
             PopUpMenu(
                 expanded = showPopup,
                 onDismiss = { showPopup = false },
@@ -85,4 +80,9 @@ fun ChatMessage(
             )
         }
     }
+}
+
+fun formatMessageTime(date: Date): String {
+    // Implement your date formatting logic here
+    return date.toString()
 }
