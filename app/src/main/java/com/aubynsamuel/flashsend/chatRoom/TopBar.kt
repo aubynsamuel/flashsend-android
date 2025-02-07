@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chatRoom
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,22 +14,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.aubynsamuel.flashsend.R
 
 @Composable
 fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
@@ -40,7 +38,7 @@ fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
             modifier = Modifier
                 .height(80.dp)
                 .fillMaxWidth(1f)
-                .background(Color.DarkGray)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(top = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -53,7 +51,7 @@ fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
                         .padding(start = 5.dp)
                         .size(30.dp)
                         .clickable(onClick = goBack),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (pic?.length != 0) {
                     AsyncImage(
@@ -61,15 +59,19 @@ fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .clip(CircleShape)
-                            .size(45.dp), contentScale = ContentScale.FillBounds
+                            .size(50.dp)
+                            .graphicsLayer {
+                                scaleX = 1.3f
+                                scaleY = 1.3f
+                            },
                     )
                 } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
+                    Icon(
+                        Icons.Default.AccountCircle,
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .clip(CircleShape)
-                            .size(40.dp)
+                            .size(55.dp)
                     )
                 }
 
@@ -77,23 +79,28 @@ fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
                     text = name,
                     fontSize = 18.sp,
                     modifier = Modifier.padding(start = 10.dp),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
             }
             Row(modifier = Modifier.padding(end = 12.dp)) {
                 Icon(
-                    Icons.Outlined.Call, contentDescription = "", tint = Color.White,
+                    Icons.Outlined.Call,
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable(onClick = {})
                 )
                 Spacer(modifier = Modifier.width(15.dp))
                 Icon(
-                    Icons.Outlined.MoreVert, contentDescription = "", tint = Color.White,
+                    Icons.Outlined.MoreVert,
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable(onClick = { expanded = !expanded })
                 )
                 PopUpMenu(
                     expanded = expanded, { expanded = !expanded },
-                    modifier = Modifier
+                    modifier = Modifier,
+                    dropItems = optionsList
                 )
             }
         }

@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.*
@@ -17,10 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +28,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.auth.AuthViewModel
 import java.net.URLEncoder
@@ -51,8 +50,7 @@ data class User(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel
+    navController: NavController, authViewModel: AuthViewModel
 ) {
     val homeViewModel: HomeViewModel = viewModel()
     val rooms by homeViewModel.rooms.collectAsState()
@@ -72,7 +70,7 @@ fun HomeScreen(
             modifier = Modifier
                 .height(80.dp)
                 .fillMaxWidth(1f)
-                .background(Color.DarkGray)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(top = 15.dp)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -80,7 +78,7 @@ fun HomeScreen(
         ) {
             Text(
                 "Flash Send",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp,
                 textAlign = TextAlign.Center
@@ -88,9 +86,8 @@ fun HomeScreen(
             Icon(
                 Icons.Outlined.MoreVert,
                 contentDescription = "",
-                tint = Color.White,
-                modifier = Modifier
-                    .clickable(onClick = { authViewModel.logout() })
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.clickable(onClick = { authViewModel.logout() })
             )
         }
     }, floatingActionButton = {
@@ -141,67 +138,87 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                         roomId = roomId
                     )
                 )
-            }, shape = MaterialTheme.shapes.medium,
+            },
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(Color.Transparent)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 0.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .padding(end = 10.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            if (room.otherParticipant.profileUrl.isNotEmpty()) {
-                AsyncImage(
-                    model = room.otherParticipant.profileUrl,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(45.dp), contentScale = ContentScale.FillBounds
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(45.dp)
-                )
-            }
-            Column {
-                Text(
-                    text = room.otherParticipant.username,
-                    modifier = Modifier.padding(start = 5.dp),
-                    color = Color.Gray,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                room.lastMessage?.let {
-                    Text(
-                        text = it, color = Color.Gray, modifier = Modifier.padding(start = 7.dp),
-                        fontSize = 15.sp,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Column {
-                Text(
-                    text = room.lastMessageTimestamp.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                    fontSize = 15.sp,
-                )
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(end = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "${8}",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp,
-                        color = Color.Red
-                    )
-                }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(0.9f),
+            ) {
 
+                if (room.otherParticipant.profileUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = room.otherParticipant.profileUrl,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(50.dp)
+                            .graphicsLayer {
+                                scaleX = 1.5f
+                                scaleY = 1.5f
+
+                            },
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(52.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Column(modifier = Modifier.fillMaxWidth(1f)) {
+                    Text(
+                        text = room.otherParticipant.username,
+                        modifier = Modifier.padding(start = 5.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold, overflow = TextOverflow.Ellipsis
+                    )
+                    room.lastMessage?.let {
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .padding(start = 7.dp, end = 10.dp),
+                            fontSize = 15.sp,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "2:12pm",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 15.sp,
+                    maxLines = 1
+                )
+                Text(
+                    text = "${8}",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1
+                )
             }
 
         }
@@ -212,14 +229,13 @@ fun ChatListItem(room: RoomData, navController: NavController) {
 @Composable
 fun PrevChatItem() {
     ChatListItem(
-        item,
-        navController = rememberNavController()
+        item, navController = rememberNavController()
     )
 }
 
 val item = RoomData(
     roomId = "room_1",
-    lastMessage = "Hey, how's it going?",
+    lastMessage = "Hey, how's it going with that sity asjasjsd sdkjfksjdf sldjsd?",
     lastMessageTimestamp = System.currentTimeMillis() - 60000,
     lastMessageSenderId = "user_1",
     otherParticipant = User(

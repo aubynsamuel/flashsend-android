@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -149,7 +148,7 @@ fun AuthForm(isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthView
         ) {
             if (isLoggingIn) {
                 CircularProgressIndicator(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
                 Text(if (isLogin) "Login" else "Sign Up", fontSize = 25.sp)

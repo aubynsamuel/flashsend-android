@@ -46,7 +46,8 @@ fun ChatMessage(
         ) {
             Box(modifier = Modifier.absoluteOffset(x = 60.dp, y = 30.dp)) {
                 PopUpMenu(
-                    expanded = showPopup, onDismiss = { showPopup = false }, modifier = Modifier
+                    expanded = showPopup, onDismiss = { showPopup = false }, modifier = Modifier,
+                    dropItems = optionsList
                 )
             }
             Column(
@@ -88,6 +89,25 @@ fun formatMessageTime(date: Date): String {
     val formater = SimpleDateFormat("h:m a", Locale.US)
     return formater.format(date).lowercase()
 }
+
+val optionsList: List<DropMenu> = listOf(
+    DropMenu(
+        text = "Copy",
+        onClick = {}, iconName = "Clipboard"
+    ),
+    DropMenu(
+        text = "Save",
+        onClick = {}, iconName = "Save"
+    ),
+    DropMenu(
+        text = "Delete",
+        onClick = {}, iconName = "Delete"
+    ),
+    DropMenu(
+        text = "Edit",
+        onClick = {}, iconName = "Edit"
+    )
+)
 
 val message: ChatMessage = ChatMessage(
     id = "12",

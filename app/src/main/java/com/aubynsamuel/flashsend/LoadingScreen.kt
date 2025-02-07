@@ -20,14 +20,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.aubynsamuel.flashsend.auth.AuthViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     // Observe the auth state
     val authState by authViewModel.authState.collectAsState()
     LaunchedEffect(authState) {
-        delay(2000)
+//        delay(2000)
         if (authState) {
             navController.navigate("home") {
                 popUpTo("loadingScreen") { inclusive = true }
