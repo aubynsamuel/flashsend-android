@@ -28,7 +28,10 @@ fun ChatScreen(
     profileUrl: String,
     roomId: String,
 ) {
-    val chatViewModel: ChatViewModel = viewModel()
+    val context = LocalContext.current
+    val chatViewModel: ChatViewModel = viewModel {
+        ChatViewModel(context)
+    }
     val auth = FirebaseAuth.getInstance()
     val currentUserId = auth.currentUser?.uid ?: return
     val chatState by chatViewModel.chatState.collectAsState()
@@ -37,18 +40,15 @@ fun ChatScreen(
 
     val decodedUsername = URLDecoder.decode(username, "UTF-8")
     val decodedProfileUrl = URLDecoder.decode(profileUrl, "UTF-8")
-    val context = LocalContext.current
     var messageText by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    val initialIndex = if (messages.isNotEmpty()) messages.size - 1 else 0
-    val scrollState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
+    val listState = rememberLazyListState()
 
     val showScrollToBottom by remember {
         derivedStateOf {
-            val lastIndex = messages.size - 1
-            val lastVisibleItem = scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            lastVisibleItem < lastIndex
+            val firstVisibleIndex = listState.firstVisibleItemIndex
+            firstVisibleIndex - 1 > 0
         }
     }
 
@@ -62,6 +62,12 @@ fun ChatScreen(
             chatViewModel.markMessagesAsRead()
         }
     }
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(0)
+        }
+    }
+
     Log.e("ChatRoom", "ProfileUrl: $decodedProfileUrl, roomId: $roomId")
     Log.e("ChatRoom", "Messages : $messages")
     Scaffold(
@@ -76,7 +82,7 @@ fun ChatScreen(
             if (showScrollToBottom) {
                 ScrollToBottom {
                     coroutineScope.launch {
-                        scrollState.animateScrollToItem(messages.size - 1)
+                        listState.animateScrollToItem(0)
                     }
                 }
             }
@@ -96,7 +102,7 @@ fun ChatScreen(
                     messages = messages,
                     currentUserId = currentUserId,
                     modifier = Modifier.weight(1f),
-                    scrollState = scrollState
+                    scrollState = listState
                 )
 
                 MessageInput(
@@ -110,9 +116,9 @@ fun ChatScreen(
                             )
                             messageText = ""
                             vibrateDevice(context)
-                            coroutineScope.launch {
-                                scrollState.animateScrollToItem(messages.size)
-                            }
+//                            coroutineScope.launch {
+//                                listState .animateScrollToItem(0)
+//                            }
                         }
                     }
                 )

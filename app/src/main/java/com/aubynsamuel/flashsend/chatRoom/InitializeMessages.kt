@@ -1,5 +1,6 @@
 package com.aubynsamuel.flashsend.chatRoom
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,9 +41,11 @@ sealed class ChatState {
     data class Error(val message: String) : ChatState()
 }
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel(context: Context) : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private var messageListener: ListenerRegistration? = null
+
+    private val messageDao = ChatDatabase.getDatabase(context).messageDao()
 
     private val _chatState = MutableStateFlow<ChatState>(ChatState.Loading)
     val chatState: StateFlow<ChatState> = _chatState
@@ -59,12 +62,32 @@ class ChatViewModel : ViewModel() {
         this.currentUserId = currentUserId
         this.otherUserId = otherUserId
 
+        Log.d(
+            "ChatViewModel",
+            "Initializing chat: roomId=$roomId, currentUserId=$currentUserId, otherUserId=$otherUserId"
+        )
+
         viewModelScope.launch {
             try {
                 _chatState.value = ChatState.Loading
-                // First create/verify the room exists
+
+                // Collect messages from the local database.
+                launch {
+                    messageDao.getMessagesForRoom(roomId).collect { cachedMessages ->
+                        Log.d(
+                            "ChatViewModel",
+                            "Received ${cachedMessages.size} cached messages from local database"
+                        )
+                        val chatMessages = cachedMessages.map { it.toChatMessage() }
+                        _messages.value = chatMessages
+                        _chatState.value = ChatState.Success(chatMessages)
+                    }
+                }
+
+                // Check if the room exists on Firestore; create it if it doesn't.
                 createRoomIfNeeded(roomId, currentUserId, otherUserId)
-                // Then initialize the message listener
+
+                // Initialize Firestore listener for real-time updates.
                 initializeMessageListener()
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error initializing chat", e)
@@ -78,37 +101,51 @@ class ChatViewModel : ViewModel() {
         currentUserId: String,
         otherUserId: String
     ) {
-        val roomRef = firestore.collection("rooms").document(roomId)
-        val room = roomRef.get().await()
+        try {
+            Log.d("ChatViewModel", "Checking if room exists for roomId=$roomId")
+            val roomRef = firestore.collection("rooms").document(roomId)
+            val room = roomRef.get().await()
 
-        if (!room.exists()) {
-            val roomData = hashMapOf(
-                "participants" to listOf(currentUserId, otherUserId),
-                "createdAt" to Timestamp.now(),
-                "lastMessage" to "",
-                "lastMessageTimestamp" to Timestamp.now()
-            )
-            roomRef.set(roomData).await()
+            if (!room.exists()) {
+                Log.d("ChatViewModel", "Room does not exist. Creating new room with roomId=$roomId")
+                val roomData = hashMapOf(
+                    "participants" to listOf(currentUserId, otherUserId),
+                    "createdAt" to Timestamp.now(),
+                    "lastMessage" to "",
+                    "lastMessageTimestamp" to Timestamp.now()
+                )
+                roomRef.set(roomData).await()
+                Log.d("ChatViewModel", "Room created successfully for roomId=$roomId")
+            } else {
+                Log.d("ChatViewModel", "Room already exists for roomId=$roomId")
+            }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error creating room if needed", e)
+            throw e
         }
     }
 
     private fun initializeMessageListener() {
         roomId?.let { roomId ->
             messageListener?.remove()
-
+            Log.d("ChatViewModel", "Initializing Firestore message listener for roomId=$roomId")
             val messagesRef = firestore.collection("rooms")
                 .document(roomId)
                 .collection("messages")
-                .orderBy("createdAt", Query.Direction.ASCENDING)  // Changed to ASCENDING
+                .orderBy("createdAt", Query.Direction.DESCENDING)
 
             messageListener = messagesRef.addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    Log.e("ChatViewModel", "Error in message listener: ${error.message}")
+                    Log.e("ChatViewModel", "Error in message listener: ${error.message}", error)
                     _chatState.value = ChatState.Error("Error loading messages: ${error.message}")
                     return@addSnapshotListener
                 }
 
                 snapshot?.let { querySnapshot ->
+                    Log.d(
+                        "ChatViewModel",
+                        "Firestore snapshot received with ${querySnapshot.documents.size} documents"
+                    )
                     val messagesList = querySnapshot.documents.mapNotNull { doc ->
                         try {
                             val data = doc.data ?: return@mapNotNull null
@@ -133,17 +170,32 @@ class ChatViewModel : ViewModel() {
                                 duration = (data["duration"] as? Number)?.toLong()
                             )
                         } catch (e: Exception) {
-                            Log.e("ChatViewModel", "Error parsing message: ${e.message}")
+                            Log.e(
+                                "ChatViewModel",
+                                "Error parsing message document with id=${doc.id}: ${e.message}",
+                                e
+                            )
                             null
                         }
                     }
-                    Log.d("ChatViewModel", "Loaded ${messagesList.size} messages")
+                    Log.d("ChatViewModel", "Processed ${messagesList.size} messages from snapshot")
                     _messages.value = messagesList
+                    viewModelScope.launch {
+                        val messageEntities = messagesList.map { it.toMessageEntity(roomId) }
+                        try {
+                            messageDao.insertMessages(messageEntities)
+                            Log.d("ChatViewModel", "Messages stored successfully")
+                        } catch (e: Exception) {
+                            Log.e("ChatViewModel", "Error storing messages in local database", e)
+                        }
+                    }
                     _chatState.value = ChatState.Success(messagesList)
+                } ?: run {
+                    Log.d("ChatViewModel", "Firestore snapshot is null")
                 }
             }
         } ?: run {
-            Log.e("ChatViewModel", "RoomId is null")
+            Log.e("ChatViewModel", "RoomId is null when trying to initialize message listener")
             _chatState.value = ChatState.Error("Room ID is not set")
         }
     }
@@ -156,8 +208,9 @@ class ChatViewModel : ViewModel() {
                         val unreadMessages = messages.value.filter {
                             !it.read && it.senderId != userId
                         }
-
+                        Log.d("ChatViewModel", "Marking ${unreadMessages.size} messages as read")
                         unreadMessages.forEach { message ->
+                            Log.d("ChatViewModel", "Marking message id=${message.id} as read")
                             firestore.collection("rooms")
                                 .document(roomId)
                                 .collection("messages")
@@ -173,16 +226,15 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        messageListener?.remove()
-    }
-
     fun sendMessage(content: String, senderName: String) {
         viewModelScope.launch {
             try {
                 roomId?.let { roomId ->
                     currentUserId?.let { userId ->
+                        Log.d(
+                            "ChatViewModel",
+                            "Sending message: content='$content', senderId=$userId, senderName=$senderName, roomId=$roomId"
+                        )
                         val messageData = hashMapOf(
                             "content" to content,
                             "createdAt" to Timestamp.now(),
@@ -193,14 +245,18 @@ class ChatViewModel : ViewModel() {
                             "delivered" to false
                         )
 
-                        // Add message to Firestore
-                        firestore.collection("rooms")
+                        // Add message to Firestore.
+                        val addedDoc = firestore.collection("rooms")
                             .document(roomId)
                             .collection("messages")
                             .add(messageData)
                             .await()
+                        Log.d(
+                            "ChatViewModel",
+                            "Message sent to Firestore with document id=${addedDoc.id}"
+                        )
 
-                        // Update room's last message
+                        // Update room's last message.
                         firestore.collection("rooms")
                             .document(roomId)
                             .update(
@@ -211,6 +267,10 @@ class ChatViewModel : ViewModel() {
                                 )
                             )
                             .await()
+                        Log.d(
+                            "ChatViewModel",
+                            "Room's last message updated successfully for roomId=$roomId"
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -219,4 +279,53 @@ class ChatViewModel : ViewModel() {
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("ChatViewModel", "onCleared: Removing Firestore message listener")
+        messageListener?.remove()
+    }
+}
+
+// Extension functions for conversions with logging.
+private fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
+    Log.d(
+        "ChatViewModel",
+        "Converting ChatMessage (id=${this.id}) to MessageEntity with roomId=$roomId"
+    )
+    return MessageEntity(
+        id = id,
+        content = content,
+        image = image,
+        audio = audio,
+        createdAt = createdAt,
+        senderId = senderId,
+        senderName = senderName,
+        replyTo = replyTo,
+        read = read,
+        type = type,
+        delivered = delivered,
+        location = location,
+        duration = duration,
+        roomId = roomId
+    )
+}
+
+private fun MessageEntity.toChatMessage(): ChatMessage {
+    Log.d("ChatViewModel", "Converting MessageEntity (id=${this.id}) to ChatMessage")
+    return ChatMessage(
+        id = id,
+        content = content,
+        image = image,
+        audio = audio,
+        createdAt = createdAt,
+        senderId = senderId,
+        senderName = senderName,
+        replyTo = replyTo,
+        read = read,
+        type = type,
+        delivered = delivered,
+        location = location,
+        duration = duration
+    )
 }

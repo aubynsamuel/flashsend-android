@@ -21,7 +21,7 @@ fun MessagesList(
         modifier = modifier,
         state = scrollState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        reverseLayout = false,
+        reverseLayout = true,
         contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
     ) {
         items(

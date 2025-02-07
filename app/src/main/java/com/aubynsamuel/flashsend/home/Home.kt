@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -51,9 +52,9 @@ data class User(
 @Composable
 fun HomeScreen(
     navController: NavController,
-    homeViewModel: HomeViewModel,
     authViewModel: AuthViewModel
 ) {
+    val homeViewModel: HomeViewModel = viewModel()
     val rooms by homeViewModel.rooms.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val authState by authViewModel.authState.collectAsState()

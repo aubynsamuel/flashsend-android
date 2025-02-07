@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.baselineprofile)
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
+
 }
 
 android {
@@ -43,6 +45,16 @@ android {
 }
 
 dependencies {
+    // Room Database
+    val roomVersion = "2.6.1"  // Use the latest version
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)// Kotlin extensions
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    implementation(libs.gson)  // Use the latest version
+
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.coil.compose)

@@ -19,7 +19,6 @@ import com.aubynsamuel.flashsend.auth.AuthScreen
 import com.aubynsamuel.flashsend.auth.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.ChatScreen
 import com.aubynsamuel.flashsend.home.HomeScreen
-import com.aubynsamuel.flashsend.home.HomeViewModel
 import com.aubynsamuel.flashsend.home.SearchUsersScreen
 import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
 import com.google.firebase.FirebaseApp
@@ -58,8 +57,6 @@ fun ChatAppNavigation() {
     val authViewModelInstance: AuthViewModel = viewModel {
         AuthViewModel(AuthRepository(FirebaseAuth.getInstance()))
     }
-    val homeViewModelInstance: HomeViewModel = viewModel()
-
     NavHost(
         navController = navController,
         startDestination = "loadingScreen",
@@ -75,7 +72,7 @@ fun ChatAppNavigation() {
             enterTransition = { slideInHorizontally(initialOffsetX = { -it / 2 }) },
         ) {
             HomeScreen(
-                navController, homeViewModelInstance, authViewModelInstance
+                navController, authViewModelInstance
             )
         }
         composable(
@@ -109,6 +106,5 @@ fun ChatAppNavigation() {
                 navController,
             )
         }
-//        composable("settings") { SettingsScreen(navController) }
     }
 }
