@@ -34,18 +34,17 @@ fun ChatScreen(
     profileUrl: String,
     roomId: String,
 ) {
+    val auth = FirebaseAuth.getInstance()
+    val currentUserId = auth.currentUser?.uid ?: return
+    val roomId by remember { mutableStateOf(createRoomId(userId, currentUserId)) }
     val context = LocalContext.current
     val chatViewModel: ChatViewModel = viewModel {
         ChatViewModel(context)
     }
-    val auth = FirebaseAuth.getInstance()
-    val currentUserId = auth.currentUser?.uid ?: return
     val chatState by chatViewModel.chatState.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
 //    val messages = generateMockMessages(currentUserId)
-
     val decodedUsername = URLDecoder.decode(username, "UTF-8")
-    val decodedProfileUrl = URLDecoder.decode(profileUrl, "UTF-8")
     var messageText by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
@@ -74,13 +73,12 @@ fun ChatScreen(
         }
     }
 
-    Log.e("ChatRoom", "ProfileUrl: $decodedProfileUrl, roomId: $roomId")
-    Log.e("ChatRoom", "Messages : $messages")
     Scaffold(
+//        modifier = Modifier.windowInsetsPadding(WindowInsets.ime),
         topBar = {
             HeaderBar(
                 name = decodedUsername,
-                pic = decodedProfileUrl
+                pic = profileUrl
             ) { navController.popBackStack() }
         },
         floatingActionButton = {
@@ -91,7 +89,8 @@ fun ChatScreen(
                     }
                 }
             }
-        }
+        },
+//        contentWindowInsets = WindowInsets.ime
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -115,12 +114,14 @@ fun ChatScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 5.dp)
+                        .padding(top = 0.dp, bottom = 5.dp)
                 ) {
                     MessagesList(
                         messages = messages,
                         currentUserId = currentUserId,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 15.dp),
                         scrollState = listState
                     )
                     MessageInput(
@@ -144,4 +145,9 @@ fun ChatScreen(
             }
         }
     }
+}
+
+fun createRoomId(userId: String, currentUserId: String): String {
+    val ids = listOf<String>(userId, currentUserId)
+    return ids.sorted().joinToString("_")
 }

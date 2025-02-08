@@ -1,6 +1,6 @@
 [versions]
 accompanistNavigationAnimation = "0.31.3-beta"
-agp = "8.7.3"
+agp = "8.8.0"
 benchmarkMacroJunit4 = "1.3.3"
 coilCompose = "2.4.0"
 firebaseBom = "33.8.0"

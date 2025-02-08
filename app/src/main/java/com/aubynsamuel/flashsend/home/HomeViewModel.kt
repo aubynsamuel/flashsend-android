@@ -2,6 +2,7 @@ package com.aubynsamuel.flashsend.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -49,7 +50,6 @@ class HomeViewModel : ViewModel() {
 
                 val roomsList = snapshot.documents.mapNotNull { roomDoc ->
                     val data = roomDoc.data ?: return@mapNotNull null
-
                     @Suppress("UNCHECKED_CAST")
                     val participants =
                         data["participants"] as? List<String> ?: return@mapNotNull null
@@ -73,7 +73,7 @@ class HomeViewModel : ViewModel() {
                     RoomData(
                         roomId = roomDoc.id,
                         lastMessage = data["lastMessage"] as? String ?: "",
-                        lastMessageTimestamp = data["lastMessageTimestamp"] as? Long ?: 0L,
+                        lastMessageTimestamp = data["lastMessageTimestamp"] as? Timestamp,
                         lastMessageSenderId = data["lastMessageSenderId"] as? String,
                         otherParticipant = user
                     )

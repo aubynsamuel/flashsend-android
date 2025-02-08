@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.aubynsamuel.flashsend.logger
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -64,10 +65,9 @@ class LocationConverter {
             )
             location
         } catch (e: Exception) {
-            Log.e(
+            logger(
                 "LocationConverter",
-                "fromString: Error converting string '$value' to Location",
-                e
+                "fromString: Error converting string '$value' to Location $e",
             )
             null
         }

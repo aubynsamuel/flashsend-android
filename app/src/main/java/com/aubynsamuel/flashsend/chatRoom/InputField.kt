@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,9 +44,17 @@ fun MessageInput(
     onMessageChange: (String) -> Unit,
     onSend: () -> Unit
 ) {
+//    val density = LocalDensity.current
+//    val isKeyboardVisible =
+//        WindowInsets.ime.getBottom(density) > 0
+
+
+//    val keyboardImePosition by animateFloatAsState(
+//        if (isKeyboardVisible) -10f else 0f,
+//        animationSpec = tween(5),
+//    )
     val transition =
         updateTransition(targetState = messageText.isNotBlank(), label = "messageTransition")
-
     val translateX by transition.animateFloat(
         transitionSpec = { tween(200) },
         label = "translationX"
@@ -72,8 +82,15 @@ fun MessageInput(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 3.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(top = 3.dp)
+            .padding(horizontal = 10.dp)
+//            .imePadding(),
+//            .graphicsLayer {
+//                translationY = if (isKeyboardVisible) -15f else 0f
+//            },
+        ,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         TextField(
             value = messageText,
@@ -81,6 +98,7 @@ fun MessageInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 8.dp),
+            textStyle = LocalTextStyle.current,
             placeholder = { Text("Type a message...") },
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -94,7 +112,7 @@ fun MessageInput(
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Default
+                imeAction = ImeAction.Default,
             ),
             trailingIcon = {
                 Row {

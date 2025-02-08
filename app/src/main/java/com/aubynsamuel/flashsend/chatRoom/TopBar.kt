@@ -33,7 +33,10 @@ import coil.compose.AsyncImage
 @Composable
 fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    Column {
+    Column(
+//        modifier = Modifier.windowInsetsPadding(WindowInsets.ime)
+    )
+    {
         Row(
             modifier = Modifier
                 .height(80.dp)
@@ -61,8 +64,8 @@ fun HeaderBar(name: String, pic: String?, goBack: () -> Unit) {
                             .clip(CircleShape)
                             .size(50.dp)
                             .graphicsLayer {
-                                scaleX = 1.3f
-                                scaleY = 1.3f
+                                scaleX = 1.5f
+                                scaleY = 1.5f
                             },
                     )
                 } else {

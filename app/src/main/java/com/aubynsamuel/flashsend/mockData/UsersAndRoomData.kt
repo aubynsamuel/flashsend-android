@@ -2,6 +2,7 @@ package com.aubynsamuel.flashsend.mockData
 
 import com.aubynsamuel.flashsend.home.RoomData
 import com.aubynsamuel.flashsend.home.User
+import com.google.firebase.Timestamp
 
 val mockUsers = listOf(
     User(
@@ -37,28 +38,28 @@ val mockRooms = listOf(
     RoomData(
         roomId = "room_1",
         lastMessage = "Hey, how's it going?",
-        lastMessageTimestamp = System.currentTimeMillis() - 60000,
+        lastMessageTimestamp = Timestamp.now(),
         lastMessageSenderId = "user_1",
         otherParticipant = mockUsers[1] // Bob Smith
     ),
     RoomData(
         roomId = "room_2",
         lastMessage = "Are we still on for tonight?",
-        lastMessageTimestamp = System.currentTimeMillis() - 120000,
+        lastMessageTimestamp = Timestamp.now(),
         lastMessageSenderId = "user_2",
         otherParticipant = mockUsers[0] // Alice Johnson
     ),
     RoomData(
         roomId = "room_3",
         lastMessage = "See you later!",
-        lastMessageTimestamp = System.currentTimeMillis() - 180000,
+        lastMessageTimestamp = Timestamp.now(),
         lastMessageSenderId = "user_3",
         otherParticipant = mockUsers[2] // Charlie Brown
     ),
     RoomData(
         roomId = "room_4",
         lastMessage = "See you soon!",
-        lastMessageTimestamp = System.currentTimeMillis() - 182000,
+        lastMessageTimestamp = Timestamp.now(),
         lastMessageSenderId = "user_3",
         otherParticipant = mockUsers[3] // Charlie Brown
     )

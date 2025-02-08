@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aubynsamuel.flashsend.logger
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -90,7 +91,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 // Initialize Firestore listener for real-time updates.
                 initializeMessageListener()
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error initializing chat", e)
+                logger("chatRoomPackage", "Error initializing chat$e")
                 _chatState.value = ChatState.Error("Failed to initialize chat: ${e.message}")
             }
         }
@@ -120,7 +121,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 Log.d("ChatViewModel", "Room already exists for roomId=$roomId")
             }
         } catch (e: Exception) {
-            Log.e("ChatViewModel", "Error creating room if needed", e)
+            logger("chatRoomPackage", "Error creating room if needed $e")
             throw e
         }
     }
@@ -136,7 +137,7 @@ class ChatViewModel(context: Context) : ViewModel() {
 
             messageListener = messagesRef.addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    Log.e("ChatViewModel", "Error in message listener: ${error.message}", error)
+                    logger("chatRoomPackage", "Error in message listener: ${error.message}")
                     _chatState.value = ChatState.Error("Error loading messages: ${error.message}")
                     return@addSnapshotListener
                 }
@@ -170,11 +171,11 @@ class ChatViewModel(context: Context) : ViewModel() {
                                 duration = (data["duration"] as? Number)?.toLong()
                             )
                         } catch (e: Exception) {
-                            Log.e(
-                                "ChatViewModel",
+                            logger(
+                                "chat",
                                 "Error parsing message document with id=${doc.id}: ${e.message}",
-                                e
-                            )
+
+                                )
                             null
                         }
                     }
@@ -186,7 +187,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                             messageDao.insertMessages(messageEntities)
                             Log.d("ChatViewModel", "Messages stored successfully")
                         } catch (e: Exception) {
-                            Log.e("ChatViewModel", "Error storing messages in local database", e)
+                            logger("chatRoomPackage", "Error storing messages in local database $e")
                         }
                     }
                     _chatState.value = ChatState.Success(messagesList)
@@ -195,7 +196,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 }
             }
         } ?: run {
-            Log.e("ChatViewModel", "RoomId is null when trying to initialize message listener")
+            logger("chatRoomPackage", "RoomId is null when trying to initialize message listener")
             _chatState.value = ChatState.Error("Room ID is not set")
         }
     }
@@ -221,7 +222,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error marking messages as read", e)
+                logger("chatRoomPackage", "Error marking messages as read $e")
             }
         }
     }
@@ -274,7 +275,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error sending message", e)
+                logger("chatRoomPackage", "Error sending message $e")
                 _chatState.value = ChatState.Error("Failed to send message: ${e.message}")
             }
         }
