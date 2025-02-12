@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
@@ -21,13 +22,15 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.Screen
-import com.aubynsamuel.flashsend.logger
+import com.aubynsamuel.flashsend.functions.User
+import com.aubynsamuel.flashsend.functions.logger
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -42,7 +45,7 @@ fun SearchUsersScreen(
     val currentUsername by remember { mutableStateOf(auth.currentUser?.uid) }
 
 
-    logger("homeSidePackage", currentUsername.toString())
+    logger("homePack", currentUsername.toString())
 
     var searchText by remember { mutableStateOf(("")) }
     var filteredUsers by remember { mutableStateOf<List<User>>(emptyList()) }
@@ -72,7 +75,7 @@ fun SearchUsersScreen(
                         userId = doc.id,
                         username = doc.getString("username") ?: "",
                         profileUrl = doc.getString("profileUrl") ?: "",
-                        otherUsersDeviceToken = doc.getString("deviceToken") ?: "",
+                        deviceToken = doc.getString("deviceToken") ?: "",
                     )
                 }
                 filteredUsers = userData
@@ -116,6 +119,9 @@ fun SearchUsersScreen(
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
                 onValueChange = { handleSearch(it) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp)
@@ -164,7 +170,7 @@ fun SearchUsersScreen(
                                 Screen.ChatRoom.createRoute(
                                     username = encodedUsername,
                                     userId = user.userId,
-                                    deviceToken = user.otherUsersDeviceToken,
+                                    deviceToken = user.deviceToken,
                                     profileUrl = encodedProfileUrl,
                                     roomId = ""
                                 )

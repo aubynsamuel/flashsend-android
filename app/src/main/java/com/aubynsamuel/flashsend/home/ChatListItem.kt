@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,7 +35,11 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.chatRoom.formatMessageTime
-import com.aubynsamuel.flashsend.logger
+import com.aubynsamuel.flashsend.chatRoom.messageTypes.FullScreenImageViewer
+import com.aubynsamuel.flashsend.functions.RoomData
+import com.aubynsamuel.flashsend.functions.User
+import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.functions.showToast
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,19 +48,16 @@ import java.net.URLEncoder
 @Composable
 fun ChatListItem(room: RoomData, navController: NavController) {
     val firestore = FirebaseFirestore.getInstance()
-
-    var lastMessage by remember { mutableStateOf(room.lastMessage) }
-    var lastMessageTimestamp by remember { mutableStateOf(room.lastMessageTimestamp) }
-
-
+    val context = LocalContext.current
     var unreadCount by remember { mutableIntStateOf(0) }
+    var isExpanded by remember { mutableStateOf(false) }
 
     fun getUnreadMessages(roomId: String, otherUserId: String) {
         firestore.collection("rooms").document(roomId).collection("messages")
             .where(Filter.equalTo("read", false)).where(Filter.equalTo("senderId", otherUserId))
             .addSnapshotListener { snapShot, error ->
                 if (error != null) {
-                    logger("chatRoomPackage", error.message.toString())
+                    logger("chatPack", error.message.toString())
                     return@addSnapshotListener
                 }
                 snapShot?.let {
@@ -64,26 +66,9 @@ fun ChatListItem(room: RoomData, navController: NavController) {
             }
     }
 
-    fun getLastMessage() {
-        try {
-
-            firestore.collection("rooms").document(room.roomId)
-                .addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        logger("chatRoomPackage", error.message.toString())
-                    }
-                    val message = snapshot?.data
-                    lastMessage = message?.get("lastMessage") as? String
-                    lastMessageTimestamp = message?.get("lastMessageTimestamp") as? Timestamp
-                }
-        } catch (e: Exception) {
-            logger("homeSidePackage", e.message.toString())
-        }
-    }
-
-    getLastMessage()
     getUnreadMessages(room.roomId, room.otherParticipant.userId)
 
+//    Chat list item card
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -96,7 +81,7 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                     Screen.ChatRoom.createRoute(
                         username = encodedUsername,
                         userId = user.userId,
-                        deviceToken = user.otherUsersDeviceToken,
+                        deviceToken = user.deviceToken,
                         profileUrl = encodedProfileUrl,
                         roomId = ""
                     )
@@ -117,7 +102,7 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(0.85f),
             ) {
-
+//                profile pic, username and last message
                 if (room.otherParticipant.profileUrl.isNotEmpty()) {
                     AsyncImage(
                         model = room.otherParticipant.profileUrl,
@@ -128,8 +113,14 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                             .graphicsLayer {
                                 scaleX = 1.5f
                                 scaleY = 1.5f
-                            },
+                            }
+                            .clickable(onClick = { isExpanded = true }),
                     )
+                    if (isExpanded) {
+                        FullScreenImageViewer(room.otherParticipant.profileUrl) {
+                            isExpanded = false
+                        }
+                    }
                 } else {
                     Icon(
                         Icons.Default.AccountCircle,
@@ -137,7 +128,13 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(52.dp)
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .clickable(onClick = {
+                                showToast(
+                                    context = context,
+                                    "No profile picture"
+                                )
+                            }),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -150,23 +147,22 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                         fontWeight = FontWeight.SemiBold,
                         overflow = TextOverflow.Ellipsis
                     )
-                    lastMessage?.let {
-                        Text(
-                            text = it,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 7.dp, end = 10.dp),
-                            fontSize = 13.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    Text(
+                        text = room.lastMessage,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 7.dp, end = 10.dp),
+                        fontSize = 13.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
+//            last message time and unread count
             Column(
                 modifier = Modifier.fillMaxWidth(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                lastMessageTimestamp?.let {
+                room.lastMessageTimestamp?.let {
                     Text(
                         text = formatMessageTime(it.toDate()),
                         style = MaterialTheme.typography.bodySmall,
@@ -213,14 +209,14 @@ val item = RoomData(
         userId = "user_1",
         username = "Alice Johnson",
         profileUrl = "",
-        otherUsersDeviceToken = "token_1"
+        deviceToken = "token_1"
     )
 )
 
-val user = User(
-    userId = "user_1",
-    username = "Alice Johnson",
-    profileUrl = "",
-    otherUsersDeviceToken = "token_1"
-
-)
+//val user = User(
+//    userId = "user_1",
+//    username = "Alice Johnson",
+//    profileUrl = "",
+//    otherUsersDeviceToken = "token_1"
+//
+//)

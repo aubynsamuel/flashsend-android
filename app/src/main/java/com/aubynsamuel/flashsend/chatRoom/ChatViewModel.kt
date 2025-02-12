@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aubynsamuel.flashsend.logger
+import com.aubynsamuel.flashsend.functions.ChatMessage
+import com.aubynsamuel.flashsend.functions.Location
+import com.aubynsamuel.flashsend.functions.logger
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -14,27 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
-
-data class ChatMessage(
-    val id: String = "",
-    val content: String = "",
-    val image: String? = null,
-    val audio: String? = null,
-    val createdAt: Date = Date(),
-    val senderId: String = "",
-    val senderName: String = "",
-    val replyTo: String? = null,
-    val read: Boolean = false,
-    val type: String = "text",
-    val delivered: Boolean = false,
-    val location: Location? = null,
-    val duration: Long? = null
-)
-
-data class Location(
-    val latitude: Double,
-    val longitude: Double
-)
 
 sealed class ChatState {
     object Loading : ChatState()
@@ -89,9 +70,9 @@ class ChatViewModel(context: Context) : ViewModel() {
                 createRoomIfNeeded(roomId, currentUserId, otherUserId)
 
                 // Initialize Firestore listener for real-time updates.
-                initializeMessageListener()
+//                initializeMessageListener()
             } catch (e: Exception) {
-                logger("chatRoomPackage", "Error initializing chat$e")
+                logger("chatPack", "Error initializing chat$e")
                 _chatState.value = ChatState.Error("Failed to initialize chat: ${e.message}")
             }
         }
@@ -121,12 +102,12 @@ class ChatViewModel(context: Context) : ViewModel() {
                 Log.d("ChatViewModel", "Room already exists for roomId=$roomId")
             }
         } catch (e: Exception) {
-            logger("chatRoomPackage", "Error creating room if needed $e")
+            logger("chatPack", "Error creating room if needed $e")
             throw e
         }
     }
 
-    private fun initializeMessageListener() {
+    fun initializeMessageListener() {
         roomId?.let { roomId ->
             messageListener?.remove()
             Log.d("ChatViewModel", "Initializing Firestore message listener for roomId=$roomId")
@@ -137,7 +118,7 @@ class ChatViewModel(context: Context) : ViewModel() {
 
             messageListener = messagesRef.addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    logger("chatRoomPackage", "Error in message listener: ${error.message}")
+                    logger("chatPack", "Error in message listener: ${error.message}")
                     _chatState.value = ChatState.Error("Error loading messages: ${error.message}")
                     return@addSnapshotListener
                 }
@@ -187,7 +168,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                             messageDao.insertMessages(messageEntities)
                             Log.d("ChatViewModel", "Messages stored successfully")
                         } catch (e: Exception) {
-                            logger("chatRoomPackage", "Error storing messages in local database $e")
+                            logger("chatPack", "Error storing messages in local database $e")
                         }
                     }
                     _chatState.value = ChatState.Success(messagesList)
@@ -196,7 +177,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 }
             }
         } ?: run {
-            logger("chatRoomPackage", "RoomId is null when trying to initialize message listener")
+            logger("chatPack", "RoomId is null when trying to initialize message listener")
             _chatState.value = ChatState.Error("Room ID is not set")
         }
     }
@@ -222,7 +203,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                logger("chatRoomPackage", "Error marking messages as read $e")
+                logger("chatPack", "Error marking messages as read $e")
             }
         }
     }
@@ -275,7 +256,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                logger("chatRoomPackage", "Error sending message $e")
+                logger("chatPack", "Error sending message $e")
                 _chatState.value = ChatState.Error("Failed to send message: ${e.message}")
             }
         }

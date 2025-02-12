@@ -1,5 +1,6 @@
 package com.aubynsamuel.flashsend.home
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,7 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
@@ -21,32 +25,42 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.auth.AuthViewModel
-import com.google.firebase.Timestamp
+import com.aubynsamuel.flashsend.chatRoom.DropMenu
+import com.aubynsamuel.flashsend.chatRoom.PopUpMenu
+import com.aubynsamuel.flashsend.functions.ConnectivityStatus
+import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 
-data class RoomData(
-    val roomId: String,
-    val lastMessage: String?,
-    val lastMessageTimestamp: Timestamp?,
-    val lastMessageSenderId: String?,
-    val otherParticipant: User
-)
-
-data class User(
-    val userId: String,
-    val username: String,
-    val profileUrl: String,
-    val otherUsersDeviceToken: String
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController, authViewModel: AuthViewModel
+    navController: NavController, authViewModel: AuthViewModel, context: Context
 ) {
-    val homeViewModel: HomeViewModel = viewModel()
+
+    val homeViewModel: HomeViewModel = viewModel {
+        HomeViewModel(context)
+    }
     val rooms by homeViewModel.rooms.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
     val authState by authViewModel.authState.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+
+//    val context = LocalContext.current
+    val connectivityObserver = remember { NetworkConnectivityObserver(context) }
+    // Collect network connectivity state
+    val networkStatus by connectivityObserver.observe().collectAsState(
+        initial = ConnectivityStatus.Unavailable
+    )
+    var netActivity by remember { mutableStateOf("") }
+
+    LaunchedEffect(networkStatus) {
+        if (networkStatus is ConnectivityStatus.Available) {
+            netActivity = ""
+            homeViewModel.retryLoadRooms()
+        } else {
+            netActivity = "Connecting..."
+        }
+    }
 
     LaunchedEffect(authState) {
         if (!authState) {
@@ -61,24 +75,34 @@ fun HomeScreen(
             modifier = Modifier
                 .height(80.dp)
                 .fillMaxWidth(1f)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(top = 15.dp)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                "Flash Send",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center
-            )
+            Row {
+                Text(
+                    "Flash Send",
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center
+                )
+                if (netActivity.isNotEmpty()) {
+                    Text(
+                        text = if (isLoading) "Loading..." else netActivity,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(start = 10.dp, top = 3.dp),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
             Row {
                 Icon(
                     Icons.Outlined.Search,
                     contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier
                         .clickable(onClick = { navController.navigate("searchUsers") })
                         .padding(end = 5.dp)
@@ -86,10 +110,32 @@ fun HomeScreen(
                 Icon(
                     Icons.Outlined.MoreVert,
                     contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier
-                        .clickable(onClick = { authViewModel.logout() })
+                        .clickable(onClick = { expanded = true })
                         .padding(horizontal = 5.dp)
+                )
+                PopUpMenu(
+                    expanded = expanded,
+                    onDismiss = { expanded = !expanded },
+                    modifier = Modifier,
+                    dropItems = listOf(
+                        DropMenu(
+                            text = "Profile",
+                            onClick = { navController.navigate("profileScreen") },
+                            icon = Icons.Default.Person
+                        ),
+                        DropMenu(
+                            text = "Settings",
+                            onClick = { navController.navigate("settings") },
+                            icon = Icons.Default.Settings
+                        ),
+                        DropMenu(
+                            text = "Logout",
+                            onClick = { authViewModel.logout() },
+                            icon = Icons.AutoMirrored.Default.Logout
+                        ),
+                    )
                 )
             }
         }
@@ -107,17 +153,17 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(8.dp)
-                ) {
-                    items(rooms) { room ->
-                        ChatListItem(room, navController)
-                    }
+//            if (isLoading) {
+//                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//            } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(8.dp)
+            ) {
+                items(rooms) { room ->
+                    ChatListItem(room, navController)
                 }
             }
+//            }
         }
     }
 }

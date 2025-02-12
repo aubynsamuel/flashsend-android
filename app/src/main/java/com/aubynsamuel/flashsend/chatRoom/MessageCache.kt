@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.aubynsamuel.flashsend.logger
+import com.aubynsamuel.flashsend.functions.Location
+import com.aubynsamuel.flashsend.functions.logger
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -29,7 +30,7 @@ data class MessageEntity(
     @TypeConverters(LocationConverter::class)
     val location: Location?,
     val duration: Long?,
-    val roomId: String // Added to associate messages with rooms
+    val roomId: String
 )
 
 // Type Converters
@@ -96,8 +97,14 @@ interface MessageDao {
     @Query("UPDATE messages SET read = :read WHERE id = :messageId")
     suspend fun updateMessageReadStatus(messageId: String, read: Boolean)
 
+    @Query("UPDATE messages SET content = :content WHERE id = :messageId")
+    suspend fun editMessage(messageId: String, content: String)
+
     @Query("SELECT * FROM messages WHERE roomId = :roomId AND createdAt > :timestamp ORDER BY createdAt DESC")
     fun getNewMessages(roomId: String, timestamp: Long): Flow<List<MessageEntity>>
+
+    @Query("DELETE FROM messages WHERE id = :messageId")
+    suspend fun deleteMessage(messageId: String)
 }
 
 // Database

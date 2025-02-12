@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Generate Baseline Profile for app" type="AndroidBaselineProfileRunConfigurationType" factoryName="Android Baseline Profile Configuration Factory">
+  <configuration default="false" name="Unnamed" type="AndroidBaselineProfileRunConfigurationType" factoryName="Android Baseline Profile Configuration Factory" nameIsGenerated="true">
     <module name="FlashSend.app" />
     <option name="generateAllVariants" value="true" />
     <option name="CLEAR_LOGCAT" value="false" />
     <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-    <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+    <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
     <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
     <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
     <option name="DEBUGGER_TYPE" value="Auto" />

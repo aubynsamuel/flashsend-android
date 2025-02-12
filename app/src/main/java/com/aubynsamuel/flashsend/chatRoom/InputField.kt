@@ -40,14 +40,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MessageInput(
-    messageText: String,
-    onMessageChange: (String) -> Unit,
-    onSend: () -> Unit
+    messageText: String, onMessageChange: (String) -> Unit, onSend: () -> Unit
 ) {
+//    Check if keyboard is shown
 //    val density = LocalDensity.current
 //    val isKeyboardVisible =
 //        WindowInsets.ime.getBottom(density) > 0
-
 
 //    val keyboardImePosition by animateFloatAsState(
 //        if (isKeyboardVisible) -10f else 0f,
@@ -56,44 +54,33 @@ fun MessageInput(
     val transition =
         updateTransition(targetState = messageText.isNotBlank(), label = "messageTransition")
     val translateX by transition.animateFloat(
-        transitionSpec = { tween(200) },
-        label = "translationX"
+        transitionSpec = { tween(200) }, label = "translationX"
     ) { if (it) 45f else 0f }
     val translate by transition.animateFloat(
-        transitionSpec = { tween(200) },
-        label = "translationX"
+        transitionSpec = { tween(200) }, label = "translationX"
     ) { if (it) 80f else 0f }
 
     val sendIconScale by transition.animateFloat(
-        transitionSpec = { tween(100) },
-        label = "sendIconScale"
+        transitionSpec = { tween(100) }, label = "sendIconScale"
     ) { if (it) 0.3f else 1f }
 
     val placeIconScale by transition.animateFloat(
-        transitionSpec = { tween(100, delayMillis = 100) },
-        label = "placeIconScale"
+        transitionSpec = { tween(100, delayMillis = 100) }, label = "placeIconScale"
     ) { if (it) 1f else 0.3f }
 
     val homeIconAlpha by transition.animateFloat(
-        transitionSpec = { tween(150) },
-        label = "homeIconAlpha"
+        transitionSpec = { tween(150) }, label = "homeIconAlpha"
     ) { if (it) 0f else 1f }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 3.dp)
-            .padding(horizontal = 10.dp)
-//            .imePadding(),
-//            .graphicsLayer {
-//                translationY = if (isKeyboardVisible) -15f else 0f
-//            },
-        ,
+            .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        TextField(
-            value = messageText,
+        TextField(value = messageText,
             onValueChange = onMessageChange,
             modifier = Modifier
                 .weight(1f)
@@ -119,7 +106,7 @@ fun MessageInput(
                     Icon(
                         imageVector = Icons.Default.AddCircle,
                         contentDescription = "Send",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .graphicsLayer {
                                 translationX = translate
@@ -129,7 +116,7 @@ fun MessageInput(
                     Icon(
                         imageVector = Icons.Default.AddAPhoto,
                         contentDescription = "Send",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .graphicsLayer {
                                 translationX = translateX
@@ -139,43 +126,38 @@ fun MessageInput(
                             .clickable(onClick = {})
                     )
                 }
-            }
-        )
+            })
 
         IconButton(
             onClick = if (messageText.isNotBlank()) onSend else onSend,
             modifier = Modifier
                 .size(55.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
+                    color = MaterialTheme.colorScheme.primaryContainer, shape = CircleShape
                 )
         ) {
             AnimatedVisibility(visible = messageText.isBlank()) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
+                Icon(imageVector = Icons.Default.Mic,
                     contentDescription = "Mic",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.graphicsLayer {
                         scaleX = sendIconScale
                         scaleY = sendIconScale
-                    }
-                )
+                    })
             }
 
             AnimatedVisibility(visible = messageText.isNotBlank()) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.Send,
+                Icon(imageVector = Icons.AutoMirrored.Default.Send,
                     contentDescription = "Send",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.graphicsLayer {
                         scaleX = placeIconScale
                         scaleY = placeIconScale
-                    }
-                )
+                    })
             }
         }
     }
+
 }
 
 @Preview

@@ -24,8 +24,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            val bool = true
+            isMinifyEnabled = bool
+            isShrinkResources = bool
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -46,22 +47,37 @@ android {
 
 dependencies {
     // Room Database
-    val roomVersion = "2.6.1"  // Use the latest version
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)// Kotlin extensions
-    annotationProcessor("androidx.room:room-compiler:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.androidx.room.ktx)
 
-    implementation(libs.gson)  // Use the latest version
+    implementation(libs.accompanist.systemuicontroller)
+
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.lottie.compose)
+
+    annotationProcessor(libs.room.compiler)
+    //noinspection KaptUsageInsteadOfKsp
+    kapt(libs.room.compiler)
+
+    implementation(libs.play.services.maps)
+
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+
+    implementation(libs.gson)
 
     implementation(libs.androidx.material.icons.extended)
-    implementation(libs.accompanist.navigation.animation)
+
     implementation(libs.androidx.profileinstaller)
+
     implementation(libs.coil.compose)
+
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.storage.ktx)
+
     androidTestImplementation(libs.androidx.benchmark.macro.junit4)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
