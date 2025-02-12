@@ -8,11 +8,13 @@ import android.net.NetworkRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import java.net.HttpURLConnection
+import java.net.URL
 
 // Represents different network states.
 sealed class ConnectivityStatus {
-    object Available : ConnectivityStatus()
-    object Unavailable : ConnectivityStatus()
+    object Available : ConnectivityStatus() // Internet is reachable
+    object Unavailable : ConnectivityStatus() // Internet is unreachable
 }
 
 // Define an interface for the observer.
@@ -30,7 +32,9 @@ class NetworkConnectivityObserver(context: Context) : ConnectivityObserver {
         // Create a network callback that sends network status changes to the Flow.
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                trySend(ConnectivityStatus.Available).isSuccess
+                checkInternetReachability { isReachable ->
+                    trySend(if (isReachable) ConnectivityStatus.Available else ConnectivityStatus.Unavailable).isSuccess
+                }
             }
 
             override fun onLost(network: Network) {
@@ -42,13 +46,9 @@ class NetworkConnectivityObserver(context: Context) : ConnectivityObserver {
                 network: Network,
                 networkCapabilities: NetworkCapabilities
             ) {
-                val status =
-                    if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
-                        ConnectivityStatus.Available
-                    else
-                        ConnectivityStatus.Unavailable
-
-                trySend(status).isSuccess
+                checkInternetReachability { isReachable ->
+                    trySend(if (isReachable) ConnectivityStatus.Available else ConnectivityStatus.Unavailable).isSuccess
+                }
             }
         }
 
@@ -62,6 +62,26 @@ class NetworkConnectivityObserver(context: Context) : ConnectivityObserver {
         // Clean up when no longer needed.
         awaitClose {
             connectivityManager.unregisterNetworkCallback(callback)
+        }
+    }
+
+    // Helper function to check if the internet is reachable.
+    private fun checkInternetReachability(callback: (Boolean) -> Unit) {
+        val url = URL("https://www.google.com")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "HEAD"
+        connection.connectTimeout = 5000 // 5 seconds timeout
+        connection.readTimeout = 5000
+
+        try {
+            connection.connect()
+            callback(connection.responseCode == HttpURLConnection.HTTP_OK)
+            logger("connection", "Has Internet Access")
+        } catch (e: Exception) {
+            callback(false)
+            logger("connection", "No Internet Access $e")
+        } finally {
+            connection.disconnect()
         }
     }
 }

@@ -24,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            val bool = true
+            val bool = false
             isMinifyEnabled = bool
             isShrinkResources = bool
             proguardFiles(
@@ -49,37 +49,54 @@ dependencies {
     // Room Database
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-
-    implementation(libs.accompanist.systemuicontroller)
-
-    implementation(libs.androidx.datastore.preferences)
-
-    implementation(libs.lottie.compose)
-
     annotationProcessor(libs.room.compiler)
     //noinspection KaptUsageInsteadOfKsp
     kapt(libs.room.compiler)
 
+    // Status Bar
+    implementation(libs.accompanist.systemuicontroller)
+
+    //Datastore
+    implementation(libs.androidx.datastore.preferences)
+
+    // Lottie animations
+    implementation(libs.lottie.compose)
+
+    // Google maps
     implementation(libs.play.services.maps)
 
+    // Media player
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
 
+    // Gson
     implementation(libs.gson)
 
+    // Material Icons
     implementation(libs.androidx.material.icons.extended)
 
+    // Baseline profile
     implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":baselineprofile"))
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.benchmark.macro.junit4)
 
+    // Async Image
     implementation(libs.coil.compose)
 
+    // Firebase libs
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.storage.ktx)
 
-    androidTestImplementation(libs.androidx.benchmark.macro.junit4)
+    // Navigation lib
     implementation(libs.androidx.navigation.compose)
+
+    // Default libs
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -88,12 +105,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    "baselineProfile"(project(":baselineprofile"))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

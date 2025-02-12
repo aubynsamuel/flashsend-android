@@ -9,10 +9,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -51,23 +58,30 @@ fun AuthScreen(navController: NavController, authViewModel: AuthViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(20.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.secondaryContainer
+                    )
+                )
+            )
+            .padding(5.dp)
             .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 title,
-                fontSize = 35.sp,
+                fontSize = 40.sp,
                 color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .padding(start = 5.dp)
+                    .padding(start = 20.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(5.dp))
 
             AuthForm(
                 isLogin,
@@ -100,114 +114,143 @@ fun AuthForm(
     val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next,
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp)
-        )
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = if (isLogin) ImeAction.Done else ImeAction.Next,
-                capitalization = KeyboardCapitalization.Sentences
-
-            ),
-            trailingIcon = {
-                Text(text = if (passwordVisible) "Hide" else "Show",
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { passwordVisible = !passwordVisible })
-            },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp)
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        AnimatedVisibility(visible = !isLogin) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                leadingIcon = {
+                    Icon(Icons.Default.Email, contentDescription = "Email")
+                },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
                     capitalization = KeyboardCapitalization.Sentences
-
                 ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp)
             )
-        }
-        Text(
-            text = "Forgot Password?",
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable(onClick = {
-                    if (email.isNotBlank()) {
-                        authViewModel.resetPassword(email)
-                        Toast.makeText(
-                            context, "Reset link has been sent to your email", Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            context, "Please enter your email address", Toast.LENGTH_LONG
-                        ).show()
+
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                leadingIcon = {
+                    Icon(Icons.Default.Lock, contentDescription = "Password")
+                },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = if (isLogin) ImeAction.Done else ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            contentDescription = if (passwordVisible) "Hide Password" else "Show Password"
+                        )
                     }
-                }),
-            color = MaterialTheme.colorScheme.onBackground
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp)
+            )
 
-        )
+            Spacer(modifier = Modifier.height(10.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = {
-                if (email.isNotBlank() && password.isNotBlank()) {
-                    if (isLogin) {
-                        authViewModel.login(email, password)
-                    } else if (password == confirmPassword) {
-                        authViewModel.signUp(email, password)
-                    }
-                }
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp), shape = RoundedCornerShape(20.dp)
-        ) {
-            if (isLoggingIn) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary
+            AnimatedVisibility(visible = !isLogin) {
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirm Password") },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done,
+                        capitalization = KeyboardCapitalization.Sentences
+                    ),
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    shape = RoundedCornerShape(20.dp)
                 )
-            } else {
-                Text(if (isLogin) "Login" else "Sign Up", fontSize = 25.sp)
             }
+            Text(
+                text = "Forgot Password?",
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable(onClick = {
+                        if (email.isNotBlank()) {
+                            authViewModel.resetPassword(email)
+                            Toast.makeText(
+                                context, "Reset link has been sent to your email", Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context, "Please enter your email address", Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }),
+                color = MaterialTheme.colorScheme.onBackground
+
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    if (email.isNotBlank() && password.isNotBlank()) {
+                        if (isLogin) {
+                            authViewModel.login(email, password)
+                        } else if (password == confirmPassword) {
+                            authViewModel.signUp(email, password)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp)),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                if (isLoggingIn) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(if (isLogin) "Login" else "Sign Up", fontSize = 25.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable { onToggleMode() })
         }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { onToggleMode() })
     }
 }
 

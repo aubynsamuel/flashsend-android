@@ -28,6 +28,7 @@ import com.aubynsamuel.flashsend.auth.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.DropMenu
 import com.aubynsamuel.flashsend.chatRoom.PopUpMenu
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
+import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 
 
@@ -36,25 +37,24 @@ import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 fun HomeScreen(
     navController: NavController, authViewModel: AuthViewModel, context: Context
 ) {
-
     val homeViewModel: HomeViewModel = viewModel {
         HomeViewModel(context)
     }
+    var connectivityViewModel: ConnectivityViewModel = viewModel {
+        ConnectivityViewModel(NetworkConnectivityObserver(context))
+    }
+    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsState()
+
     val rooms by homeViewModel.rooms.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
-    val authState by authViewModel.authState.collectAsState()
-    var expanded by remember { mutableStateOf(false) }
 
-//    val context = LocalContext.current
-    val connectivityObserver = remember { NetworkConnectivityObserver(context) }
-    // Collect network connectivity state
-    val networkStatus by connectivityObserver.observe().collectAsState(
-        initial = ConnectivityStatus.Unavailable
-    )
+    val authState by authViewModel.authState.collectAsState()
+
+    var expanded by remember { mutableStateOf(false) }
     var netActivity by remember { mutableStateOf("") }
 
-    LaunchedEffect(networkStatus) {
-        if (networkStatus is ConnectivityStatus.Available) {
+    LaunchedEffect(connectivityStatus) {
+        if (connectivityStatus is ConnectivityStatus.Available) {
             netActivity = ""
             homeViewModel.retryLoadRooms()
         } else {

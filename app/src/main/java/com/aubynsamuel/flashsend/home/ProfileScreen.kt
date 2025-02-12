@@ -103,7 +103,7 @@ fun ProfileScreen(
                             .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                             .clickable(onClick = { isExpanded = true }),
                         contentScale = ContentScale.Crop,
-                        error = rememberAsyncImagePainter(R.drawable.ic_launcher_foreground)
+                        error = rememberAsyncImagePainter(R.drawable.person)
                     )
 
                     if (isExpanded) {

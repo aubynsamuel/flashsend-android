@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
+import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
@@ -66,11 +68,11 @@ fun ChatScreen(
             firstVisibleIndex - 1 > 0
         }
     }
-    val connectivityObserver = remember { NetworkConnectivityObserver(context) }
-    // Collect network connectivity state
-    val networkStatus by connectivityObserver.observe().collectAsState(
-        initial = ConnectivityStatus.Unavailable
-    )
+    var connectivityViewModel: ConnectivityViewModel = viewModel {
+        ConnectivityViewModel(NetworkConnectivityObserver(context))
+    }
+    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsState()
+
     var netActivity by remember { mutableStateOf("") }
 
     LaunchedEffect(roomId, currentUserId, userId) {
@@ -78,8 +80,8 @@ fun ChatScreen(
         chatViewModel.initialize(roomId, currentUserId, userId)
     }
 
-    LaunchedEffect(networkStatus) {
-        if (networkStatus is ConnectivityStatus.Available) {
+    LaunchedEffect(connectivityStatus) {
+        if (connectivityStatus is ConnectivityStatus.Available) {
             Log.d("ChatScreen", "Re-initializing chatroom listener with roomId: $roomId")
             netActivity = ""
             chatViewModel.initializeMessageListener()
@@ -122,7 +124,12 @@ fun ChatScreen(
                             navController.navigate("otherProfileScreen/$userJson")
                         },
                         icon = Icons.Default.Person
-                    )
+                    ),
+                    DropMenu(
+                        text = "Settings",
+                        onClick = { navController.navigate("settings") },
+                        icon = Icons.Default.Settings
+                    ),
                 )
             )
         },
