@@ -3,6 +3,9 @@ package com.aubynsamuel.flashsend.chatRoom
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
@@ -32,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
+import java.net.URLEncoder
 
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -68,16 +73,45 @@ fun ChatScreen(
             firstVisibleIndex - 1 > 0
         }
     }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val encodedUri = URLEncoder.encode(uri.toString(), "UTF-8")
+            navController.navigate("imagePreview/$encodedUri/$roomId")
+        }
+    }
+
+//    var result: Bitmap? by remember { mutableStateOf<Bitmap?>(null) }
+    var permission by remember { mutableStateOf(false) }
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview(),
+            onResult = { newImage ->
+                val encodedUri = (newImage.toString())
+                navController.navigate("imagePreview/$encodedUri/$roomId")
+            }
+        )
+    val permissionRequest =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                permission = isGranted
+            }
+        }
+
     var connectivityViewModel: ConnectivityViewModel = viewModel {
         ConnectivityViewModel(NetworkConnectivityObserver(context))
     }
-    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsState()
+    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     var netActivity by remember { mutableStateOf("") }
 
     LaunchedEffect(roomId, currentUserId, userId) {
         Log.d("ChatScreen", "Initializing chat with roomId: $roomId")
         chatViewModel.initialize(roomId, currentUserId, userId)
+    }
+    LaunchedEffect(Unit) {
+        permissionRequest.launch(android.Manifest.permission.CAMERA)
     }
 
     LaunchedEffect(connectivityStatus) {
@@ -130,7 +164,12 @@ fun ChatScreen(
                         onClick = { navController.navigate("settings") },
                         icon = Icons.Default.Settings
                     ),
-                )
+                ),
+                onImageClick = {
+                    if (permission) {
+                        launcher.launch()
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -189,7 +228,8 @@ fun ChatScreen(
                                 messageText = ""
                                 vibrateDevice(context)
                             }
-                        }
+                        },
+                        onImageClick = { imagePickerLauncher.launch("image/*") }
                     )
                 }
             }

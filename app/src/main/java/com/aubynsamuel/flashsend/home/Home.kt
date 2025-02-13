@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.auth.AuthViewModel
@@ -43,7 +44,7 @@ fun HomeScreen(
     var connectivityViewModel: ConnectivityViewModel = viewModel {
         ConnectivityViewModel(NetworkConnectivityObserver(context))
     }
-    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsState()
+    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     val rooms by homeViewModel.rooms.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
@@ -60,6 +61,9 @@ fun HomeScreen(
         } else {
             netActivity = "Connecting..."
         }
+    }
+    LaunchedEffect(Unit) {
+        authViewModel.loadUserData()
     }
 
     LaunchedEffect(authState) {

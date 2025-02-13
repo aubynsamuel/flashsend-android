@@ -15,6 +15,19 @@ fun TextMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
-        fontSize = fontSize.sp
+        fontSize = fontSize.sp,
+        lineHeight = getLineHeight(fontSize).sp
     )
+}
+
+fun getLineHeight(fontSize: Int): Int {
+    var lineHeight = 0
+    when (fontSize) {
+        12 -> lineHeight = 15
+        14 -> lineHeight = 18
+        16 -> lineHeight = 21
+        18 -> lineHeight = 24
+        20 -> lineHeight = 27
+    }
+    return lineHeight
 }

@@ -1,6 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,6 +28,7 @@ sealed class ChatState {
 class ChatViewModel(context: Context) : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private var messageListener: ListenerRegistration? = null
+    private val storage = FirebaseStorage.getInstance()
 
     private val messageDao = ChatDatabase.getDatabase(context).messageDao()
 
@@ -261,6 +264,76 @@ class ChatViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+    // New function to send image messages.
+    fun sendImageMessage(
+        caption: String,
+        imageUrl: String,
+        senderName: String,
+        roomId: String,
+        currentUserId: String,
+    ) {
+        logger(
+            "sendImage",
+            "Caption: $caption," +
+                    "ImageUrl: $imageUrl," +
+                    "SenderName: $senderName," +
+                    "RoomId: $roomId," +
+                    "CurrentUserId: $currentUserId"
+        )
+        viewModelScope.launch {
+            try {
+                roomId.let { roomId ->
+                    currentUserId.let { userId ->
+                        val messageData = hashMapOf(
+                            "content" to caption,
+                            "createdAt" to Timestamp.now(),
+                            "senderId" to userId,
+                            "senderName" to senderName,
+                            "type" to "image",
+                            "read" to false,
+                            "delivered" to false,
+                            "image" to imageUrl
+                        )
+                        val addedDoc = firestore.collection("rooms")
+                            .document(roomId)
+                            .collection("messages")
+                            .add(messageData)
+                            .await()
+                        Log.d("ChatViewModel", "Image message sent with id=${addedDoc.id}")
+
+                        firestore.collection("rooms")
+                            .document(roomId)
+                            .update(
+                                mapOf(
+                                    "lastMessage" to "📷 Sent an image",
+                                    "lastMessageTimestamp" to Timestamp.now(),
+                                    "lastMessageSenderId" to userId
+                                )
+                            )
+                            .await()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error sending image message", e)
+            }
+        }
+    }
+
+    // Function to upload an image to Firebase Storage and return the download URL.
+    suspend fun uploadImage(imageUri: Uri, username: String): String? {
+        return try {
+            // Use a unique filename (you could also use the image’s original name)
+            val storageRef =
+                storage.reference.child("chatMedia/${username}_${System.currentTimeMillis()}.jpg")
+            storageRef.putFile(imageUri).await()
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error uploading image", e)
+            null
+        }
+    }
+
 
     override fun onCleared() {
         super.onCleared()

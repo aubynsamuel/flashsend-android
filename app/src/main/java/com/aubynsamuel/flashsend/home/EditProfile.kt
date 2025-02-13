@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
@@ -63,7 +64,7 @@ fun EditProfileScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
-            .padding(top = 30.dp)
+            .padding(top = 20.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -82,7 +83,7 @@ fun EditProfileScreen(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Update your username and/or profile picture",
             fontSize = 18.sp,
@@ -90,7 +91,7 @@ fun EditProfileScreen(
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(70.dp))
 
         // Profile Picture
         Box(modifier = Modifier.clickable { imagePickerLauncher.launch("image/*") }) {
@@ -130,7 +131,8 @@ fun EditProfileScreen(
             onValueChange = { username = it },
             textStyle = TextStyle(fontSize = 16.sp),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text, capitalization = KeyboardCapitalization.Sentences
+                keyboardType = KeyboardType.Text,
+                capitalization = KeyboardCapitalization.Sentences
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,7 +153,7 @@ fun EditProfileScreen(
                 }
             })
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Save Button
         Button(onClick = {

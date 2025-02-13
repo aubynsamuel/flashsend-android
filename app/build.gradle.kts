@@ -24,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            val bool = false
+            val bool = true
             isMinifyEnabled = bool
             isShrinkResources = bool
             proguardFiles(

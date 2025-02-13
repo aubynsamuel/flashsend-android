@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,8 +36,14 @@ import com.google.gson.Gson
 
 @Composable
 fun HeaderBar(
-    name: String, netActivity: String, pic: String?, goBack: () -> Unit, userData: User,
-    navController: NavController, chatOptionsList: List<DropMenu>
+    name: String,
+    netActivity: String,
+    pic: String?,
+    goBack: () -> Unit,
+    userData: User,
+    navController: NavController,
+    chatOptionsList: List<DropMenu>,
+    onImageClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     Column {
@@ -99,7 +106,7 @@ fun HeaderBar(
                         Text(
                             text = netActivity,
                             fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 15.dp),
+                            modifier = Modifier.padding(start = 11.dp),
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
@@ -108,6 +115,13 @@ fun HeaderBar(
             }
 //          Call and more vert icon buttons
             Row(modifier = Modifier.padding(end = 12.dp)) {
+                Icon(
+                    Icons.Outlined.CameraAlt,
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.clickable(onClick = { onImageClick() })
+                )
+                Spacer(modifier = Modifier.width(15.dp))
                 Icon(
                     Icons.Outlined.Call,
                     contentDescription = "",
@@ -121,7 +135,6 @@ fun HeaderBar(
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.clickable(onClick = { expanded = !expanded })
                 )
-
                 PopUpMenu(
                     expanded = expanded, { expanded = !expanded },
                     modifier = Modifier,

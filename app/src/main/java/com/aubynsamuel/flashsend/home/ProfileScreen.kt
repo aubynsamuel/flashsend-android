@@ -184,9 +184,9 @@ fun ProfileScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        authViewModel.loadUserData()
-    }
+//    LaunchedEffect(Unit) {
+//        authViewModel.loadUserData()
+//    }
 }
 
 @Composable

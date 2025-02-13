@@ -35,12 +35,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun MessageInput(
-    messageText: String, onMessageChange: (String) -> Unit, onSend: () -> Unit
+    messageText: String,
+    onMessageChange: (String) -> Unit,
+    onSend: () -> Unit,
+    onImageClick: () -> Unit
 ) {
 //    Check if keyboard is shown
 //    val density = LocalDensity.current
@@ -115,7 +117,7 @@ fun MessageInput(
                     )
                     Icon(
                         imageVector = Icons.Default.AddAPhoto,
-                        contentDescription = "Send",
+                        contentDescription = "Add Photo",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .graphicsLayer {
@@ -123,7 +125,7 @@ fun MessageInput(
                                 alpha = homeIconAlpha
                             }
                             .padding(horizontal = 10.dp)
-                            .clickable(onClick = {})
+                            .clickable(onClick = { onImageClick() })
                     )
                 }
             })
@@ -160,8 +162,11 @@ fun MessageInput(
 
 }
 
-@Preview
-@Composable
-fun PrevInputToolBar() {
-    MessageInput(messageText = "", onMessageChange = {}, onSend = {})
-}
+
+//@Preview
+//@Composable
+//fun PrevInputToolBar() {
+//    MessageInput(messageText = "", onMessageChange = {}, onSend = {},
+//        onImageClick = {}
+//    )
+//}
