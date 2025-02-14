@@ -38,8 +38,8 @@ fun ImageMessage(message: ChatMessage, isFromMe: Boolean) {
                 model = imageUrl,
                 contentDescription = "Image message",
                 modifier = Modifier
-                    .width(250.dp)
-                    .height(350.dp)
+                    .widthIn(min = 100.dp, max = 250.dp)
+                    .heightIn(min = 200.dp, max = 350.dp)
                     .background(
                         MaterialTheme.colorScheme.surfaceVariant,
                         RoundedCornerShape(8.dp)

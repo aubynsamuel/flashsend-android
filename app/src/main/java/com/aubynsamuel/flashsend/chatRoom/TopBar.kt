@@ -26,7 +26,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -80,10 +80,8 @@ fun HeaderBar(
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(50.dp)
-                            .graphicsLayer {
-                                scaleX = 1.5f
-                                scaleY = 1.5f
-                            },
+                            .align(Alignment.CenterVertically),
+                        contentScale = ContentScale.Crop
                     )
                 } else {
                     Icon(

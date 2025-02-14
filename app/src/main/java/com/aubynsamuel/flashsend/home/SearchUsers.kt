@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -211,10 +211,8 @@ fun UserItem(
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(50.dp)
-                    .graphicsLayer {
-                        scaleX = 1.5f
-                        scaleY = 1.5f
-                    },
+                    .align(Alignment.CenterVertically),
+                contentScale = ContentScale.Crop
             )
         } else {
             Icon(

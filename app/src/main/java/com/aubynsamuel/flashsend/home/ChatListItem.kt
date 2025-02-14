@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -110,11 +110,9 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(50.dp)
-                            .graphicsLayer {
-                                scaleX = 1.5f
-                                scaleY = 1.5f
-                            }
+                            .align(Alignment.CenterVertically)
                             .clickable(onClick = { isExpanded = true }),
+                        contentScale = ContentScale.Crop
                     )
                     if (isExpanded) {
                         FullScreenImageViewer(room.otherParticipant.profileUrl) {
@@ -138,7 +136,10 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Column(modifier = Modifier.fillMaxWidth(1f)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = room.otherParticipant.username,
                         modifier = Modifier.padding(start = 7.dp),
@@ -147,14 +148,16 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                         fontWeight = FontWeight.SemiBold,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Text(
-                        text = room.lastMessage,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 7.dp, end = 10.dp),
-                        fontSize = 13.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (room.lastMessage.isNotEmpty()) {
+                        Text(
+                            text = room.lastMessage,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 7.dp, end = 10.dp),
+                            fontSize = 13.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
 //            last message time and unread count

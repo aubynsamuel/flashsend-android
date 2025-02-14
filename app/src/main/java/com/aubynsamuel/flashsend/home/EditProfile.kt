@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -106,16 +106,16 @@ fun EditProfileScreen(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-                AsyncImage(model = if (profileUri != null) profileUri else userData?.profileUrl,
+                AsyncImage(
+                    model = if (profileUri != null) profileUri else userData?.profileUrl,
                     contentDescription = "Selected image",
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(200.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .graphicsLayer {
-                            scaleX = 1.5f
-                            scaleY = 1.5f
-                        })
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Crop
+                )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))

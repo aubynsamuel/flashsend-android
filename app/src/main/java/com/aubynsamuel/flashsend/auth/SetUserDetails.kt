@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -96,10 +96,8 @@ fun SetUserDetailsScreen(
                         .clip(CircleShape)
                         .size(200.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .graphicsLayer {
-                            scaleX = 1.5f
-                            scaleY = 1.5f
-                        }
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Crop
                 )
             }
         }

@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend
 
-import android.R
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -45,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 ChatAppNavigation()
             }
         }
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content)) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             view.updatePadding(bottom = bottom)
             insets
