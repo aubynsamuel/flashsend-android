@@ -1,11 +1,12 @@
 package com.aubynsamuel.flashsend.chatRoom
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,18 +24,23 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
+import com.aubynsamuel.flashsend.auth.AuthViewModel
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
 import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
+import com.aubynsamuel.flashsend.functions.createRoomId
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -48,72 +54,97 @@ fun ChatScreen(
     deviceToken: String,
     profileUrl: String,
     roomId: String,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    authViewModel: AuthViewModel
 ) {
-    val auth = FirebaseAuth.getInstance()
-    val currentUserId = auth.currentUser?.uid ?: return
-    val roomId by remember { mutableStateOf(createRoomId(userId, currentUserId)) }
     val context = LocalContext.current
+
+//    initializations
+    val auth = FirebaseAuth.getInstance()
     val chatViewModel: ChatViewModel = viewModel {
         ChatViewModel(context)
     }
+    val userData by authViewModel.userData.collectAsState()
+    var connectivityViewModel: ConnectivityViewModel = viewModel {
+        ConnectivityViewModel(NetworkConnectivityObserver(context))
+    }
+
+//    state variables
+    val currentUserId = auth.currentUser?.uid ?: return
+    val roomId by remember { mutableStateOf(createRoomId(userId, currentUserId)) }
+    var messageText by remember { mutableStateOf("") }
+    var netActivity by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+    val decodedUsername = URLDecoder.decode(username, "UTF-8")
+    val isRecording by chatViewModel.isRecording.collectAsState()
+    val showOverlay by chatViewModel.showRecordingOverlay.collectAsState()
     val fontSize by settingsViewModel.uiState.collectAsState()
     val chatState by chatViewModel.chatState.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
+    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
+
+//     functions
 //    val messages = generateMockMessages(currentUserId)
-    val decodedUsername = URLDecoder.decode(username, "UTF-8")
-    var messageText by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
-
-    val listState = rememberLazyListState()
-
     val showScrollToBottom by remember {
         derivedStateOf {
             val firstVisibleIndex = listState.firstVisibleItemIndex
             firstVisibleIndex - 1 > 0
         }
     }
-
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
             val encodedUri = URLEncoder.encode(uri.toString(), "UTF-8")
-            navController.navigate("imagePreview/$encodedUri/$roomId")
+            navController.navigate("imagePreview/$encodedUri/$roomId/0")
         }
     }
+    val tempImageUri = remember {
+        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+        // Ensure your FileProvider is configured in your manifest with the proper authority and paths
+        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+    }
 
-//    var result: Bitmap? by remember { mutableStateOf<Bitmap?>(null) }
-    var permission by remember { mutableStateOf(false) }
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview(),
-            onResult = { newImage ->
-                val encodedUri = (newImage.toString())
-                navController.navigate("imagePreview/$encodedUri/$roomId")
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if (success) {
+                val encodedImage = URLEncoder.encode(tempImageUri.toString(), "UTF-8")
+                navController.navigate("imagePreview/${encodedImage}/$roomId/1")
+            } else {
+                // Handle capture failure if needed
             }
-        )
+        }
+    )
+
     val permissionRequest =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                permission = isGranted
-            }
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            onResult = {}
+        )
+    val hasCameraPermission = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
+    val hasAudioPermission = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.RECORD_AUDIO
+    ) == PackageManager.PERMISSION_GRANTED
+
+//    Hooks
+    LaunchedEffect(Unit) {
+        if (!hasAudioPermission) {
+            permissionRequest.launch(Manifest.permission.RECORD_AUDIO)
         }
-
-    var connectivityViewModel: ConnectivityViewModel = viewModel {
-        ConnectivityViewModel(NetworkConnectivityObserver(context))
+        if (!hasCameraPermission) {
+            permissionRequest.launch(Manifest.permission.CAMERA)
+        }
     }
-    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
-
-    var netActivity by remember { mutableStateOf("") }
-
     LaunchedEffect(roomId, currentUserId, userId) {
         Log.d("ChatScreen", "Initializing chat with roomId: $roomId")
         chatViewModel.initialize(roomId, currentUserId, userId)
     }
-    LaunchedEffect(Unit) {
-        permissionRequest.launch(android.Manifest.permission.CAMERA)
-    }
-
     LaunchedEffect(connectivityStatus) {
         if (connectivityStatus is ConnectivityStatus.Available) {
             Log.d("ChatScreen", "Re-initializing chatroom listener with roomId: $roomId")
@@ -122,8 +153,6 @@ fun ChatScreen(
         } else
             netActivity = "Connecting..."
     }
-
-
     LaunchedEffect(chatState) {
         if (chatState is ChatState.Success) {
             chatViewModel.markMessagesAsRead()
@@ -166,8 +195,10 @@ fun ChatScreen(
                     ),
                 ),
                 onImageClick = {
-                    if (permission) {
-                        launcher.launch()
+                    if (!hasCameraPermission) {
+                        permissionRequest.launch(Manifest.permission.CAMERA)
+                    } else {
+                        launcher.launch(tempImageUri)
                     }
                 }
             )
@@ -229,15 +260,26 @@ fun ChatScreen(
                                 vibrateDevice(context)
                             }
                         },
-                        onImageClick = { imagePickerLauncher.launch("image/*") }
+                        onImageClick = { imagePickerLauncher.launch("image/*") },
+                        isRecording = isRecording,
+                        onRecordAudio = { chatViewModel.toggleRecording(context) },
+                        chatViewModel = chatViewModel,
+                        userData = userData,
+                        roomId = roomId
+                    )
+                }
+                if (showOverlay) {
+                    AudioRecordingOverlay(
+                        isRecording = isRecording,
+                        resetRecording = { chatViewModel.resetRecording() },
+                        sendAudioMessage = {
+                            chatViewModel.sendAudioMessage(senderName = userData?.username ?: "")
+                            chatViewModel.resetRecording()
+                        },
+                        recordingStartTime = chatViewModel.recordingStartTime,
                     )
                 }
             }
         }
     }
-}
-
-fun createRoomId(userId: String, currentUserId: String): String {
-    val ids = listOf<String>(userId, currentUserId)
-    return ids.sorted().joinToString("_")
 }

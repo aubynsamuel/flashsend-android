@@ -18,6 +18,7 @@ lottieCompose = "6.3.0"
 media3Exoplayer = "1.5.1"
 media3Ui = "1.5.1"
 navVersion = "2.8.6"
+playServicesLocation = "21.3.0"
 playServicesMaps = "19.0.0"
 profileinstaller = "1.4.1"
 roomCompilerVersion = "2.6.1"
@@ -59,6 +60,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 

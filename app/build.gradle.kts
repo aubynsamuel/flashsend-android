@@ -64,6 +64,8 @@ dependencies {
 
     // Google maps
     implementation(libs.play.services.maps)
+    implementation(libs.play.services.location) // Latest version as of now
+
 
     // Media player
     implementation(libs.androidx.media3.exoplayer)

@@ -1,13 +1,17 @@
 package com.aubynsamuel.flashsend.chatRoom
 
 import android.content.Context
+import android.media.MediaRecorder
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aubynsamuel.flashsend.functions.ChatMessage
 import com.aubynsamuel.flashsend.functions.Location
 import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.functions.toChatMessage
+import com.aubynsamuel.flashsend.functions.toMessageEntity
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -17,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.File
 import java.util.Date
 
 sealed class ChatState {
@@ -41,6 +46,120 @@ class ChatViewModel(context: Context) : ViewModel() {
     private var roomId: String? = null
     private var currentUserId: String? = null
     private var otherUserId: String? = null
+
+    private var mediaRecorder: MediaRecorder? = null
+    private var audioFile: File? = null
+    private var startTime: Long = 0L
+    private var stopTime: Long = 0L
+
+    private val _isRecording = MutableStateFlow(false)
+    val isRecording: StateFlow<Boolean> = _isRecording
+
+    val recordingStartTime: Long
+        get() = startTime
+
+
+    private val _showRecordingOverlay = MutableStateFlow(false)
+    val showRecordingOverlay: StateFlow<Boolean> = _showRecordingOverlay
+
+    fun toggleRecording(context: Context) {
+        if (_isRecording.value) {
+            stopRecording()
+            _showRecordingOverlay.value = true
+        } else {
+            startRecording(context)
+            _showRecordingOverlay.value = true
+        }
+        _isRecording.value = !_isRecording.value
+    }
+
+    fun resetRecording() {
+        _showRecordingOverlay.value = false
+    }
+
+    private fun startRecording(context: Context) {
+        try {
+            val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+            audioFile =
+                File.createTempFile("audio_${System.currentTimeMillis()}", ".3gp", outputDir)
+
+            mediaRecorder = MediaRecorder().apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                setOutputFile(audioFile?.absolutePath)
+                prepare()
+                start()
+                startTime = System.currentTimeMillis()
+            }
+        } catch (e: Exception) {
+            Log.e("AudioRecorder", "Error starting recording", e)
+        }
+    }
+
+    private fun stopRecording() {
+        mediaRecorder?.apply {
+            stop()
+            release()
+        }
+        stopTime = System.currentTimeMillis()
+        mediaRecorder = null
+    }
+
+    private suspend fun uploadAudio(file: File?): String? {
+        return try {
+            val storageRef = storage.reference.child("chatAudio/${file?.name}")
+            storageRef.putFile(Uri.fromFile(file)).await()
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error uploading audio", e)
+            null
+        }
+        audioFile = null
+    }
+
+    fun sendAudioMessage(senderName: String) {
+        viewModelScope.launch {
+            try {
+                val audioUrl = uploadAudio(audioFile)
+                val duration = stopTime - startTime
+                roomId?.let { roomId ->
+                    currentUserId?.let { userId ->
+                        val messageData = hashMapOf(
+                            "content" to "🎵 Audio message",
+                            "createdAt" to Timestamp.now(),
+                            "senderId" to userId,
+                            "senderName" to senderName,
+                            "type" to "audio",
+                            "read" to false,
+                            "delivered" to false,
+                            "audio" to audioUrl,
+                            "duration" to duration
+                        )
+
+                        firestore.collection("rooms")
+                            .document(roomId)
+                            .collection("messages")
+                            .add(messageData)
+                            .await()
+
+                        firestore.collection("rooms")
+                            .document(roomId)
+                            .update(
+                                mapOf(
+                                    "lastMessage" to "🎵 ${formatTime(duration)}",
+                                    "lastMessageTimestamp" to Timestamp.now(),
+                                    "lastMessageSenderId" to userId
+                                )
+                            )
+                            .await()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error sending audio message", e)
+            }
+        }
+    }
 
     fun initialize(roomId: String, currentUserId: String, otherUserId: String) {
         this.roomId = roomId
@@ -334,53 +453,59 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun sendLocationMessage(
+        latitude: Double,
+        longitude: Double,
+        senderName: String,
+        roomId: String,
+        currentUserId: String
+    ) {
+        viewModelScope.launch {
+            try {
+                // Create a map for the location data.
+                val locationData = mapOf(
+                    "latitude" to latitude,
+                    "longitude" to longitude
+                )
+                val messageData = hashMapOf(
+                    "content" to "Shared a location",
+                    "createdAt" to Timestamp.now(),
+                    "senderId" to currentUserId,
+                    "senderName" to senderName,
+                    "type" to "location",
+                    "location" to locationData,
+                    "read" to false,
+                    "delivered" to false
+                )
+
+                // Add the message document to Firestore.
+                val addedDoc = firestore.collection("rooms")
+                    .document(roomId)
+                    .collection("messages")
+                    .add(messageData)
+                    .await()
+                Log.d("ChatViewModel", "Location message sent with id=${addedDoc.id}")
+
+                // Update the room's last message.
+                firestore.collection("rooms")
+                    .document(roomId)
+                    .update(
+                        mapOf(
+                            "lastMessage" to "Shared a location",
+                            "lastMessageTimestamp" to Timestamp.now(),
+                            "lastMessageSenderId" to currentUserId
+                        )
+                    )
+                    .await()
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error sending location message", e)
+            }
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
         Log.d("ChatViewModel", "onCleared: Removing Firestore message listener")
         messageListener?.remove()
     }
-}
-
-// Extension functions for conversions with logging.
-private fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
-    Log.d(
-        "ChatViewModel",
-        "Converting ChatMessage (id=${this.id}) to MessageEntity with roomId=$roomId"
-    )
-    return MessageEntity(
-        id = id,
-        content = content,
-        image = image,
-        audio = audio,
-        createdAt = createdAt,
-        senderId = senderId,
-        senderName = senderName,
-        replyTo = replyTo,
-        read = read,
-        type = type,
-        delivered = delivered,
-        location = location,
-        duration = duration,
-        roomId = roomId
-    )
-}
-
-private fun MessageEntity.toChatMessage(): ChatMessage {
-    Log.d("ChatViewModel", "Converting MessageEntity (id=${this.id}) to ChatMessage")
-    return ChatMessage(
-        id = id,
-        content = content,
-        image = image,
-        audio = audio,
-        createdAt = createdAt,
-        senderId = senderId,
-        senderName = senderName,
-        replyTo = replyTo,
-        read = read,
-        type = type,
-        delivered = delivered,
-        location = location,
-        duration = duration
-    )
 }

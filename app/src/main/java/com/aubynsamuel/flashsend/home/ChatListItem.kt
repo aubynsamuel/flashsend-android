@@ -41,6 +41,7 @@ import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.logger
 import com.aubynsamuel.flashsend.functions.showToast
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import java.net.URLEncoder
@@ -51,6 +52,8 @@ fun ChatListItem(room: RoomData, navController: NavController) {
     val context = LocalContext.current
     var unreadCount by remember { mutableIntStateOf(0) }
     var isExpanded by remember { mutableStateOf(false) }
+    val auth = FirebaseAuth.getInstance()
+    val currentUserId = auth.currentUser?.uid ?: return
 
     fun getUnreadMessages(roomId: String, otherUserId: String) {
         firestore.collection("rooms").document(roomId).collection("messages")
@@ -150,7 +153,7 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                     )
                     if (room.lastMessage.isNotEmpty()) {
                         Text(
-                            text = room.lastMessage,
+                            text = if (room.lastMessageSenderId == currentUserId) "You: ${room.lastMessage}" else room.lastMessage,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(start = 7.dp, end = 10.dp),
                             fontSize = 13.sp,

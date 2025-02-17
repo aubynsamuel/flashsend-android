@@ -110,6 +110,7 @@ fun ChatAppNavigation() {
                 profileUrl = profileUrl,
                 roomId = roomId,
                 settingsViewModel = settingsViewModel,
+                authViewModel = authViewModelInstance,
             )
         }
         composable(
@@ -169,16 +170,18 @@ fun ChatAppNavigation() {
             )
         }
         composable(
-            route = "imagePreview/{imageUri}/{roomId}",
+            route = "imagePreview/{imageUri}/{roomId}/{takenFromCamera}",
             arguments = listOf(
                 navArgument("imageUri") { type = NavType.StringType },
-                navArgument("roomId") { type = NavType.StringType }
+                navArgument("roomId") { type = NavType.StringType },
+                navArgument("takenFromCamera") { type = NavType.StringType }
             ),
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
         ) { backStackEntry ->
             // Retrieve the imageUri from the arguments
             val imageUri = backStackEntry.arguments?.getString("imageUri")
             val roomId = backStackEntry.arguments?.getString("roomId")
+            val takenFromCamera = backStackEntry.arguments?.getString("takenFromCamera")
 
             // Only show the screen if imageUri is not null
             imageUri?.let {
@@ -187,7 +190,8 @@ fun ChatAppNavigation() {
                     imageUri = it.toUri(),
                     chatViewModel = chatViewModel,
                     authViewModel = authViewModelInstance,
-                    roomId = roomId.toString()
+                    roomId = roomId.toString(),
+                    takenFromCamera = takenFromCamera
                 )
             }
         }

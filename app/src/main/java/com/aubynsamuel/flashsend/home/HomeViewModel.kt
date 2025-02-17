@@ -125,8 +125,10 @@ class HomeViewModel(context: Context) : ViewModel() {
                             otherParticipant = user
                         )
                     }
-                    _rooms.value = roomsList
-                    cacheHelper.saveRooms(roomsList)
+                    if (roomsList.isNotEmpty()) {
+                        _rooms.value = roomsList
+                        cacheHelper.saveRooms(roomsList)
+                    }
                     _isLoading.value = false
                 }
             } else {

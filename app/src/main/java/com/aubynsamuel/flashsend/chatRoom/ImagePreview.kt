@@ -46,7 +46,8 @@ fun ImagePreviewScreen(
     chatViewModel: ChatViewModel = viewModel(),
     navController: NavController,
     authViewModel: AuthViewModel,
-    roomId: String
+    roomId: String,
+    takenFromCamera: String?
 ) {
     var caption by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -83,15 +84,22 @@ fun ImagePreviewScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .padding(vertical = 20.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween)
-        {
-            Button(onClick = { onPickAnother() }) { Text("Pick Another") }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 10.dp),
+            horizontalArrangement = if (takenFromCamera == "0") Arrangement.SpaceBetween
+            else Arrangement.End
+        ) {
+            if (takenFromCamera == "0") {
+                Button(onClick = { onPickAnother() }) { Text("Pick Another") }
+            }
             Icon(
                 Icons.Default.Close,
                 contentDescription = "Cancel",
@@ -143,11 +151,8 @@ fun ImagePreviewScreen(
                                     onSend(imageUrl)
                                 } else {
                                     Toast.makeText(
-                                        context,
-                                        "Failed to upload image",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                        context, "Failed to upload image", Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         }

@@ -21,3 +21,8 @@ fun showToast(context: Context, message: String, long: Boolean = false) {
         context, message, if (long) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
     ).show()
 }
+
+fun createRoomId(userId: String, currentUserId: String): String {
+    val ids = listOf<String>(userId, currentUserId)
+    return ids.sorted().joinToString("_")
+}

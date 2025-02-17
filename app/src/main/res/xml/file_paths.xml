@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Allows access to files in your app's cache directory -->
+    <cache-path
+        name="cache"
+        path="." />
+    <!-- Optionally, allow access to external cache if needed -->
+    <external-cache-path
+        name="external_cache"
+        path="." />
+</paths>

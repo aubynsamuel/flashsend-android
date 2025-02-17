@@ -1,5 +1,10 @@
 package com.aubynsamuel.flashsend.chatRoom
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -19,11 +24,13 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
@@ -32,18 +39,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import com.aubynsamuel.flashsend.functions.NewUser
+import com.aubynsamuel.flashsend.functions.getCurrentLocation
 
 @Composable
 fun MessageInput(
     messageText: String,
     onMessageChange: (String) -> Unit,
     onSend: () -> Unit,
-    onImageClick: () -> Unit
+    onImageClick: () -> Unit,
+    isRecording: Boolean,
+    onRecordAudio: () -> Unit,
+    chatViewModel: ChatViewModel,
+    roomId: String,
+    userData: NewUser?
 ) {
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+    val locationPermission = Manifest.permission.ACCESS_FINE_LOCATION
+    val permissionRequest =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            onResult = {}
+        )
 //    Check if keyboard is shown
 //    val density = LocalDensity.current
 //    val isKeyboardVisible =
@@ -105,15 +129,14 @@ fun MessageInput(
             ),
             trailingIcon = {
                 Row {
-                    Icon(
-                        imageVector = Icons.Default.AddCircle,
-                        contentDescription = "Send",
+                    Icon(imageVector = Icons.Default.AddCircle,
+                        contentDescription = "More options",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .graphicsLayer {
                                 translationX = translate
                             }
-                            .clickable(onClick = {})
+                            .clickable(onClick = { showDialog = true })
                     )
                     Icon(
                         imageVector = Icons.Default.AddAPhoto,
@@ -131,11 +154,12 @@ fun MessageInput(
             })
 
         IconButton(
-            onClick = if (messageText.isNotBlank()) onSend else onSend,
+            onClick = if (messageText.isNotBlank()) onSend else onRecordAudio,
             modifier = Modifier
                 .size(55.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primaryContainer, shape = CircleShape
+                    color = if (!isRecording) MaterialTheme.colorScheme.primaryContainer else Color.Red,
+                    shape = CircleShape
                 )
         ) {
             AnimatedVisibility(visible = messageText.isBlank()) {
@@ -159,7 +183,49 @@ fun MessageInput(
             }
         }
     }
-
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Share Location") },
+            text = { Text("You are about to share your location, do you want to continue?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    // Check if permission is granted.
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            locationPermission
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        getCurrentLocation(context) { lat, lon ->
+                            if (lat != null && lon != null) {
+                                chatViewModel.sendLocationMessage(
+                                    lat, lon,
+                                    userData?.username ?: "", roomId, userData?.userId ?: ""
+                                )
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Unable to retrieve location",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } else {
+                        // Request permission if not granted.
+                        permissionRequest.launch(locationPermission)
+                    }
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
 }
 
 
@@ -167,6 +233,9 @@ fun MessageInput(
 //@Composable
 //fun PrevInputToolBar() {
 //    MessageInput(messageText = "", onMessageChange = {}, onSend = {},
-//        onImageClick = {}
+//        onImageClick = {},
+//        isRecording = false,
+//        onRecordAudio = {},
+//        onLocationRetrieved = {}
 //    )
 //}
