@@ -94,9 +94,19 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.messaging.ktx)
+
 
     // Navigation lib
     implementation(libs.androidx.navigation.compose)
+
+    //Retrofit API
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
+
 
     // Default libs
     implementation(libs.androidx.core.ktx)

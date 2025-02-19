@@ -1,8 +1,9 @@
 [versions]
 accompanistSystemuicontroller = "0.30.0"
-agp = "8.8.0"
+agp = "8.8.1"
 benchmarkMacroJunit4 = "1.3.3"
 coilCompose = "2.4.0"
+converterGson = "2.11.0"
 datastorePreferences = "1.1.2"
 firebaseBom = "33.9.0"
 gson = "2.10.1"
@@ -13,14 +14,15 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
-composeBom = "2025.01.01"
+composeBom = "2025.02.00"
 lottieCompose = "6.3.0"
 media3Exoplayer = "1.5.1"
 media3Ui = "1.5.1"
-navVersion = "2.8.6"
+navVersion = "2.8.7"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.0.0"
 profileinstaller = "1.4.1"
+retrofit = "2.11.0"
 roomCompilerVersion = "2.6.1"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
@@ -40,9 +42,11 @@ androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstall
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
+firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx" }
 firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -62,6 +66,7 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 
 [plugins]

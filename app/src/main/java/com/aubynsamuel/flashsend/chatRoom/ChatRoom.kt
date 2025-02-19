@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +37,7 @@ import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.createRoomId
+import com.aubynsamuel.flashsend.notifications.ConversationHistoryManager
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -254,10 +256,19 @@ fun ChatScreen(
                             if (messageText.isNotBlank()) {
                                 chatViewModel.sendMessage(
                                     content = messageText,
-                                    senderName = decodedUsername
+                                    senderName = userData?.username ?: "",
+                                    profileUrl = userData?.profileUrl ?: "",
+                                    recipientsToken = deviceToken
                                 )
-                                messageText = ""
                                 vibrateDevice(context)
+                                val newMessage = NotificationCompat.MessagingStyle.Message(
+                                    messageText, System.currentTimeMillis(), "Me"
+                                )
+                                val hasMessages = ConversationHistoryManager.hasMessages(roomId)
+                                if (hasMessages) {
+                                    ConversationHistoryManager.addMessage(roomId, newMessage)
+                                }
+                                messageText = ""
                             }
                         },
                         onImageClick = { imagePickerLauncher.launch("image/*") },

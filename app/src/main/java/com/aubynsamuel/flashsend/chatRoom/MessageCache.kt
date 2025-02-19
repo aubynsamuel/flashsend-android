@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aubynsamuel.flashsend.functions.Location
-import com.aubynsamuel.flashsend.functions.logger
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -38,14 +37,14 @@ class DateConverter {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         val date = value?.let { Date(it) }
-        Log.d("DateConverter", "fromTimestamp: Converting timestamp $value to Date: $date")
+//        Log.d("DateConverter", "fromTimestamp: Converting timestamp $value to Date: $date")
         return date
     }
 
     @TypeConverter
     fun dateToTimestamp(date: Date?): Long? {
         val timestamp = date?.time
-        Log.d("DateConverter", "dateToTimestamp: Converting Date $date to timestamp: $timestamp")
+//        Log.d("DateConverter", "dateToTimestamp: Converting Date $date to timestamp: $timestamp")
         return timestamp
     }
 }
@@ -54,22 +53,22 @@ class LocationConverter {
     @TypeConverter
     fun fromString(value: String?): Location? {
         if (value == null) {
-            Log.d("LocationConverter", "fromString: Received null value, returning null Location")
+//            Log.d("LocationConverter", "fromString: Received null value, returning null Location")
             return null
         }
         return try {
             val parts = value.split(",")
             val location = Location(parts[0].toDouble(), parts[1].toDouble())
-            Log.d(
-                "LocationConverter",
-                "fromString: Converted string '$value' to Location: $location"
-            )
+//            Log.d(
+//                "LocationConverter",
+//                "fromString: Converted string '$value' to Location: $location"
+//            )
             location
         } catch (e: Exception) {
-            logger(
-                "LocationConverter",
-                "fromString: Error converting string '$value' to Location $e",
-            )
+//            logger(
+//                "LocationConverter",
+//                "fromString: Error converting string '$value' to Location $e",
+//            )
             null
         }
     }
@@ -77,7 +76,7 @@ class LocationConverter {
     @TypeConverter
     fun toString(location: Location?): String? {
         val result = location?.let { "${it.latitude},${it.longitude}" }
-        Log.d("LocationConverter", "toString: Converted Location $location to string: $result")
+//        Log.d("LocationConverter", "toString: Converted Location $location to string: $result")
         return result
     }
 }

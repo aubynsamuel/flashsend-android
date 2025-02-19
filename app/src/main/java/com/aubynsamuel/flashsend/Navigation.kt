@@ -30,6 +30,7 @@ import com.aubynsamuel.flashsend.home.EditProfileScreen
 import com.aubynsamuel.flashsend.home.HomeScreen
 import com.aubynsamuel.flashsend.home.ProfileScreen
 import com.aubynsamuel.flashsend.home.SearchUsersScreen
+import com.aubynsamuel.flashsend.notifications.Notifications
 import com.aubynsamuel.flashsend.settings.SettingsRepository
 import com.aubynsamuel.flashsend.settings.SettingsScreen
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
@@ -59,7 +60,9 @@ fun ChatAppNavigation() {
         AuthViewModel(AuthRepository(FirebaseAuth.getInstance()))
     }
     val chatViewModel: ChatViewModel = viewModel {
-        ChatViewModel(context)
+        ChatViewModel(
+            context = context,
+        )
     }
 
     val dataStore = context.applicationContext.dataStore // Changed to application context
@@ -84,7 +87,8 @@ fun ChatAppNavigation() {
         ) {
             HomeScreen(
                 navController, authViewModelInstance,
-                context = context
+                context = context,
+                chatViewModel = chatViewModel
             )
         }
         composable(
@@ -118,6 +122,14 @@ fun ChatAppNavigation() {
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
             SearchUsersScreen(
                 navController,
+            )
+        }
+        composable(
+            "notifications",
+            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
+            Notifications(
+                navController,
+                context = context,
             )
         }
         composable(

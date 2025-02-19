@@ -27,27 +27,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.Screen
+import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.formatMessageTime
 import com.aubynsamuel.flashsend.chatRoom.messageTypes.FullScreenImageViewer
 import com.aubynsamuel.flashsend.functions.RoomData
-import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.logger
 import com.aubynsamuel.flashsend.functions.showToast
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import java.net.URLEncoder
 
 @Composable
-fun ChatListItem(room: RoomData, navController: NavController) {
+fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: ChatViewModel) {
     val firestore = FirebaseFirestore.getInstance()
     val context = LocalContext.current
     var unreadCount by remember { mutableIntStateOf(0) }
@@ -67,6 +64,10 @@ fun ChatListItem(room: RoomData, navController: NavController) {
                     unreadCount = it.documents.size
                 }
             }
+    }
+
+    LaunchedEffect(unreadCount) {
+        chatViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
     }
 
     getUnreadMessages(room.roomId, room.otherParticipant.userId)
@@ -198,31 +199,31 @@ fun ChatListItem(room: RoomData, navController: NavController) {
     }
 }
 
-@Preview
-@Composable
-fun PrevChatItem() {
-    ChatListItem(
-        item, navController = rememberNavController()
-    )
-}
-
-val item = RoomData(
-    roomId = "room_1",
-    lastMessage = "Hey, how's it going with that",
-    lastMessageTimestamp = Timestamp.now(),
-    lastMessageSenderId = "user_1",
-    otherParticipant = User(
-        userId = "user_1",
-        username = "Alice Johnson",
-        profileUrl = "",
-        deviceToken = "token_1"
-    )
-)
+//@Preview
+//@Composable
+//fun PrevChatItem() {
+//    ChatListItem(
+//        item, navController = rememberNavController(),
+//        chatViewModel =
+//    )
+//}
+//
+//val item = RoomData(
+//    roomId = "room_1",
+//    lastMessage = "Hey, how's it going with that",
+//    lastMessageTimestamp = Timestamp.now(),
+//    lastMessageSenderId = "user_1",
+//    otherParticipant = User(
+//        userId = "user_1",
+//        username = "Alice Johnson",
+//        profileUrl = "",
+//        deviceToken = "token_1"
+//    )
+//)
 
 //val user = User(
 //    userId = "user_1",
 //    username = "Alice Johnson",
 //    profileUrl = "",
 //    otherUsersDeviceToken = "token_1"
-//
 //)
