@@ -1,6 +1,12 @@
 package com.aubynsamuel.flashsend.home
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
@@ -22,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -31,6 +39,11 @@ import com.aubynsamuel.flashsend.chatRoom.PopUpMenu
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
 import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
+import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.notifications.NotificationRepository
+import com.aubynsamuel.flashsend.notifications.NotificationTokenManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +54,21 @@ fun HomeScreen(
     val homeViewModel: HomeViewModel = viewModel {
         HomeViewModel(context)
     }
+    val notificationRepository = NotificationRepository()
+    val user = FirebaseAuth.getInstance().currentUser
+    var retrievedToken by remember { mutableStateOf("") }
+    fun getFCMToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.e("FCM", "Fetching FCM token failed", task.exception)
+                    return@addOnCompleteListener
+                }
+                retrievedToken = task.result
+                Log.d("FCM", "FCM Token: $retrievedToken")
+            }
+    }
+
     var connectivityViewModel: ConnectivityViewModel = viewModel {
         ConnectivityViewModel(NetworkConnectivityObserver(context))
     }
@@ -54,6 +82,18 @@ fun HomeScreen(
     var expanded by remember { mutableStateOf(false) }
     var netActivity by remember { mutableStateOf("") }
 
+    val permissionRequest = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        onResult = {})
+    val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+
     LaunchedEffect(connectivityStatus) {
         if (connectivityStatus is ConnectivityStatus.Available) {
             netActivity = ""
@@ -63,7 +103,31 @@ fun HomeScreen(
         }
     }
     LaunchedEffect(Unit) {
+        if (!hasNotificationPermission) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
         authViewModel.loadUserData()
+        try {
+            getFCMToken()
+            notificationRepository.checkServerHealth()
+        } catch (e: Exception) {
+            logger("NetWorkError", e.message.toString())
+        }
+    }
+    LaunchedEffect(retrievedToken) {
+        try {
+            if (user != null) {
+                NotificationTokenManager.initializeAndUpdateToken(
+                    context, user.uid, retrievedToken.toString()
+                )
+            } else {
+                Log.w("NotificationTokenChange", "User not signed in; cannot update token.")
+            }
+        } catch (e: Exception) {
+            logger("NetWorkError", e.message.toString())
+        }
     }
 
     LaunchedEffect(authState) {
@@ -133,6 +197,11 @@ fun HomeScreen(
                             text = "Settings",
                             onClick = { navController.navigate("settings") },
                             icon = Icons.Default.Settings
+                        ),
+                        DropMenu(
+                            text = "Notifications",
+                            onClick = { navController.navigate("notifications") },
+                            icon = Icons.Default.Notifications
                         ),
                         DropMenu(
                             text = "Logout",

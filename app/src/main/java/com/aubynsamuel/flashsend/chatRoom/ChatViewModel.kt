@@ -12,6 +12,7 @@ import com.aubynsamuel.flashsend.functions.Location
 import com.aubynsamuel.flashsend.functions.logger
 import com.aubynsamuel.flashsend.functions.toChatMessage
 import com.aubynsamuel.flashsend.functions.toMessageEntity
+import com.aubynsamuel.flashsend.notifications.NotificationRepository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -36,6 +37,7 @@ class ChatViewModel(context: Context) : ViewModel() {
     private val storage = FirebaseStorage.getInstance()
 
     private val messageDao = ChatDatabase.getDatabase(context).messageDao()
+    private val repository = NotificationRepository()
 
     private val _chatState = MutableStateFlow<ChatState>(ChatState.Loading)
     val chatState: StateFlow<ChatState> = _chatState
@@ -126,7 +128,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 roomId?.let { roomId ->
                     currentUserId?.let { userId ->
                         val messageData = hashMapOf(
-                            "content" to "🎵 Audio message",
+                            "content" to "🔊 ${formatTime(duration)}",
                             "createdAt" to Timestamp.now(),
                             "senderId" to userId,
                             "senderName" to senderName,
@@ -147,7 +149,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                             .document(roomId)
                             .update(
                                 mapOf(
-                                    "lastMessage" to "🎵 ${formatTime(duration)}",
+                                    "lastMessage" to "🔊 ${formatTime(duration)}",
                                     "lastMessageTimestamp" to Timestamp.now(),
                                     "lastMessageSenderId" to userId
                                 )
@@ -330,7 +332,38 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun sendMessage(content: String, senderName: String) {
+    fun onSendNotification(
+        recipientsToken: String,
+        title: String,
+        body: String,
+        roomId: String,
+        recipientsUserId: String,
+        sendersUserId: String,
+        profileUrl: String
+    ) {
+        viewModelScope.launch {
+            try {
+                repository.sendNotification(
+                    recipientsToken = recipientsToken,
+                    title = title,
+                    body = body,
+                    roomId = roomId,
+                    recipientsUserId = recipientsUserId,
+                    sendersUserId = sendersUserId,
+                    profileUrl = profileUrl
+                )
+            } catch (e: Exception) {
+                logger("NetWorkError", e.message.toString())
+            }
+        }
+    }
+
+    fun sendMessage(
+        content: String,
+        senderName: String,
+        recipientsToken: String,
+        profileUrl: String
+    ) {
         viewModelScope.launch {
             try {
                 roomId?.let { roomId ->
@@ -371,6 +404,11 @@ class ChatViewModel(context: Context) : ViewModel() {
                                 )
                             )
                             .await()
+                        // send notification
+                        onSendNotification(
+                            recipientsToken, senderName, content, roomId,
+                            otherUserId.toString(), userId, profileUrl
+                        )
                         Log.d(
                             "ChatViewModel",
                             "Room's last message updated successfully for roomId=$roomId"
@@ -468,7 +506,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     "longitude" to longitude
                 )
                 val messageData = hashMapOf(
-                    "content" to "Shared a location",
+                    "content" to "$locationData",
                     "createdAt" to Timestamp.now(),
                     "senderId" to currentUserId,
                     "senderName" to senderName,
