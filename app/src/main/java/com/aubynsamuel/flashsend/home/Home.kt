@@ -132,6 +132,25 @@ fun HomeScreen(
         } catch (e: Exception) {
             logger("NetWorkError", e.message.toString())
         }
+        try {
+            getFCMToken()
+            notificationRepository.checkServerHealth()
+        } catch (e: Exception) {
+            logger("NetWorkError", e.message.toString())
+        }
+    }
+    LaunchedEffect(retrievedToken) {
+        try {
+            if (user != null) {
+                NotificationTokenManager.initializeAndUpdateToken(
+                    context, user.uid, retrievedToken.toString()
+                )
+            } else {
+                Log.w("NotificationTokenChange", "User not signed in; cannot update token.")
+            }
+        } catch (e: Exception) {
+            logger("NetWorkError", e.message.toString())
+        }
     }
 
     LaunchedEffect(authState) {
