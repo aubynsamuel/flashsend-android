@@ -4,7 +4,6 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import com.aubynsamuel.flashsend.functions.logger
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -36,7 +35,7 @@ class ActionReceiver : BroadcastReceiver() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             notificationManager.cancel(notificationId.hashCode())
-            Toast.makeText(context, "messages marked as read", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "messages marked as read", Toast.LENGTH_SHORT).show()
         }
     }
 }

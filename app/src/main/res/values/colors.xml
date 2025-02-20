@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="toolbar_color">#6650a4</color>
+    <color name="status_bar_color">#000000</color>
+    <color name="toolbar_widget_color">#FFFFFF</color>
+    <color name="active_widget_color">#6650a4</color>
+    <color name="dimmed_layer_color">#80000000</color>
 </resources>

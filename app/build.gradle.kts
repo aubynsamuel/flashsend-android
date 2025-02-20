@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            val bool = false
+            val bool = true
             isMinifyEnabled = bool
             isShrinkResources = bool
             proguardFiles(
@@ -66,6 +66,9 @@ dependencies {
     // Google maps
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location) // Latest version as of now
+
+    // Image Cropping
+    implementation(libs.ucrop)
 
 
     // Media player

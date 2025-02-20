@@ -52,7 +52,10 @@ fun ChatMessageObject(
     var showEditDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(
+            end = if (!isFromMe && message.type == "image") 30.dp else 0.dp,
+            start = if (isFromMe && message.type == "image") 30.dp else 0.dp
+        ),
         horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
     ) {
 //        Action pop ups
@@ -148,13 +151,15 @@ fun ChatMessageObject(
                         ImageMessage(
                             message = message,
                             isFromMe = isFromMe,
+                            fontSize = fontSize,
                         )
                     }
 
                     "audio" -> {
                         AudioMessage(
                             message = message,
-                            isFromMe = isFromMe
+                            isFromMe = isFromMe,
+                            fontSize = fontSize
                         )
                     }
 

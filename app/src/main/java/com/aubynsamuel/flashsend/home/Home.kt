@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
@@ -221,11 +220,11 @@ fun HomeScreen(
                             onClick = { navController.navigate("settings") },
                             icon = Icons.Default.Settings
                         ),
-                        DropMenu(
-                            text = "Notifications",
-                            onClick = { navController.navigate("notifications") },
-                            icon = Icons.Default.Notifications
-                        ),
+//                        DropMenu(
+//                            text = "Notifications",
+//                            onClick = { navController.navigate("notifications") },
+//                            icon = Icons.Default.Notifications
+//                        ),
                         DropMenu(
                             text = "Logout",
                             onClick = { authViewModel.logout() },

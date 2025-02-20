@@ -37,6 +37,7 @@ import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.createRoomId
+import com.aubynsamuel.flashsend.functions.logger
 import com.aubynsamuel.flashsend.notifications.ConversationHistoryManager
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -98,10 +99,11 @@ fun ChatScreen(
     ) { uri: Uri? ->
         uri?.let {
             val encodedUri = URLEncoder.encode(uri.toString(), "UTF-8")
-            val encodedProfileUrl = URLEncoder.encode(uri.toString(), "UTF-8")
+            val encodedProfileUrl = URLEncoder.encode(userData?.profileUrl.toString(), "UTF-8")
             navController.navigate(
-                "imagePreview/$encodedUri/$roomId/0/${encodedProfileUrl}/$deviceToken"
+                "imagePreview/$encodedUri/$roomId/0/$encodedProfileUrl/$deviceToken"
             )
+            logger("profileUrl", encodedProfileUrl)
         }
     }
     val tempImageUri = remember {
@@ -117,8 +119,9 @@ fun ChatScreen(
                 val encodedImage = URLEncoder.encode(tempImageUri.toString(), "UTF-8")
                 val encodedProfileUrl = URLEncoder.encode(userData?.profileUrl.toString(), "UTF-8")
                 navController.navigate(
-                    "imagePreview/${encodedImage}/$roomId/1/${encodedProfileUrl}/$deviceToken"
+                    "imagePreview/$encodedImage/$roomId/1/$encodedProfileUrl/$deviceToken"
                 )
+                logger("profileUrl", encodedProfileUrl)
             } else {
                 // Handle capture failure if needed
             }

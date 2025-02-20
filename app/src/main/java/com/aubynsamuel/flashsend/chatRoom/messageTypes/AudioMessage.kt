@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -36,7 +37,7 @@ import com.aubynsamuel.flashsend.mockData.messageExample
 import kotlinx.coroutines.delay
 
 @Composable
-fun AudioMessage(message: ChatMessage, isFromMe: Boolean) {
+fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
     val context = LocalContext.current
     val audioUrl = message.audio ?: return
 
@@ -114,7 +115,8 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean) {
             }
             Text(
                 text = "${currentPosition / 1000}s / ${duration / 1000}s",
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
+                fontSize = fontSize.sp
             )
         }
         Slider(
@@ -149,5 +151,8 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean) {
 @Preview
 @Composable
 fun Prev() {
-    AudioMessage(message = messageExample, isFromMe = false)
+    AudioMessage(
+        message = messageExample, isFromMe = false,
+        fontSize = 16
+    )
 }

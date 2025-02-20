@@ -72,7 +72,8 @@ fun DemoMessage(
                     "audio" -> {
                         AudioMessage(
                             message = message,
-                            isFromMe = isFromMe
+                            isFromMe = isFromMe,
+                            fontSize = fontSize
                         )
                     }
 

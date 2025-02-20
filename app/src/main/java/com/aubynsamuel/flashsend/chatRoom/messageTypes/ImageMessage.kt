@@ -29,7 +29,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-fun ImageMessage(message: ChatMessage, isFromMe: Boolean) {
+fun ImageMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
     var isExpanded by remember { mutableStateOf(false) }
 
     message.image?.let { imageUrl ->
@@ -38,14 +38,15 @@ fun ImageMessage(message: ChatMessage, isFromMe: Boolean) {
                 model = imageUrl,
                 contentDescription = "Image message",
                 modifier = Modifier
-                    .widthIn(min = 100.dp, max = 250.dp)
-                    .heightIn(min = 200.dp, max = 350.dp)
+//                    .width(250.dp)
+                    .heightIn(min = 30.dp, max = 250.dp)
                     .background(
                         MaterialTheme.colorScheme.surfaceVariant,
                         RoundedCornerShape(8.dp)
                     )
+                    .fillMaxWidth()
                     .clickable { isExpanded = true },
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillWidth
             )
             if (message.content != "") {
                 Text(
@@ -55,7 +56,7 @@ fun ImageMessage(message: ChatMessage, isFromMe: Boolean) {
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
-                    fontSize = 16.sp,
+                    fontSize = fontSize.sp,
                     modifier = Modifier
                         .padding(top = 2.dp)
                         .padding(horizontal = 5.dp)
