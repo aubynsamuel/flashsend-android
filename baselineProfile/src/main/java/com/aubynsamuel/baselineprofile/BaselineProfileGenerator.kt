@@ -20,30 +20,13 @@ class BaselineProfileGenerator {
         pressHome()
         startActivityAndWait()
 
-//        // Simulate scrolling in LazyColumn
-//        device.waitForIdle()
-//        device.swipe(500, 1500, 500, 500, 10)  // Scroll down
-//        device.waitForIdle()
-//        device.swipe(500, 500, 500, 1500, 10)  // Scroll up
+        // Log a message (optional) to indicate manual interaction phase
+        println("Manual interaction phase started. You have 60 seconds to interact with the app...")
 
-        device.waitForIdle()
-        device.swipe(500, 1500, 500, 500, 10)  // Scroll down
-        device.waitForIdle()
-        device.swipe(500, 500, 500, 1500, 10)  // Scroll up
+        // Pause execution to allow manual interactions (60 seconds in this case)
+        Thread.sleep(60000)
 
-        // Navigate to a chat conversation
-        // Replace with a tap coordinate or UI Automator selector as needed:
-        device.click(300, 600)
-        startActivityAndWait()  // Wait for the conversation to load
-
-        // Simulate scrolling through the conversation
-        device.waitForIdle()
-        device.swipe(500, 1200, 500, 400, 10)
-        device.waitForIdle()
-
-        // Navigate back to the chat list
-        device.pressBack()
-        device.waitForIdle()
-
+        // Optionally, add a log to indicate the end of manual interaction phase
+        println("Manual interaction phase ended.")
     }
 }

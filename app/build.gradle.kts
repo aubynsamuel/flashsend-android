@@ -15,6 +15,7 @@ android {
     defaultConfig {
         applicationId = "com.aubynsamuel.flashsend"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -24,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            val bool = true
+            val bool = false
             isMinifyEnabled = bool
             isShrinkResources = bool
             proguardFiles(
@@ -103,10 +104,6 @@ dependencies {
     //Retrofit API
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-
-    implementation("com.google.android.gms:play-services-auth:21.3.0")
-
-
 
     // Default libs
     implementation(libs.androidx.core.ktx)

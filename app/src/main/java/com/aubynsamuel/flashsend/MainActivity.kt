@@ -76,7 +76,6 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val CHANNEL_ID = "flash"
-        const val NOTIFICATION_ID = 0
         const val KEY_TEXT_REPLY = "key_text_reply"
     }
 }

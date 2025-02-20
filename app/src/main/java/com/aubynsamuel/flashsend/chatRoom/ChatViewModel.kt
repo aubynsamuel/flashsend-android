@@ -62,108 +62,8 @@ class ChatViewModel(context: Context) : ViewModel() {
     val recordingStartTime: Long
         get() = startTime
 
-
     private val _showRecordingOverlay = MutableStateFlow(false)
     val showRecordingOverlay: StateFlow<Boolean> = _showRecordingOverlay
-
-    fun toggleRecording(context: Context) {
-        if (_isRecording.value) {
-            stopRecording()
-            _showRecordingOverlay.value = true
-        } else {
-            startRecording(context)
-            _showRecordingOverlay.value = true
-        }
-        _isRecording.value = !_isRecording.value
-    }
-
-    fun resetRecording() {
-        _showRecordingOverlay.value = false
-    }
-
-    private fun startRecording(context: Context) {
-        try {
-            val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-            audioFile =
-                File.createTempFile("audio_${System.currentTimeMillis()}", ".3gp", outputDir)
-
-            mediaRecorder = MediaRecorder().apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                setOutputFile(audioFile?.absolutePath)
-                prepare()
-                start()
-                startTime = System.currentTimeMillis()
-            }
-        } catch (e: Exception) {
-            Log.e("AudioRecorder", "Error starting recording", e)
-        }
-    }
-
-    private fun stopRecording() {
-        mediaRecorder?.apply {
-            stop()
-            release()
-        }
-        stopTime = System.currentTimeMillis()
-        mediaRecorder = null
-    }
-
-    private suspend fun uploadAudio(file: File?): String? {
-        return try {
-            val storageRef = storage.reference.child("chatAudio/${file?.name}")
-            storageRef.putFile(Uri.fromFile(file)).await()
-            storageRef.downloadUrl.await().toString()
-        } catch (e: Exception) {
-            Log.e("ChatViewModel", "Error uploading audio", e)
-            null
-        }
-        audioFile = null
-    }
-
-    fun sendAudioMessage(senderName: String) {
-        viewModelScope.launch {
-            try {
-                val audioUrl = uploadAudio(audioFile)
-                val duration = stopTime - startTime
-                roomId?.let { roomId ->
-                    currentUserId?.let { userId ->
-                        val messageData = hashMapOf(
-                            "content" to "🔊 ${formatTime(duration)}",
-                            "createdAt" to Timestamp.now(),
-                            "senderId" to userId,
-                            "senderName" to senderName,
-                            "type" to "audio",
-                            "read" to false,
-                            "delivered" to false,
-                            "audio" to audioUrl,
-                            "duration" to duration
-                        )
-
-                        firestore.collection("rooms")
-                            .document(roomId)
-                            .collection("messages")
-                            .add(messageData)
-                            .await()
-
-                        firestore.collection("rooms")
-                            .document(roomId)
-                            .update(
-                                mapOf(
-                                    "lastMessage" to "🔊 ${formatTime(duration)}",
-                                    "lastMessageTimestamp" to Timestamp.now(),
-                                    "lastMessageSenderId" to userId
-                                )
-                            )
-                            .await()
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error sending audio message", e)
-            }
-        }
-    }
 
     fun initialize(roomId: String, currentUserId: String, otherUserId: String) {
         this.roomId = roomId
@@ -204,42 +104,11 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
-    private suspend fun createRoomIfNeeded(
-        roomId: String,
-        currentUserId: String,
-        otherUserId: String
-    ) {
-        try {
-            Log.d("ChatViewModel", "Checking if room exists for roomId=$roomId")
-            val roomRef = firestore.collection("rooms").document(roomId)
-            val room = roomRef.get().await()
-
-            if (!room.exists()) {
-                Log.d("ChatViewModel", "Room does not exist. Creating new room with roomId=$roomId")
-                val roomData = hashMapOf(
-                    "participants" to listOf(currentUserId, otherUserId),
-                    "createdAt" to Timestamp.now(),
-                    "lastMessage" to "",
-                    "lastMessageTimestamp" to Timestamp.now()
-                )
-                roomRef.set(roomData).await()
-                Log.d("ChatViewModel", "Room created successfully for roomId=$roomId")
-            } else {
-                Log.d("ChatViewModel", "Room already exists for roomId=$roomId")
-            }
-        } catch (e: Exception) {
-            logger("chatPack", "Error creating room if needed $e")
-            throw e
-        }
-    }
-
     fun initializeMessageListener() {
         roomId?.let { roomId ->
             messageListener?.remove()
             Log.d("ChatViewModel", "Initializing Firestore message listener for roomId=$roomId")
-            val messagesRef = firestore.collection("rooms")
-                .document(roomId)
-                .collection("messages")
+            val messagesRef = firestore.collection("rooms").document(roomId).collection("messages")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
 
             messageListener = messagesRef.addSnapshotListener { snapshot, error ->
@@ -294,7 +163,10 @@ class ChatViewModel(context: Context) : ViewModel() {
                             val deletedMessageId = change.document.id
                             viewModelScope.launch {
                                 messageDao.deleteMessage(deletedMessageId)
-                                Log.d("ChatViewModel", "Message $deletedMessageId deleted successfully")
+                                Log.d(
+                                    "ChatViewModel",
+                                    "Message $deletedMessageId deleted successfully"
+                                )
 
                             }
                         }
@@ -319,6 +191,33 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
+    private suspend fun createRoomIfNeeded(
+        roomId: String, currentUserId: String, otherUserId: String
+    ) {
+        try {
+            Log.d("ChatViewModel", "Checking if room exists for roomId=$roomId")
+            val roomRef = firestore.collection("rooms").document(roomId)
+            val room = roomRef.get().await()
+
+            if (!room.exists()) {
+                Log.d("ChatViewModel", "Room does not exist. Creating new room with roomId=$roomId")
+                val roomData = hashMapOf(
+                    "participants" to listOf(currentUserId, otherUserId),
+                    "createdAt" to Timestamp.now(),
+                    "lastMessage" to "",
+                    "lastMessageTimestamp" to Timestamp.now()
+                )
+                roomRef.set(roomData).await()
+                Log.d("ChatViewModel", "Room created successfully for roomId=$roomId")
+            } else {
+                Log.d("ChatViewModel", "Room already exists for roomId=$roomId")
+            }
+        } catch (e: Exception) {
+            logger("chatPack", "Error creating room if needed $e")
+            throw e
+        }
+    }
+
     fun markMessagesAsRead() {
         viewModelScope.launch {
             try {
@@ -328,17 +227,12 @@ class ChatViewModel(context: Context) : ViewModel() {
                             !it.read && it.senderId != userId
                         }
                         Log.d(
-                            "ChatViewModel",
-                            "Marking ${unreadMessages.size} messages as read"
+                            "ChatViewModel", "Marking ${unreadMessages.size} messages as read"
                         )
                         unreadMessages.forEach { message ->
                             Log.d("ChatViewModel", "Marking message id=${message.id} as read")
-                            firestore.collection("rooms")
-                                .document(roomId)
-                                .collection("messages")
-                                .document(message.id)
-                                .update("read", true)
-                                .await()
+                            firestore.collection("rooms").document(roomId).collection("messages")
+                                .document(message.id).update("read", true).await()
                         }
                     }
                 }
@@ -346,6 +240,50 @@ class ChatViewModel(context: Context) : ViewModel() {
                 logger("chatPack", "Error marking messages as read $e")
             }
         }
+    }
+
+    fun toggleRecording(context: Context) {
+        if (_isRecording.value) {
+            stopRecording()
+            _showRecordingOverlay.value = true
+        } else {
+            startRecording(context)
+            _showRecordingOverlay.value = true
+        }
+        _isRecording.value = !_isRecording.value
+    }
+
+    fun resetRecording() {
+        _showRecordingOverlay.value = false
+    }
+
+    private fun startRecording(context: Context) {
+        try {
+            val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+            audioFile =
+                File.createTempFile("audio_${System.currentTimeMillis()}", ".3gp", outputDir)
+
+            mediaRecorder = MediaRecorder().apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                setOutputFile(audioFile?.absolutePath)
+                prepare()
+                start()
+                startTime = System.currentTimeMillis()
+            }
+        } catch (e: Exception) {
+            Log.e("AudioRecorder", "Error starting recording", e)
+        }
+    }
+
+    private fun stopRecording() {
+        mediaRecorder?.apply {
+            stop()
+            release()
+        }
+        stopTime = System.currentTimeMillis()
+        mediaRecorder = null
     }
 
     fun onSendNotification(
@@ -375,10 +313,7 @@ class ChatViewModel(context: Context) : ViewModel() {
     }
 
     fun sendMessage(
-        content: String,
-        senderName: String,
-        recipientsToken: String,
-        profileUrl: String
+        content: String, senderName: String, recipientsToken: String, profileUrl: String
     ) {
         viewModelScope.launch {
             try {
@@ -399,31 +334,31 @@ class ChatViewModel(context: Context) : ViewModel() {
                         )
 
                         // Add message to Firestore.
-                        val addedDoc = firestore.collection("rooms")
-                            .document(roomId)
-                            .collection("messages")
-                            .add(messageData)
-                            .await()
+                        val addedDoc =
+                            firestore.collection("rooms").document(roomId).collection("messages")
+                                .add(messageData).await()
                         Log.d(
                             "ChatViewModel",
                             "Message sent to Firestore with document id=${addedDoc.id}"
                         )
 
                         // Update room's last message.
-                        firestore.collection("rooms")
-                            .document(roomId)
-                            .update(
-                                mapOf(
-                                    "lastMessage" to content,
-                                    "lastMessageTimestamp" to Timestamp.now(),
-                                    "lastMessageSenderId" to userId
-                                )
+                        firestore.collection("rooms").document(roomId).update(
+                            mapOf(
+                                "lastMessage" to content,
+                                "lastMessageTimestamp" to Timestamp.now(),
+                                "lastMessageSenderId" to userId
                             )
-                            .await()
+                        ).await()
                         // send notification
                         onSendNotification(
-                            recipientsToken, senderName, content, roomId,
-                            otherUserId.toString(), userId, profileUrl
+                            recipientsToken,
+                            senderName,
+                            content,
+                            roomId,
+                            otherUserId.toString(),
+                            userId,
+                            profileUrl
                         )
                         Log.d(
                             "ChatViewModel",
@@ -438,21 +373,64 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
-    // New function to send image messages.
+    fun sendAudioMessage(senderName: String, profileUrl: String, recipientsToken: String) {
+        viewModelScope.launch {
+            try {
+                val audioUrl = uploadAudio(audioFile)
+                val duration = stopTime - startTime
+                roomId?.let { roomId ->
+                    currentUserId?.let { userId ->
+                        val messageData = hashMapOf(
+                            "content" to "🔊 ${formatTime(duration)}",
+                            "createdAt" to Timestamp.now(),
+                            "senderId" to userId,
+                            "senderName" to senderName,
+                            "type" to "audio",
+                            "read" to false,
+                            "delivered" to false,
+                            "audio" to audioUrl,
+                            "duration" to duration
+                        )
+
+                        firestore.collection("rooms").document(roomId).collection("messages")
+                            .add(messageData).await()
+
+                        firestore.collection("rooms").document(roomId).update(
+                            mapOf(
+                                "lastMessage" to "🔊 ${formatTime(duration)}",
+                                "lastMessageTimestamp" to Timestamp.now(),
+                                "lastMessageSenderId" to userId
+                            )
+                        ).await()
+                        onSendNotification(
+                            recipientsToken,
+                            senderName,
+                            "🔊 ${formatTime(duration)}",
+                            roomId,
+                            otherUserId.toString(),
+                            userId,
+                            profileUrl
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error sending audio message", e)
+            }
+        }
+    }
+
     fun sendImageMessage(
         caption: String,
         imageUrl: String,
         senderName: String,
         roomId: String,
         currentUserId: String,
+        profileUrl: String,
+        recipientsToken: String
     ) {
         logger(
             "sendImage",
-            "Caption: $caption," +
-                    "ImageUrl: $imageUrl," +
-                    "SenderName: $senderName," +
-                    "RoomId: $roomId," +
-                    "CurrentUserId: $currentUserId"
+            "Caption: $caption,ImageUrl: $imageUrl,SenderName: $senderName,RoomId: $roomId,CurrentUserId: $currentUserId"
         )
         viewModelScope.launch {
             try {
@@ -468,23 +446,27 @@ class ChatViewModel(context: Context) : ViewModel() {
                             "delivered" to false,
                             "image" to imageUrl
                         )
-                        val addedDoc = firestore.collection("rooms")
-                            .document(roomId)
-                            .collection("messages")
-                            .add(messageData)
-                            .await()
+                        val addedDoc =
+                            firestore.collection("rooms").document(roomId).collection("messages")
+                                .add(messageData).await()
                         Log.d("ChatViewModel", "Image message sent with id=${addedDoc.id}")
 
-                        firestore.collection("rooms")
-                            .document(roomId)
-                            .update(
-                                mapOf(
-                                    "lastMessage" to "📷 Sent an image",
-                                    "lastMessageTimestamp" to Timestamp.now(),
-                                    "lastMessageSenderId" to userId
-                                )
+                        firestore.collection("rooms").document(roomId).update(
+                            mapOf(
+                                "lastMessage" to "📷 Sent an image",
+                                "lastMessageTimestamp" to Timestamp.now(),
+                                "lastMessageSenderId" to userId
                             )
-                            .await()
+                        ).await()
+                        onSendNotification(
+                            recipientsToken,
+                            senderName,
+                            "📷 Sent an image",
+                            roomId,
+                            otherUserId.toString(),
+                            userId,
+                            profileUrl
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -493,33 +475,21 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
-    // Function to upload an image to Firebase Storage and return the download URL.
-    suspend fun uploadImage(imageUri: Uri, username: String): String? {
-        return try {
-            // Use a unique filename (you could also use the image’s original name)
-            val storageRef =
-                storage.reference.child("chatMedia/${username}_${System.currentTimeMillis()}.jpg")
-            storageRef.putFile(imageUri).await()
-            storageRef.downloadUrl.await().toString()
-        } catch (e: Exception) {
-            Log.e("ChatViewModel", "Error uploading image", e)
-            null
-        }
-    }
-
     fun sendLocationMessage(
         latitude: Double,
         longitude: Double,
         senderName: String,
         roomId: String,
-        currentUserId: String
+        currentUserId: String,
+        profileUrl: String,
+        recipientsToken: String
+
     ) {
         viewModelScope.launch {
             try {
                 // Create a map for the location data.
                 val locationData = mapOf(
-                    "latitude" to latitude,
-                    "longitude" to longitude
+                    "latitude" to latitude, "longitude" to longitude
                 )
                 val messageData = hashMapOf(
                     "content" to "$locationData",
@@ -533,34 +503,56 @@ class ChatViewModel(context: Context) : ViewModel() {
                 )
 
                 // Add the message document to Firestore.
-                val addedDoc = firestore.collection("rooms")
-                    .document(roomId)
-                    .collection("messages")
-                    .add(messageData)
-                    .await()
+                val addedDoc = firestore.collection("rooms").document(roomId).collection("messages")
+                    .add(messageData).await()
                 Log.d("ChatViewModel", "Location message sent with id=${addedDoc.id}")
 
                 // Update the room's last message.
-                firestore.collection("rooms")
-                    .document(roomId)
-                    .update(
-                        mapOf(
-                            "lastMessage" to "Shared a location",
-                            "lastMessageTimestamp" to Timestamp.now(),
-                            "lastMessageSenderId" to currentUserId
-                        )
+                firestore.collection("rooms").document(roomId).update(
+                    mapOf(
+                        "lastMessage" to "Shared a location",
+                        "lastMessageTimestamp" to Timestamp.now(),
+                        "lastMessageSenderId" to currentUserId
                     )
-                    .await()
+                ).await()
+                onSendNotification(
+                    recipientsToken,
+                    senderName,
+                    "Shared a location",
+                    roomId,
+                    otherUserId.toString(),
+                    currentUserId,
+                    profileUrl
+                )
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error sending location message", e)
             }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("ChatViewModel", "onCleared: Removing Firestore message listener")
-        messageListener?.remove()
+    suspend fun uploadImage(imageUri: Uri, username: String): String? {
+        return try {
+            // Use a unique filename (you could also use the image’s original name)
+            val storageRef =
+                storage.reference.child("chatMedia/${username}_${System.currentTimeMillis()}.jpg")
+            storageRef.putFile(imageUri).await()
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error uploading image", e)
+            null
+        }
+    }
+
+    private suspend fun uploadAudio(file: File?): String? {
+        return try {
+            val storageRef = storage.reference.child("chatAudio/${file?.name}")
+            storageRef.putFile(Uri.fromFile(file)).await()
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error uploading audio", e)
+            null
+        }
+        audioFile = null
     }
 
     suspend fun prefetchNewMessagesForRoom(
@@ -570,12 +562,9 @@ class ChatViewModel(context: Context) : ViewModel() {
         val lastCachedTime: Date = cachedMessages.firstOrNull()?.createdAt ?: Date(0)
 
         try {
-            val querySnapshot = firestore.collection("rooms")
-                .document(roomId)
-                .collection("messages")
-                .whereGreaterThan("createdAt", Timestamp(lastCachedTime))
-                .get()
-                .await()
+            val querySnapshot =
+                firestore.collection("rooms").document(roomId).collection("messages")
+                    .whereGreaterThan("createdAt", Timestamp(lastCachedTime)).get().await()
 
             val newMessages = querySnapshot.documents.mapNotNull { doc ->
                 val data = doc.data ?: return@mapNotNull null
@@ -615,6 +604,12 @@ class ChatViewModel(context: Context) : ViewModel() {
         } catch (e: Exception) {
             Log.e("Prefetch", "Error fetching new messages for room $roomId: ${e.message}")
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("ChatViewModel", "onCleared: Removing Firestore message listener")
+        messageListener?.remove()
     }
 
 }

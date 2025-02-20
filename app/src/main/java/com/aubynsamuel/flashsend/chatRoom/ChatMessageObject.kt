@@ -101,17 +101,19 @@ fun ChatMessageObject(
                         text = "Copy",
                         onClick = { copyTextToClipboard(context, message.content) },
                         icon = Icons.Default.CopyAll
-                    ), DropMenu(
-                        text = "Delete",
-                        onClick = { showDeleteDialog = true },
-                        icon = Icons.Default.Delete
-                    ), DropMenu(
+                    ),
+                    DropMenu(
                         text = "Edit",
                         onClick = {
                             showEditDialog = true
                         },
                         icon = Icons.Default.Edit
-                    )
+                    ),
+                    DropMenu(
+                        text = "Delete",
+                        onClick = { showDeleteDialog = true },
+                        icon = Icons.Default.Delete
+                    ),
                 )
                 val othersMessageOptionsList = listOf<DropMenu>(
                     DropMenu(

@@ -172,7 +172,6 @@ fun SearchUsersScreen(
                                     userId = user.userId,
                                     deviceToken = user.deviceToken,
                                     profileUrl = encodedProfileUrl,
-                                    roomId = ""
                                 )
                             )
                         })

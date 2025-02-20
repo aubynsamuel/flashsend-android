@@ -25,7 +25,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             // Note: Here, we pass roomId as the 'id' which is used to group messages (conversation ID).
             showNotification(
                 context = this,
-                title = title,
                 message = body,
                 sender = title,
                 id = roomId,

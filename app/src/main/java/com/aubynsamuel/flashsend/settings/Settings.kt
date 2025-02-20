@@ -146,7 +146,7 @@ private fun DarkModeSelector(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent
                 ),
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor(type = MenuAnchorType.SecondaryEditable)
             )
 
             ExposedDropdownMenu(

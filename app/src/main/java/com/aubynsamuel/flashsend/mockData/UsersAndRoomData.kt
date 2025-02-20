@@ -31,6 +31,7 @@ val mockUsers = listOf(
     )
 )
 
+@Suppress("unused")
 val mockRooms = listOf(
     RoomData(
         roomId = "room_1",

@@ -19,8 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -39,6 +39,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.aubynsamuel.flashsend.R
 import kotlinx.coroutines.delay
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
@@ -144,7 +145,7 @@ fun AudioRecordingOverlay(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    imageVector = Icons.Default.Send,
+                                    imageVector = Icons.AutoMirrored.Default.Send,
                                     contentDescription = "Send",
                                     tint = Color.White
                                 )
@@ -163,5 +164,5 @@ fun formatTime(milliseconds: Long): String {
     val minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds)
     val seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
             TimeUnit.MINUTES.toSeconds(minutes)
-    return String.format("%d:%02d", minutes, seconds)
+    return String.format(Locale.US, "%d:%02d", minutes, seconds)
 }

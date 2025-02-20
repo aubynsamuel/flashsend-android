@@ -33,7 +33,6 @@ fun LocationMessage(message: ChatMessage) {
                 }
             }
     ) {
-        // Use Coil or another image loading library
         AsyncImage(
             model = R.drawable.map,
             contentDescription = "Location preview",

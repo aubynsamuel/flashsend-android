@@ -55,7 +55,6 @@ fun ChatScreen(
     userId: String,
     deviceToken: String,
     profileUrl: String,
-    roomId: String,
     settingsViewModel: SettingsViewModel,
     authViewModel: AuthViewModel
 ) {
@@ -99,7 +98,10 @@ fun ChatScreen(
     ) { uri: Uri? ->
         uri?.let {
             val encodedUri = URLEncoder.encode(uri.toString(), "UTF-8")
-            navController.navigate("imagePreview/$encodedUri/$roomId/0")
+            val encodedProfileUrl = URLEncoder.encode(uri.toString(), "UTF-8")
+            navController.navigate(
+                "imagePreview/$encodedUri/$roomId/0/${encodedProfileUrl}/$deviceToken"
+            )
         }
     }
     val tempImageUri = remember {
@@ -113,7 +115,10 @@ fun ChatScreen(
         onResult = { success ->
             if (success) {
                 val encodedImage = URLEncoder.encode(tempImageUri.toString(), "UTF-8")
-                navController.navigate("imagePreview/${encodedImage}/$roomId/1")
+                val encodedProfileUrl = URLEncoder.encode(userData?.profileUrl.toString(), "UTF-8")
+                navController.navigate(
+                    "imagePreview/${encodedImage}/$roomId/1/${encodedProfileUrl}/$deviceToken"
+                )
             } else {
                 // Handle capture failure if needed
             }
@@ -197,9 +202,11 @@ fun ChatScreen(
                     ),
                 ),
                 onImageClick = {
+                    // Check and request camera permission
                     if (!hasCameraPermission) {
                         permissionRequest.launch(Manifest.permission.CAMERA)
                     } else {
+                        // Launch camera
                         launcher.launch(tempImageUri)
                     }
                 }
@@ -262,7 +269,7 @@ fun ChatScreen(
                                 )
                                 vibrateDevice(context)
                                 val newMessage = NotificationCompat.MessagingStyle.Message(
-                                    messageText, System.currentTimeMillis(), "Me"
+                                    messageText, System.currentTimeMillis(), "You"
                                 )
                                 val hasMessages = ConversationHistoryManager.hasMessages(roomId)
                                 if (hasMessages) {
@@ -276,7 +283,8 @@ fun ChatScreen(
                         onRecordAudio = { chatViewModel.toggleRecording(context) },
                         chatViewModel = chatViewModel,
                         userData = userData,
-                        roomId = roomId
+                        roomId = roomId,
+                        recipientToken = deviceToken
                     )
                 }
                 if (showOverlay) {
@@ -284,8 +292,11 @@ fun ChatScreen(
                         isRecording = isRecording,
                         resetRecording = { chatViewModel.resetRecording() },
                         sendAudioMessage = {
-                            chatViewModel.sendAudioMessage(senderName = userData?.username ?: "")
-                            chatViewModel.resetRecording()
+                            chatViewModel.sendAudioMessage(
+                                senderName = userData?.username ?: "",
+                                profileUrl = userData?.profileUrl ?: "",
+                                recipientsToken = deviceToken
+                            )
                         },
                         recordingStartTime = chatViewModel.recordingStartTime,
                     )

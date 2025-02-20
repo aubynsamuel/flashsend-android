@@ -47,7 +47,9 @@ fun ImagePreviewScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
     roomId: String,
-    takenFromCamera: String?
+    takenFromCamera: String?,
+    profileUrl: String,
+    recipientsToken: String
 ) {
     var caption by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -76,7 +78,9 @@ fun ImagePreviewScreen(
             imageUrl = imageUrl,
             senderName = userData?.username ?: "",
             roomId = roomId,
-            currentUserId = userData?.userId ?: ""
+            currentUserId = userData?.userId ?: "",
+            profileUrl = profileUrl,
+            recipientsToken = recipientsToken
         )
         navController.popBackStack()
     }

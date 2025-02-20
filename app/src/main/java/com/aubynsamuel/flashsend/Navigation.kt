@@ -40,14 +40,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 
 sealed class Screen(val route: String) {
-    object ChatRoom : Screen("chatRoom/{username}/{userId}/{deviceToken}/{profileUrl}/{roomId}") {
+    object ChatRoom : Screen("chatRoom/{username}/{userId}/{deviceToken}/{profileUrl}") {
         fun createRoute(
             username: String,
             userId: String,
             deviceToken: String,
             profileUrl: String,
-            roomId: String
-        ) = "chatRoom/$username/$userId/$deviceToken/$profileUrl/${roomId}"
+        ) = "chatRoom/$username/$userId/$deviceToken/$profileUrl"
     }
 }
 
@@ -97,14 +96,12 @@ fun ChatAppNavigation() {
             arguments = listOf(navArgument("username") { type = NavType.StringType },
                 navArgument("userId") { type = NavType.StringType },
                 navArgument("deviceToken") { type = NavType.StringType },
-                navArgument("profileUrl") { type = NavType.StringType },
-                navArgument("roomId") { type = NavType.StringType })
+                navArgument("profileUrl") { type = NavType.StringType })
         ) { backStackEntry ->
             val username = backStackEntry.arguments?.getString("username") ?: ""
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val deviceToken = backStackEntry.arguments?.getString("deviceToken") ?: ""
             val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
-            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
 
             ChatScreen(
                 navController = navController,
@@ -112,7 +109,6 @@ fun ChatAppNavigation() {
                 userId = userId,
                 deviceToken = deviceToken,
                 profileUrl = profileUrl,
-                roomId = roomId,
                 settingsViewModel = settingsViewModel,
                 authViewModel = authViewModelInstance,
             )
@@ -128,7 +124,6 @@ fun ChatAppNavigation() {
             "notifications",
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
             Notifications(
-                navController,
                 context = context,
             )
         }
@@ -182,11 +177,13 @@ fun ChatAppNavigation() {
             )
         }
         composable(
-            route = "imagePreview/{imageUri}/{roomId}/{takenFromCamera}",
+            route = "imagePreview/{imageUri}/{roomId}/{takenFromCamera}/{profileUrl}/{recipientsToken}",
             arguments = listOf(
                 navArgument("imageUri") { type = NavType.StringType },
                 navArgument("roomId") { type = NavType.StringType },
-                navArgument("takenFromCamera") { type = NavType.StringType }
+                navArgument("takenFromCamera") { type = NavType.StringType },
+                navArgument("profileUrl") { type = NavType.StringType },
+                navArgument("recipientsToken") { type = NavType.StringType }
             ),
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
         ) { backStackEntry ->
@@ -194,6 +191,8 @@ fun ChatAppNavigation() {
             val imageUri = backStackEntry.arguments?.getString("imageUri")
             val roomId = backStackEntry.arguments?.getString("roomId")
             val takenFromCamera = backStackEntry.arguments?.getString("takenFromCamera")
+            val recipientsToken = backStackEntry.arguments?.getString("recipientsToken")
+            val profileUrl = backStackEntry.arguments?.getString("profileUrl")
 
             // Only show the screen if imageUri is not null
             imageUri?.let {
@@ -203,7 +202,9 @@ fun ChatAppNavigation() {
                     chatViewModel = chatViewModel,
                     authViewModel = authViewModelInstance,
                     roomId = roomId.toString(),
-                    takenFromCamera = takenFromCamera
+                    takenFromCamera = takenFromCamera,
+                    profileUrl = profileUrl.toString(),
+                    recipientsToken = recipientsToken.toString()
                 )
             }
         }

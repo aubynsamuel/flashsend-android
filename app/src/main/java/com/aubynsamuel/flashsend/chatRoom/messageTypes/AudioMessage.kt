@@ -40,7 +40,7 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean) {
     val context = LocalContext.current
     val audioUrl = message.audio ?: return
 
-    // Create and remember an ExoPlayer instance using Media3
+    // Create and remember an ExoPlayer instance
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(audioUrl))

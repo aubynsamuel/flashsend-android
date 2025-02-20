@@ -5,12 +5,15 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import androidx.core.net.toUri
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.functions.showToast
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -19,6 +22,16 @@ class ReplyReceiver : BroadcastReceiver() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onReceive(context: Context, intent: Intent) {
         val repository = NotificationRepository()
+
+        fun isNetworkAvailable(context: Context): Boolean {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities =
+                connectivityManager.getNetworkCapabilities(network) ?: return false
+            return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        }
+
         val notificationId = intent.data?.toString() ?: return
         val roomId = intent.getStringExtra("roomId") ?: return
         val sendersUserId = intent.getStringExtra("sendersUserId") ?: ""
@@ -44,9 +57,14 @@ class ReplyReceiver : BroadcastReceiver() {
 
                 // Add the reply to the conversation history
                 val newMessage = NotificationCompat.MessagingStyle.Message(
-                    replyText, System.currentTimeMillis(), "Me"
+                    replyText, System.currentTimeMillis(), "You"
                 )
-                ConversationHistoryManager.addMessage(notificationId, newMessage)
+                val isConnected = isNetworkAvailable(context)
+                if (isConnected) {
+                    ConversationHistoryManager.addMessage(notificationId, newMessage)
+                } else {
+                    showToast(context, "Message Not Sent, No Internet Connection", true)
+                }
 
                 // Rebuild and update the notification immediately
                 updateNotification(context, notificationId, roomId, sendersUserId, recipientsUserId)
@@ -61,7 +79,7 @@ class ReplyReceiver : BroadcastReceiver() {
         sendersUserId: String,
         recipientsUserId: String
     ) {
-        val messagingStyle = NotificationCompat.MessagingStyle("Me")
+        val messagingStyle = NotificationCompat.MessagingStyle("You")
         ConversationHistoryManager.getHistory(notificationId)
             .forEach { it -> messagingStyle.addMessage(it) }
 
@@ -94,7 +112,7 @@ class ReplyReceiver : BroadcastReceiver() {
         )
 
         val updatedNotification = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
             .setStyle(messagingStyle)
             .addAction(replyAction)
             .addAction(R.mipmap.ic_launcher_foreground, "Mark As Read", markAsReadPendingIntent)
@@ -104,7 +122,7 @@ class ReplyReceiver : BroadcastReceiver() {
             .build()
 
         val groupSummary = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle("New Messages")
             .setContentText("You have new messages")
             .setAutoCancel(true)

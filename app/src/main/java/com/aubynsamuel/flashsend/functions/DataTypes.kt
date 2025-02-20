@@ -26,10 +26,7 @@ data class NewUser(
     var profileUrl: String = "",
     var deviceToken: String = "",
     var email: String = ""
-) {
-    // Add a no-argument constructor
-    constructor() : this("", "", "", "", "")
-}
+) : Serializable
 
 data class ChatMessage(
     val id: String = "",

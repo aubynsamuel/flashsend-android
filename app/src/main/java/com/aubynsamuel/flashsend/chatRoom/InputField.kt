@@ -58,7 +58,7 @@ fun MessageInput(
     onRecordAudio: () -> Unit,
     chatViewModel: ChatViewModel,
     roomId: String,
-    userData: NewUser?
+    userData: NewUser?, recipientToken: String
 ) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -200,8 +200,13 @@ fun MessageInput(
                         getCurrentLocation(context) { lat, lon ->
                             if (lat != null && lon != null) {
                                 chatViewModel.sendLocationMessage(
-                                    lat, lon,
-                                    userData?.username ?: "", roomId, userData?.userId ?: ""
+                                    lat,
+                                    lon,
+                                    userData?.username ?: "",
+                                    roomId,
+                                    userData?.userId ?: "",
+                                    userData?.profileUrl ?: "",
+                                    recipientToken
                                 )
                             } else {
                                 Toast.makeText(

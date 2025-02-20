@@ -19,12 +19,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import androidx.core.net.toUri
-import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
 
 @Composable
-fun Notifications(navController: NavController, context: Context) {
+fun Notifications(context: Context) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -41,7 +40,6 @@ fun Notifications(navController: NavController, context: Context) {
                     context,
                     message = "Alright reply to this one",
                     sender = "Samuel",
-                    title = "",
                     id = "as",
                     sendersUserId = "",
                     recipientsUserId = ""
@@ -54,7 +52,6 @@ fun Notifications(navController: NavController, context: Context) {
 
 fun showNotification(
     context: Context,
-    title: String,
     message: String,
     sender: String = "Unknown",
     id: String,
@@ -117,7 +114,7 @@ fun showNotification(
     )
     ConversationHistoryManager.addMessage(id.toString(), newMessage)
     // Rebuild the MessagingStyle notification with the full conversation history.
-    val messagingStyle = NotificationCompat.MessagingStyle("Me")
+    val messagingStyle = NotificationCompat.MessagingStyle("You")
 
     // Append each message in the history
     ConversationHistoryManager.getHistory(id.toString()).forEach { message ->
@@ -125,7 +122,7 @@ fun showNotification(
     }
 
     val individualNotification = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+        .setSmallIcon(R.mipmap.ic_launcher_round)
 //        .setContentTitle(sender)
 //        .setContentText(messages)
         .setStyle(messagingStyle)
@@ -138,7 +135,7 @@ fun showNotification(
         .build()
 
     val groupSummary = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+        .setSmallIcon(R.mipmap.ic_launcher_round)
         .setContentTitle("New Messages")
         .setContentText("You have new messages")
         .setAutoCancel(true)

@@ -80,14 +80,12 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
                 val user = room.otherParticipant
                 val encodedUsername = URLEncoder.encode(user.username, "UTF-8")
                 val encodedProfileUrl = URLEncoder.encode(user.profileUrl, "UTF-8")
-                val roomId = room.roomId
                 navController.navigate(
                     Screen.ChatRoom.createRoute(
                         username = encodedUsername,
                         userId = user.userId,
                         deviceToken = user.deviceToken,
                         profileUrl = encodedProfileUrl,
-                        roomId = ""
                     )
                 )
             },

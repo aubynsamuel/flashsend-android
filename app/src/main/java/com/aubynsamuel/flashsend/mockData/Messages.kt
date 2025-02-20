@@ -16,6 +16,7 @@ import java.util.Random
 //    val isFromMe: Boolean
 //)
 
+@Suppress("unused", "UnusedVariable")
 fun generateMockMessages(parsedId: String): List<ChatMessage> {
     val messages = mutableListOf<ChatMessage>()
     val baseTime = Date()
@@ -141,6 +142,7 @@ fun generateMockMessages(parsedId: String): List<ChatMessage> {
     return messages
 }
 
+@Suppress("unused")
 val optionsListExample: List<DropMenu> = listOf(
     DropMenu(
         text = "Copy", onClick = {}, icon = Icons.Default.CopyAll
