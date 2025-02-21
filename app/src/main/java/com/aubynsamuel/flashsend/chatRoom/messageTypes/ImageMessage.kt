@@ -1,5 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom.messageTypes
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,7 +10,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,11 +20,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
+import com.aubynsamuel.flashsend.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.ChatMessage
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -31,11 +34,20 @@ import kotlin.math.roundToInt
 @Composable
 fun ImageMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
     var isExpanded by remember { mutableStateOf(false) }
-
     message.image?.let { imageUrl ->
+        val context = LocalContext.current
+        var mediaUri by remember { mutableStateOf(Uri.parse(imageUrl)) }
+
+        // Retrieve the cached URI asynchronously.
+        LaunchedEffect(imageUrl) {
+            val cachedUri = MediaCacheManager.getMediaUri(context, imageUrl)
+            Log.d("ImageMessage", "Retrieved cached image URI: $cachedUri")
+            mediaUri = cachedUri
+        }
+
         Column {
             AsyncImage(
-                model = imageUrl,
+                model = mediaUri,
                 contentDescription = "Image message",
                 modifier = Modifier
 //                    .width(250.dp)
@@ -48,7 +60,7 @@ fun ImageMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
                     .clickable { isExpanded = true },
                 contentScale = ContentScale.FillWidth
             )
-            if (message.content != "") {
+            if (message.content.isNotEmpty()) {
                 Text(
                     text = message.content,
                     color = if (isFromMe) {
@@ -62,18 +74,16 @@ fun ImageMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
                         .padding(horizontal = 5.dp)
                 )
             }
-
             if (isExpanded) {
-                FullScreenImageViewer(imageUrl) { isExpanded = false }
+                FullScreenImageViewer(mediaUri.toString()) { isExpanded = false }
             }
         }
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullScreenImageViewer(imageUrl: String, onDismiss: () -> Unit) {
+fun FullScreenImageViewer(imageUri: String, onDismiss: () -> Unit) {
     var dragOffset by remember { mutableFloatStateOf(0f) }
     // Define a threshold (in pixels) beyond which the viewer will dismiss
     val dragThreshold = 200f
@@ -120,7 +130,7 @@ fun FullScreenImageViewer(imageUrl: String, onDismiss: () -> Unit) {
                     tint = MaterialTheme.colorScheme.onBackground
                 )
                 AsyncImage(
-                    model = imageUrl,
+                    model = imageUri,
                     contentDescription = "Expanded Image",
                     modifier = Modifier
                         .fillMaxSize()

@@ -1,5 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom.messageTypes
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.aubynsamuel.flashsend.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.ChatMessage
 import com.aubynsamuel.flashsend.mockData.messageExample
 import kotlinx.coroutines.delay
@@ -39,14 +42,24 @@ import kotlinx.coroutines.delay
 @Composable
 fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
     val context = LocalContext.current
-    val audioUrl = message.audio ?: return
+    // Start with the original URL as a fallback.
+    var mediaUri by remember { mutableStateOf(Uri.parse(message.audio)) }
 
-    // Create and remember an ExoPlayer instance
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(audioUrl))
-            prepare()
-        }
+    // Retrieve the cached URI.
+    LaunchedEffect(message.audio) {
+        val cachedUri = MediaCacheManager.getMediaUri(context, message.audio.toString())
+        Log.d("CachedAudioMessage", "Retrieved media URI: $cachedUri")
+        mediaUri = cachedUri
+    }
+
+    // Create and remember an ExoPlayer instance.
+    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
+
+    // Whenever the mediaUri changes, update the player's media item.
+    LaunchedEffect(mediaUri) {
+        Log.d("CachedAudioMessage", "Updating ExoPlayer with new mediaUri: $mediaUri")
+        exoPlayer.setMediaItem(MediaItem.fromUri(mediaUri))
+        exoPlayer.prepare()
     }
 
     // Player states
@@ -64,15 +77,17 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
-                    isPlaying = false  // Update the play/pause state
-                    currentPosition = 0L  // Reset position
-                    exoPlayer.seekTo(0)  // Reset player position
-                    exoPlayer.pause()    // Ensure player is paused
+                    isPlaying = false
+                    currentPosition = 0L
+                    exoPlayer.seekTo(0)
+                    exoPlayer.pause()
+                    Log.d("CachedAudioMessage", "Playback ended, reset player")
                 }
             }
 
             override fun onIsPlayingChanged(playing: Boolean) {
-                isPlaying = playing  // Keep UI state synchronized with actual playback state
+                isPlaying = playing
+                Log.d("CachedAudioMessage", "Playback state changed: isPlaying = $playing")
             }
         }
 
@@ -95,6 +110,7 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
         }
     }
 
+    // Your UI layout
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -123,11 +139,8 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
             value = if (duration > 0) currentPosition.toFloat() else 0f,
             colors = SliderColors(
                 thumbColor = if (isFromMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-
                 activeTrackColor = if (isFromMe) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
-
                 inactiveTrackColor = MaterialTheme.colorScheme.onBackground,
-
                 activeTickColor = Color.Red,
                 inactiveTickColor = Color.Green,
                 disabledThumbColor = Color.Gray,
@@ -152,7 +165,6 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
 @Composable
 fun Prev() {
     AudioMessage(
-        message = messageExample, isFromMe = false,
-        fontSize = 16
+        message = messageExample, isFromMe = false, fontSize = 16
     )
 }
