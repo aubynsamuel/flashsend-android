@@ -63,11 +63,39 @@ fun MessageInput(
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     val locationPermission = Manifest.permission.ACCESS_FINE_LOCATION
-    val permissionRequest =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-            onResult = {}
-        )
+
+    val permissionRequest = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission granted, get the location
+            getCurrentLocation(context) { lat, lon ->
+                if (lat != null && lon != null) {
+                    chatViewModel.sendLocationMessage(
+                        lat,
+                        lon,
+                        userData?.username ?: "",
+                        roomId,
+                        userData?.userId ?: "",
+                        userData?.profileUrl ?: "",
+                        recipientToken
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Unable to retrieve location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            Toast.makeText(
+                context,
+                "Location permission denied",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 //    Check if keyboard is shown
 //    val density = LocalDensity.current
 //    val isKeyboardVisible =
@@ -191,12 +219,14 @@ fun MessageInput(
             confirmButton = {
                 TextButton(onClick = {
                     showDialog = false
-                    // Check if permission is granted.
+
+                    // Check if the permission is already granted
                     if (ContextCompat.checkSelfPermission(
                             context,
                             locationPermission
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
+                        // Permission is granted, get location immediately
                         getCurrentLocation(context) { lat, lon ->
                             if (lat != null && lon != null) {
                                 chatViewModel.sendLocationMessage(
@@ -217,7 +247,7 @@ fun MessageInput(
                             }
                         }
                     } else {
-                        // Request permission if not granted.
+                        // Permission not granted, request it.
                         permissionRequest.launch(locationPermission)
                     }
                 }) {

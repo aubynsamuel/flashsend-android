@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -94,6 +95,15 @@ fun ChatScreen(
             firstVisibleIndex - 1 > 0
         }
     }
+
+    val tempImageUri = remember {
+        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+    }
+
+    val audioPermission = Manifest.permission.RECORD_AUDIO
+
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -106,13 +116,8 @@ fun ChatScreen(
             logger("profileUrl", encodedProfileUrl)
         }
     }
-    val tempImageUri = remember {
-        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
-        // Ensure your FileProvider is configured in your manifest with the proper authority and paths
-        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-    }
 
-    val launcher = rememberLauncherForActivityResult(
+    val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
@@ -122,35 +127,30 @@ fun ChatScreen(
                     "imagePreview/$encodedImage/$roomId/1/$encodedProfileUrl/$deviceToken"
                 )
                 logger("profileUrl", encodedProfileUrl)
-            } else {
-                // Handle capture failure if needed
             }
         }
     )
 
-    val permissionRequest =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-            onResult = {}
-        )
-    val hasCameraPermission = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.CAMERA
-    ) == PackageManager.PERMISSION_GRANTED
-    val hasAudioPermission = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.RECORD_AUDIO
-    ) == PackageManager.PERMISSION_GRANTED
-
-//    Hooks
-    LaunchedEffect(Unit) {
-        if (!hasAudioPermission) {
-            permissionRequest.launch(Manifest.permission.RECORD_AUDIO)
-        }
-        if (!hasCameraPermission) {
-            permissionRequest.launch(Manifest.permission.CAMERA)
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            chatViewModel.toggleRecording(context)
+        } else {
+            Toast.makeText(context, "Audio recording permission denied", Toast.LENGTH_SHORT).show()
         }
     }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            cameraLauncher.launch(tempImageUri)
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     LaunchedEffect(roomId, currentUserId, userId) {
         Log.d("ChatScreen", "Initializing chat with roomId: $roomId")
         chatViewModel.initialize(roomId, currentUserId, userId)
@@ -205,12 +205,14 @@ fun ChatScreen(
                     ),
                 ),
                 onImageClick = {
-                    // Check and request camera permission
-                    if (!hasCameraPermission) {
-                        permissionRequest.launch(Manifest.permission.CAMERA)
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        cameraLauncher.launch(tempImageUri)
                     } else {
-                        // Launch camera
-                        launcher.launch(tempImageUri)
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
                 }
             )
@@ -231,6 +233,7 @@ fun ChatScreen(
                 .padding(paddingValues)
         ) {
             Box {
+//                Background Image
                 Image(
                     painterResource(id = R.drawable.d2a77609f5d97b9081b117c8f699bd37),
                     contentDescription = "",
@@ -238,12 +241,14 @@ fun ChatScreen(
                         .fillMaxSize(), contentScale = ContentScale.FillBounds,
                     alpha = 0.3f
                 )
+//                Background Image filter
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .alpha(0.6f)
                         .background(Color.Black)
                 )
+//                Chat list and input field
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -283,7 +288,17 @@ fun ChatScreen(
                         },
                         onImageClick = { imagePickerLauncher.launch("image/*") },
                         isRecording = isRecording,
-                        onRecordAudio = { chatViewModel.toggleRecording(context) },
+                        onRecordAudio = {
+                            if (ContextCompat.checkSelfPermission(
+                                    context,
+                                    audioPermission
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                chatViewModel.toggleRecording(context)
+                            } else {
+                                audioPermissionLauncher.launch(audioPermission)
+                            }
+                        },
                         chatViewModel = chatViewModel,
                         userData = userData,
                         roomId = roomId,

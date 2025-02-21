@@ -26,6 +26,7 @@ import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.ImagePreviewScreen
 import com.aubynsamuel.flashsend.chatRoom.OtherUserProfile
 import com.aubynsamuel.flashsend.functions.User
+import com.aubynsamuel.flashsend.functions.showToast
 import com.aubynsamuel.flashsend.home.EditProfileScreen
 import com.aubynsamuel.flashsend.home.HomeScreen
 import com.aubynsamuel.flashsend.home.ProfileScreen
@@ -187,26 +188,32 @@ fun ChatAppNavigation() {
             ),
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
         ) { backStackEntry ->
-            // Retrieve the imageUri from the arguments
-            val imageUri = backStackEntry.arguments?.getString("imageUri")
-            val roomId = backStackEntry.arguments?.getString("roomId")
-            val takenFromCamera = backStackEntry.arguments?.getString("takenFromCamera")
-            val recipientsToken = backStackEntry.arguments?.getString("recipientsToken")
-            val profileUrl = backStackEntry.arguments?.getString("profileUrl")
+            // Retrieve and validate the arguments
+            val imageUriStr = backStackEntry.arguments?.getString("imageUri")
+            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
+            val takenFromCameraStr =
+                backStackEntry.arguments?.getString("takenFromCamera") ?: "0"
+            val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
+            val recipientsToken = backStackEntry.arguments?.getString("recipientsToken") ?: ""
 
-            // Only show the screen if imageUri is not null
-            imageUri?.let {
-                ImagePreviewScreen(
-                    navController = navController,
-                    imageUri = it.toUri(),
-                    chatViewModel = chatViewModel,
-                    authViewModel = authViewModelInstance,
-                    roomId = roomId.toString(),
-                    takenFromCamera = takenFromCamera,
-                    profileUrl = profileUrl.toString(),
-                    recipientsToken = recipientsToken.toString()
-                )
+            if (imageUriStr.isNullOrEmpty()) {
+                showToast(context, "An error occurred, Invalid image format")
+                return@composable
             }
+
+            val imageUri = imageUriStr.toUri()
+
+            ImagePreviewScreen(
+                navController = navController,
+                imageUri = imageUri,
+                chatViewModel = chatViewModel,
+                authViewModel = authViewModelInstance,
+                roomId = roomId,
+                takenFromCamera = takenFromCameraStr,
+                profileUrl = profileUrl,
+                recipientsToken = recipientsToken
+            )
         }
+
     }
 }
