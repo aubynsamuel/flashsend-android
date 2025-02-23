@@ -1,12 +1,8 @@
 package com.aubynsamuel.flashsend.chatRoom
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -30,18 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.AuthViewModel
-import com.yalantis.ucrop.UCrop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 @Composable
 fun ImagePreviewScreen(
@@ -89,7 +81,11 @@ fun ImagePreviewScreen(
     }
 
     fun onCancel() {
-        navController.popBackStack()
+        if (takenFromCamera == "1") {
+            navController.popBackStack()
+            navController.popBackStack()
+        } else
+            navController.popBackStack()
     }
 
     fun onSend(imageUrl: String) {
@@ -102,7 +98,11 @@ fun ImagePreviewScreen(
             profileUrl = profileUrl,
             recipientsToken = recipientsToken
         )
-        navController.popBackStack()
+        if (takenFromCamera == "1") {
+            navController.popBackStack()
+            navController.popBackStack()
+        } else
+            navController.popBackStack()
     }
 
     Column(
@@ -150,12 +150,9 @@ fun ImagePreviewScreen(
             imageVector = Icons.Default.Crop,
             contentDescription = "Crop Image",
             modifier = Modifier
-                .padding(8.dp)
                 .size(35.dp)
                 .clickable { onCrop() }, tint = MaterialTheme.colorScheme.onBackground
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Row {
             TextField(
@@ -197,44 +194,6 @@ fun ImagePreviewScreen(
                         }
                     })
             )
-        }
-    }
-}
-
-// Custom ActivityResultContract for cropping images with uCrop.
-class CropImageContract : ActivityResultContract<Uri, Uri?>() {
-    override fun createIntent(context: Context, input: Uri): Intent {
-        // Destination URI for the cropped image.
-        val destinationUri = Uri.fromFile(
-            File(context.cacheDir, "cropped_${System.currentTimeMillis()}.jpg")
-        )
-        // Set up uCrop options to enable editing features.
-        val options = UCrop.Options().apply {
-            setToolbarTitle("Edit Image")
-            setFreeStyleCropEnabled(true) // Allow free style cropping.
-            // Add any additional uCrop configuration here.
-            setToolbarColor(ContextCompat.getColor(context, R.color.toolbar_color))
-            setStatusBarColor(ContextCompat.getColor(context, R.color.status_bar_color))
-            setToolbarWidgetColor(ContextCompat.getColor(context, R.color.toolbar_widget_color))
-            setActiveControlsWidgetColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.active_widget_color
-                )
-            )
-        }
-        return UCrop.of(input, destinationUri)
-            .withOptions(options)
-            .withAspectRatio(15f, 10f)
-            .withMaxResultSize(1080, 1080)
-            .getIntent(context)
-    }
-
-    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-        return if (resultCode == Activity.RESULT_OK && intent != null) {
-            UCrop.getOutput(intent)
-        } else {
-            null
         }
     }
 }

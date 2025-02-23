@@ -5,6 +5,10 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun logger(tag: String, message: String) {
     Log.d(tag, message)
@@ -25,4 +29,10 @@ fun showToast(context: Context, message: String, long: Boolean = false) {
 fun createRoomId(userId: String, currentUserId: String): String {
     val ids = listOf<String>(userId, currentUserId)
     return ids.sorted().joinToString("_")
+}
+
+fun createFile(context: Context): File {
+    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+    // Here we use the app's cache directory; you might prefer filesDir if you need persistence.
+    return File.createTempFile("JPEG_${timestamp}_", ".jpg", context.cacheDir)
 }

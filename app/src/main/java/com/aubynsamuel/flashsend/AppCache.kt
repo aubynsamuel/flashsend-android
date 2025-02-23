@@ -13,10 +13,11 @@ import java.net.URL
 object MediaCacheManager {
     private const val TAG = "MediaCacheManager"
     private const val CACHE_DIR_NAME = "media_cache"
+    private const val MAX_CACHE_SIZE: Long = 300L * 1024 * 1024 // 300 MB in bytes
 
-    // Ensure the cache directory exists.
+    // Use the internal files directory for persistent caching.
     private fun getCacheDir(context: Context): File {
-        val cacheDir = File(context.cacheDir, CACHE_DIR_NAME)
+        val cacheDir = File(context.filesDir, CACHE_DIR_NAME)
         if (!cacheDir.exists()) {
             Log.d(TAG, "Cache directory does not exist. Creating: ${cacheDir.absolutePath}")
             cacheDir.mkdirs()
@@ -34,7 +35,7 @@ object MediaCacheManager {
     }
 
     // Get the File object corresponding to this URL in the cache.
-    private fun getFileForUrl(context: Context, url: String): File {
+    fun getFileForUrl(context: Context, url: String): File {
         val file = File(getCacheDir(context), generateFileName(url))
         Log.d(TAG, "Computed cache file path: ${file.absolutePath} for URL: $url")
         return file
@@ -44,6 +45,7 @@ object MediaCacheManager {
      * Returns a Uri pointing to the locally cached file.
      * If the file does not exist, it attempts to download it.
      * If the download fails, it falls back to the original remote URL.
+     * After downloading, the cache is evicted if needed.
      */
     suspend fun getMediaUri(context: Context, url: String): Uri {
         val file = getFileForUrl(context, url)
@@ -55,6 +57,8 @@ object MediaCacheManager {
             return try {
                 withContext(Dispatchers.IO) {
                     downloadFile(url, file)
+                    // After downloading, enforce the max cache size policy.
+                    evictCacheIfNeeded(getCacheDir(context))
                 }
                 if (file.exists()) {
                     Log.d(TAG, "Download succeeded. File cached at: ${file.absolutePath}")
@@ -98,5 +102,31 @@ object MediaCacheManager {
         }
         connection.disconnect()
         Log.d(TAG, "Download finished. File saved to: ${destFile.absolutePath}")
+    }
+
+    /**
+     * Checks the total size of the cache directory and deletes the oldest files until
+     * the total size is below the MAX_CACHE_SIZE.
+     */
+    private fun evictCacheIfNeeded(cacheDir: File) {
+        val files = cacheDir.listFiles() ?: return
+        var totalSize = files.sumOf { it.length() }
+        if (totalSize <= MAX_CACHE_SIZE) {
+            Log.d(TAG, "Cache size ($totalSize bytes) within limit ($MAX_CACHE_SIZE bytes).")
+            return
+        }
+        // Sort files by last modified (oldest first)
+        val sortedFiles = files.sortedBy { it.lastModified() }
+        for (file in sortedFiles) {
+            if (totalSize <= MAX_CACHE_SIZE) break
+            val fileSize = file.length()
+            if (file.delete()) {
+                totalSize -= fileSize
+                Log.d(
+                    TAG,
+                    "Evicted file: ${file.absolutePath} of size $fileSize bytes. New cache size: $totalSize bytes."
+                )
+            }
+        }
     }
 }

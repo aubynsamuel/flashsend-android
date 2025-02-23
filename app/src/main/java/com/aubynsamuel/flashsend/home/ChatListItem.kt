@@ -94,7 +94,7 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
     ) {
         Row(
             modifier = Modifier
-                .padding(vertical = 10.dp)
+                .padding(vertical = 10.dp, horizontal = 8.dp)
                 .padding(end = 10.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

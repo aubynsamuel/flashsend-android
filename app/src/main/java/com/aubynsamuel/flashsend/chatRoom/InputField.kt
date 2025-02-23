@@ -21,8 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.AddLocationAlt
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -157,7 +157,8 @@ fun MessageInput(
             ),
             trailingIcon = {
                 Row {
-                    Icon(imageVector = Icons.Default.AddCircle,
+                    Icon(
+                        imageVector = Icons.Default.AddLocationAlt,
                         contentDescription = "More options",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
@@ -167,7 +168,7 @@ fun MessageInput(
                             .clickable(onClick = { showDialog = true })
                     )
                     Icon(
-                        imageVector = Icons.Default.AddAPhoto,
+                        imageVector = Icons.Default.AddPhotoAlternate,
                         contentDescription = "Add Photo",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier

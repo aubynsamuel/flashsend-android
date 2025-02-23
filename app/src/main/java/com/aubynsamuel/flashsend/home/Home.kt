@@ -248,11 +248,11 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-//            if (isLoading) {
-//                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//            } else {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
             LazyColumn(
-                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(8.dp)
+                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(rooms) { room ->
                     ChatListItem(
@@ -261,7 +261,6 @@ fun HomeScreen(
                     )
                 }
             }
-//            }
         }
     }
 }

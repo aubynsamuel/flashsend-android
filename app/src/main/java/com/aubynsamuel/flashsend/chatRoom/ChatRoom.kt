@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -27,26 +28,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
+import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.auth.AuthViewModel
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
 import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.createRoomId
-import com.aubynsamuel.flashsend.functions.logger
 import com.aubynsamuel.flashsend.notifications.ConversationHistoryManager
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import java.io.File
 import java.net.URLDecoder
-import java.net.URLEncoder
 
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -96,11 +94,6 @@ fun ChatScreen(
         }
     }
 
-    val tempImageUri = remember {
-        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
-        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-    }
-
     val audioPermission = Manifest.permission.RECORD_AUDIO
 
 
@@ -108,28 +101,16 @@ fun ChatScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            val encodedUri = URLEncoder.encode(uri.toString(), "UTF-8")
-            val encodedProfileUrl = URLEncoder.encode(userData?.profileUrl.toString(), "UTF-8")
-            navController.navigate(
-                "imagePreview/$encodedUri/$roomId/0/$encodedProfileUrl/$deviceToken"
+            val route = Screen.ImagePreview.createRoute(
+                imageUri = it.toString(),
+                roomId = roomId,
+                takenFromCamera = false,
+                profileUrl = userData?.profileUrl.orEmpty(),
+                recipientsToken = deviceToken
             )
-            logger("profileUrl", encodedProfileUrl)
+            navController.navigate(route)
         }
     }
-
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { success ->
-            if (success) {
-                val encodedImage = URLEncoder.encode(tempImageUri.toString(), "UTF-8")
-                val encodedProfileUrl = URLEncoder.encode(userData?.profileUrl.toString(), "UTF-8")
-                navController.navigate(
-                    "imagePreview/$encodedImage/$roomId/1/$encodedProfileUrl/$deviceToken"
-                )
-                logger("profileUrl", encodedProfileUrl)
-            }
-        }
-    )
 
     val audioPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -145,7 +126,12 @@ fun ChatScreen(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            cameraLauncher.launch(tempImageUri)
+            val route = Screen.CameraX.createRoute(
+                roomId = roomId,
+                profileUrl = userData?.profileUrl ?: "",
+                deviceToken = deviceToken
+            )
+            navController.navigate(route)
         } else {
             Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
@@ -210,7 +196,12 @@ fun ChatScreen(
                             Manifest.permission.CAMERA
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        cameraLauncher.launch(tempImageUri)
+                        val route = Screen.CameraX.createRoute(
+                            roomId = roomId,
+                            profileUrl = userData.profileUrl,
+                            deviceToken = deviceToken
+                        )
+                        navController.navigate(route)
                     } else {
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
@@ -305,7 +296,12 @@ fun ChatScreen(
                         recipientToken = deviceToken
                     )
                 }
-                if (showOverlay) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = showOverlay,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 70.dp)
+                ) {
                     AudioRecordingOverlay(
                         isRecording = isRecording,
                         resetRecording = { chatViewModel.resetRecording() },

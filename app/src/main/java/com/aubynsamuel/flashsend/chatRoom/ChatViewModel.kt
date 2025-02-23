@@ -608,8 +608,9 @@ class ChatViewModel(context: Context) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("ChatViewModel", "onCleared: Removing Firestore message listener")
+        Log.d("OnCleared", "onCleared: Removing Firestore message listener and media recorder")
         messageListener?.remove()
+        stopRecording()
     }
 
 }
