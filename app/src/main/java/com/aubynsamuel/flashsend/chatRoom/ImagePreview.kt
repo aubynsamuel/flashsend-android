@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -52,14 +54,14 @@ fun ImagePreviewScreen(
     var croppedPicture by remember { mutableStateOf<Uri?>(selectedPicture) }
     val userData by authViewModel.userData.collectAsState()
 
-    // Launcher for cropping the image using our custom contract.
+    var loading by remember { mutableStateOf(false) }
+
     val cropImageLauncher = rememberLauncherForActivityResult(
         contract = CropImageContract()
     ) { croppedUri: Uri? ->
         croppedUri?.let { croppedPicture = it }
     }
 
-    // Launcher for picking an image; it simply updates selectedPicture.
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -73,7 +75,6 @@ fun ImagePreviewScreen(
         imagePickerLauncher.launch("image/*")
     }
 
-    // Trigger the crop action when the user taps the crop icon.
     fun onCrop() {
         selectedPicture?.let { uri ->
             cropImageLauncher.launch(uri)
@@ -84,8 +85,7 @@ fun ImagePreviewScreen(
         if (takenFromCamera == "1") {
             navController.popBackStack()
             navController.popBackStack()
-        } else
-            navController.popBackStack()
+        } else navController.popBackStack()
     }
 
     fun onSend(imageUrl: String) {
@@ -101,8 +101,7 @@ fun ImagePreviewScreen(
         if (takenFromCamera == "1") {
             navController.popBackStack()
             navController.popBackStack()
-        } else
-            navController.popBackStack()
+        } else navController.popBackStack()
     }
 
     Column(
@@ -134,24 +133,33 @@ fun ImagePreviewScreen(
             )
         }
 
-        // Display the selected image.
         croppedPicture?.let { uri ->
-            Image(
-                painter = rememberAsyncImagePainter(model = uri),
-                contentDescription = "Selected Image",
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(500.dp)
-            )
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = uri),
+                    contentDescription = "Selected Image",
+                    modifier = Modifier.fillMaxSize()
+                )
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
         }
 
-        // Crop icon to launch the uCrop editor.
+
         Icon(
             imageVector = Icons.Default.Crop,
             contentDescription = "Crop Image",
             modifier = Modifier
                 .size(35.dp)
-                .clickable { onCrop() }, tint = MaterialTheme.colorScheme.onBackground
+                .clickable { onCrop() },
+            tint = MaterialTheme.colorScheme.onBackground
         )
 
         Row {
@@ -164,7 +172,10 @@ fun ImagePreviewScreen(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(24.dp),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences
+                )
             )
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
@@ -177,6 +188,7 @@ fun ImagePreviewScreen(
                     .clickable(onClick = {
                         CoroutineScope(Dispatchers.IO).launch {
                             croppedPicture?.let { uri ->
+                                loading = true
                                 val imageUrl =
                                     chatViewModel.uploadImage(uri, userData?.username ?: "")
                                 withContext(Dispatchers.Main) {
@@ -184,11 +196,10 @@ fun ImagePreviewScreen(
                                         onSend(imageUrl)
                                     } else {
                                         Toast.makeText(
-                                            context,
-                                            "Failed to upload image",
-                                            Toast.LENGTH_SHORT
+                                            context, "Failed to upload image", Toast.LENGTH_SHORT
                                         ).show()
                                     }
+                                    loading
                                 }
                             }
                         }

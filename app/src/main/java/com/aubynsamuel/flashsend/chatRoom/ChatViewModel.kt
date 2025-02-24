@@ -5,6 +5,7 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aubynsamuel.flashsend.functions.ChatMessage
@@ -34,6 +35,8 @@ sealed class ChatState {
 }
 
 class ChatViewModel(context: Context) : ViewModel() {
+    val unreadRoomIds = mutableStateListOf<String>()
+
     private val firestore = FirebaseFirestore.getInstance()
     private var messageListener: ListenerRegistration? = null
     private val storage = FirebaseStorage.getInstance()
@@ -226,13 +229,21 @@ class ChatViewModel(context: Context) : ViewModel() {
                         val unreadMessages = messages.value.filter {
                             !it.read && it.senderId != userId
                         }
-                        Log.d(
-                            "ChatViewModel", "Marking ${unreadMessages.size} messages as read"
-                        )
-                        unreadMessages.forEach { message ->
-                            Log.d("ChatViewModel", "Marking message id=${message.id} as read")
-                            firestore.collection("rooms").document(roomId).collection("messages")
-                                .document(message.id).update("read", true).await()
+                        if (unreadMessages.isNotEmpty()) {
+                            val batch = firestore.batch()
+                            unreadMessages.forEach { message ->
+                                val messageRef = firestore
+                                    .collection("rooms")
+                                    .document(roomId)
+                                    .collection("messages")
+                                    .document(message.id)
+                                batch.update(messageRef, "read", true)
+                            }
+                            batch.commit().await()
+                            Log.d(
+                                "ChatViewModel",
+                                "Marking ${unreadMessages.size} messages as read"
+                            )
                         }
                     }
                 }
@@ -241,6 +252,7 @@ class ChatViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
 
     fun toggleRecording(context: Context) {
         if (_isRecording.value) {
@@ -502,12 +514,10 @@ class ChatViewModel(context: Context) : ViewModel() {
                     "delivered" to false
                 )
 
-                // Add the message document to Firestore.
                 val addedDoc = firestore.collection("rooms").document(roomId).collection("messages")
                     .add(messageData).await()
                 Log.d("ChatViewModel", "Location message sent with id=${addedDoc.id}")
 
-                // Update the room's last message.
                 firestore.collection("rooms").document(roomId).update(
                     mapOf(
                         "lastMessage" to "Shared a location",
@@ -612,5 +622,4 @@ class ChatViewModel(context: Context) : ViewModel() {
         messageListener?.remove()
         stopRecording()
     }
-
 }

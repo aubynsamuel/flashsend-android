@@ -15,8 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
@@ -53,26 +51,24 @@ fun ProfileScreen(
     val userData by authViewModel.userData.collectAsState()
     var isExpanded by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("My Profile") },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                ),
-                navigationIcon = {
-                    Icon(
-                        Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = "Back Button",
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .clickable(onClick = { navController.popBackStack() })
-                    )
-                }
-            )
-        }
-    ) { paddingValues ->
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(
+            title = { Text("My Profile") },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.primary
+            ),
+//                navigationIcon = {
+//                    Icon(
+//                        Icons.AutoMirrored.Default.ArrowBack,
+//                        contentDescription = "Back Button",
+//                        modifier = Modifier
+//                            .padding(start = 9.dp)
+//                            .clickable(onClick = { navController.popBackStack() })
+//                    )
+//                }
+        )
+    }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -162,31 +158,27 @@ fun ProfileScreen(
                 Text("Edit Profile")
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+//            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    authViewModel.logout()
-                    navController.navigate("auth") {
-                        popUpTo(0)
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                ),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Icon(Icons.AutoMirrored.Default.Logout, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Log Out")
-            }
+//            Button(
+//                onClick = {
+//                    authViewModel.logout()
+//                    navController.navigate("auth") {
+//                        popUpTo(0)
+//                    }
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = MaterialTheme.colorScheme.errorContainer,
+//                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+//                ),
+//                modifier = Modifier.fillMaxWidth(0.8f)
+//            ) {
+//                Icon(Icons.AutoMirrored.Default.Logout, contentDescription = null)
+//                Spacer(modifier = Modifier.width(8.dp))
+//                Text("Log Out")
+//            }
         }
     }
-
-//    LaunchedEffect(Unit) {
-//        authViewModel.loadUserData()
-//    }
 }
 
 @Composable

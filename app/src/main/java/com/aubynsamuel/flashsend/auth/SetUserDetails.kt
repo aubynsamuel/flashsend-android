@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -66,14 +67,16 @@ fun SetUserDetailsScreen(
             text = "Let Others Recognize You Easily",
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Set Your Username and Profile Picture",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(140.dp))
 
@@ -131,6 +134,7 @@ fun SetUserDetailsScreen(
                     if (username.isEmpty()) {
                         Text(
                             text = "Username",
+                            color = Color.Black
                         )
                     }
                     innerTextField()
@@ -150,7 +154,6 @@ fun SetUserDetailsScreen(
             isLoading = true
             coroutineScope.launch {
                 try {
-                    // First upload image if selected
                     val profileUrl = profileUri?.let { uri ->
                         val imageRef =
                             storageRef.child("profilePictures/${System.currentTimeMillis()}.jpg")
@@ -158,7 +161,6 @@ fun SetUserDetailsScreen(
                         imageRef.downloadUrl.await().toString()
                     } ?: ""
 
-                    // Update Firestore document
                     val newData = mapOf(
                         "username" to username,
                         "profileUrl" to profileUrl
@@ -167,7 +169,9 @@ fun SetUserDetailsScreen(
                     authViewModel.updateUserDocument(newData)
 
                     showToast(context, "Profile updated successfully!")
-                    navController.navigate("home")
+                    navController.navigate("main?initialPage=0") {
+                        popUpTo(0)
+                    }
                 } catch (e: Exception) {
                     showToast(context, "Error: ${e.message}", true)
                 } finally {

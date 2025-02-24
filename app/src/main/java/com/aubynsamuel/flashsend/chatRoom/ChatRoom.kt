@@ -12,12 +12,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -45,7 +45,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
-
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
@@ -76,7 +75,7 @@ fun ChatScreen(
     var messageText by remember { mutableStateOf("") }
     var netActivity by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
-    val listState = rememberLazyListState()
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val decodedUsername = URLDecoder.decode(username, "UTF-8")
     val isRecording by chatViewModel.isRecording.collectAsState()
     val showOverlay by chatViewModel.showRecordingOverlay.collectAsState()
@@ -108,7 +107,10 @@ fun ChatScreen(
                 profileUrl = userData?.profileUrl.orEmpty(),
                 recipientsToken = deviceToken
             )
-            navController.navigate(route)
+            navController.navigate(route) {
+                launchSingleTop = true
+                restoreState = true
+            }
         }
     }
 
@@ -131,7 +133,10 @@ fun ChatScreen(
                 profileUrl = userData?.profileUrl ?: "",
                 deviceToken = deviceToken
             )
-            navController.navigate(route)
+            navController.navigate(route) {
+                launchSingleTop = true
+                restoreState = true
+            }
         } else {
             Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
@@ -154,10 +159,15 @@ fun ChatScreen(
             chatViewModel.markMessagesAsRead()
         }
     }
+    var previousMessageCount by rememberSaveable { mutableIntStateOf(messages.size) }
+
     LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(0)
+        if (messages.size > previousMessageCount) {
+            if (messages.isNotEmpty()) {
+                listState.animateScrollToItem(0)
+            }
         }
+        previousMessageCount = messages.size
     }
 
     Scaffold(
@@ -180,15 +190,23 @@ fun ChatScreen(
                         text = "View Profile",
                         onClick = {
                             val userJson = Uri.encode(Gson().toJson(userData))
-                            navController.navigate("otherProfileScreen/$userJson")
+                            navController.navigate("otherProfileScreen/$userJson") {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         },
                         icon = Icons.Default.Person
                     ),
-                    DropMenu(
-                        text = "Settings",
-                        onClick = { navController.navigate("settings") },
-                        icon = Icons.Default.Settings
-                    ),
+//                    DropMenu(
+//                        text = "Settings",
+//                        onClick = {
+//                            navController.navigate("settings") {
+//                                launchSingleTop = true
+//                                restoreState = true
+//                            }
+//                        },
+//                        icon = Icons.Default.Settings
+//                    ),
                 ),
                 onImageClick = {
                     if (ContextCompat.checkSelfPermission(
@@ -201,7 +219,10 @@ fun ChatScreen(
                             profileUrl = userData.profileUrl,
                             deviceToken = deviceToken
                         )
-                        navController.navigate(route)
+                        navController.navigate(route) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     } else {
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }

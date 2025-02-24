@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            val bool = true
+            val bool = false
             isMinifyEnabled = bool
             isShrinkResources = bool
             proguardFiles(
@@ -51,8 +51,11 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    implementation("androidx.camera:camera-mlkit-vision:1.4.1")
-    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation(libs.androidx.camera.mlkit.vision)
+    implementation(libs.barcode.scanning)
+
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+
 
     // Room Database
     implementation(libs.androidx.room.runtime)

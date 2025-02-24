@@ -27,15 +27,16 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
+import com.aubynsamuel.flashsend.functions.showToast
 
 @Composable
-fun AuthScreen(navController: NavController, authViewModel: AuthViewModel) {
+fun AuthScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     var isLogin by remember { mutableStateOf(true) }
     val title = if (isLogin) "Login" else "Sign Up"
     val authState by authViewModel.authState.collectAsState()
@@ -44,7 +45,7 @@ fun AuthScreen(navController: NavController, authViewModel: AuthViewModel) {
     LaunchedEffect(authState) {
         if (authState) {
             if (isLogin) {
-                navController.navigate("home") {
+                navController.navigate("main?initialPage=0") {
                     popUpTo("auth") { inclusive = true }
                 }
             } else {
@@ -221,9 +222,17 @@ fun AuthForm(
                     if (email.isNotBlank() && password.isNotBlank()) {
                         if (isLogin) {
                             authViewModel.login(email, password)
-                        } else if (password == confirmPassword) {
-                            authViewModel.signUp(email, password)
+                        } else {
+                            if (confirmPassword.isBlank()) {
+                                showToast(context, "Please confirm your password")
+                            } else if (confirmPassword != password) {
+                                showToast(context, "Passwords do not match")
+                            } else {
+                                authViewModel.signUp(email, password)
+                            }
                         }
+                    } else {
+                        showToast(context, "Email and password cannot be empty")
                     }
                 },
                 modifier = Modifier
@@ -252,17 +261,4 @@ fun AuthForm(
                 modifier = Modifier.clickable { onToggleMode() })
         }
     }
-}
-
-@Preview
-@Composable
-fun PrevAuthForm() {
-    AuthForm(
-        isLogin = false, onToggleMode = {},
-        authViewModel = viewModel {
-            AuthViewModel(
-                repository = AuthRepository(FirebaseAuth.getInstance())
-            )
-        },
-    )
 }

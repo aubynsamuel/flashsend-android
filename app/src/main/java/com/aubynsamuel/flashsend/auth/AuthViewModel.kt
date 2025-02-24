@@ -1,7 +1,9 @@
 package com.aubynsamuel.flashsend.auth
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aubynsamuel.flashsend.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.NewUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -10,7 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
+class AuthViewModel(private val repository: AuthRepository, context: Context) :
+    ViewModel() {
+    private val appContext = context.applicationContext
 
     private val _authState = MutableStateFlow(repository.isUserLoggedIn())
     val authState: StateFlow<Boolean> = _authState
@@ -67,10 +71,13 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
                 val document = firebase.collection("users").document(userId).get().await()
                 val userDataMap = document.data
                 if (userDataMap != null) {
+                    val originalProfileUrl = userDataMap["profileUrl"] as? String ?: ""
+                    // Get the locally cached URI for the profile image.
+                    val cachedUri = MediaCacheManager.getMediaUri(appContext, originalProfileUrl)
                     val user = NewUser(
                         userId = userId,
                         username = userDataMap["username"] as? String ?: "Unknown User",
-                        profileUrl = userDataMap["profileUrl"] as? String ?: "",
+                        profileUrl = cachedUri.toString(),
                         deviceToken = userDataMap["deviceToken"] as? String ?: "",
                         email = userDataMap["email"] as? String ?: ""
                     )
@@ -109,20 +116,6 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             }
         }
     }
-
-//    fun continueWithGoogle() {
-//        _isLoggingIn.value = true
-//        viewModelScope.launch {
-//            val result = repository.signInWithGoogle()
-//            result.onSuccess {
-//                _authState.value = true
-//                _message.value = it
-//            }.onFailure {
-//                _message.value = it.message
-//            }
-//            _isLoggingIn.value = false
-//        }
-//    }
 
     fun logout() {
         repository.logout()

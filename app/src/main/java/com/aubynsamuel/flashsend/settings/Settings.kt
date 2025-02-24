@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RestartAlt
@@ -237,12 +236,13 @@ fun SettingsTopAppBar(
     onReset: () -> Unit
 ) {
     TopAppBar(
-        title = { Text("Settings") },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
-            }
-        },
+        modifier = Modifier.height(80.dp),
+        title = { Text("Settings", modifier = Modifier.padding(top = 10.dp)) },
+//        navigationIcon = {
+//            IconButton(onClick = onBack) {
+//                Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+//            }
+//        },
         actions = {
             IconButton(onClick = onReset) {
                 Icon(Icons.Default.RestartAlt, contentDescription = "Reset Settings")

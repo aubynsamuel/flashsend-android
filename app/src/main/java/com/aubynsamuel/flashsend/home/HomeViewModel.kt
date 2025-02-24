@@ -3,6 +3,7 @@ package com.aubynsamuel.flashsend.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aubynsamuel.flashsend.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.RoomData
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.logger
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class HomeViewModel(context: Context) : ViewModel() {
+    private val appContext = context.applicationContext
     private val _rooms = MutableStateFlow<List<RoomData>>(emptyList())
     val rooms: StateFlow<List<RoomData>> = _rooms
 
@@ -32,10 +34,8 @@ class HomeViewModel(context: Context) : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    // Cache to store user data. Since this data changes infrequently, we fetch it only once.
     private val userCache = mutableMapOf<String, User>()
 
-    // Keep a reference to the Firestore listener so we can remove it when needed.
     private var roomsListenerRegistration: ListenerRegistration? = null
 
     private fun loadCachedRooms() {
@@ -55,16 +55,12 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
-    /**
-     * Listen to changes in rooms that the current user is a participant of.
-     */
     private fun listenToRooms() {
         val userId = auth.currentUser?.uid ?: run {
             _error.value = "User not authenticated"
             return
         }
 
-        // Mark loading as active.
         _isLoading.value = true
 
         val roomsRef = firestore.collection("rooms")
@@ -72,7 +68,6 @@ class HomeViewModel(context: Context) : ViewModel() {
             .whereArrayContains("participants", userId)
             .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
 
-        // Attach a real-time snapshot listener.
         roomsListenerRegistration = query.addSnapshotListener { snapshot, exception ->
             if (exception != null) {
                 _error.value = "Failed to load rooms: ${exception.message}"
@@ -81,7 +76,6 @@ class HomeViewModel(context: Context) : ViewModel() {
             }
 
             if (snapshot != null) {
-                // Launch a coroutine to fetch and process room data.
                 viewModelScope.launch {
                     val roomsList = snapshot.documents.mapNotNull { roomDoc ->
                         val data = roomDoc.data ?: return@mapNotNull null
@@ -90,32 +84,36 @@ class HomeViewModel(context: Context) : ViewModel() {
                         val participants =
                             data["participants"] as? List<String> ?: return@mapNotNull null
 
-                        // Identify the "other" user in the room.
                         val otherUserId =
                             participants.firstOrNull { it != userId } ?: return@mapNotNull null
 
-                        // Fetch the other user's data from the cache or from Firestore if not already fetched.
                         val user = userCache[otherUserId] ?: try {
                             val userDoc = firestore.collection("users")
                                 .document(otherUserId)
                                 .get()
                                 .await()
                             val userData = userDoc.data
+                            val originalProfileUrl = userData?.get("profileUrl") as? String ?: ""
+
                             val newUser = User(
                                 userId = otherUserId,
                                 username = userData?.get("username") as? String ?: "Unknown User",
-                                profileUrl = userData?.get("profileUrl") as? String ?: "",
+                                profileUrl = originalProfileUrl,
                                 deviceToken = userData?.get("deviceToken") as? String ?: ""
                             )
-                            userCache[otherUserId] = newUser
-                            newUser
+
+                            val cachedUri =
+                                MediaCacheManager.getMediaUri(appContext, originalProfileUrl)
+
+                            val updatedUser = newUser.copy(profileUrl = cachedUri.toString())
+
+                            userCache[otherUserId] = updatedUser
+                            updatedUser
                         } catch (e: Exception) {
-                            logger(
-                                "homePack",
-                                message = e.message.toString()
-                            )
+                            logger("homePack", message = e.message.toString())
                             null
                         } ?: return@mapNotNull null
+
 
                         RoomData(
                             roomId = roomDoc.id,
@@ -137,17 +135,12 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
-    /**
-     * Retry loading rooms by reattaching the listener.
-     */
     fun retryLoadRooms() {
-        // Remove any existing listener before retrying.
         roomsListenerRegistration?.remove()
         listenToRooms()
     }
 
     override fun onCleared() {
-        // Clean up the listener when the ViewModel is cleared.
         roomsListenerRegistration?.remove()
         super.onCleared()
     }

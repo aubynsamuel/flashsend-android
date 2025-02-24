@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
@@ -212,19 +213,27 @@ fun HomeScreen(
                     dropItems = listOf(
                         DropMenu(
                             text = "Profile",
-                            onClick = { navController.navigate("profileScreen") },
+                            onClick = {
+                                navController.navigate("main?initialPage=1") {
+                                    popUpTo(0)
+                                }
+                            },
                             icon = Icons.Default.Person
                         ),
                         DropMenu(
                             text = "Settings",
-                            onClick = { navController.navigate("settings") },
+                            onClick = {
+                                navController.navigate("main?initialPage=2") {
+                                    popUpTo("home")
+                                }
+                            },
                             icon = Icons.Default.Settings
                         ),
-//                        DropMenu(
-//                            text = "Notifications",
-//                            onClick = { navController.navigate("notifications") },
-//                            icon = Icons.Default.Notifications
-//                        ),
+                        DropMenu(
+                            text = "QRScannerScreen",
+                            onClick = { navController.navigate("QRScannerScreen") },
+                            icon = Icons.Default.QrCodeScanner
+                        ),
                         DropMenu(
                             text = "Logout",
                             onClick = { authViewModel.logout() },
@@ -237,7 +246,7 @@ fun HomeScreen(
     }, floatingActionButton = {
         FloatingActionButton(
             onClick = { navController.navigate("searchUsers") },
-            modifier = Modifier.padding(bottom = 50.dp, end = 10.dp)
+            modifier = Modifier.padding(bottom = 20.dp, end = 5.dp)
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add Chat")
         }
@@ -248,11 +257,9 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
             LazyColumn(
-                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(vertical = 8.dp)
+                modifier = Modifier
+                    .fillMaxSize(),
             ) {
                 items(rooms) { room ->
                     ChatListItem(

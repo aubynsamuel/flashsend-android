@@ -60,5 +60,117 @@ val mockRooms = listOf(
         lastMessageTimestamp = Timestamp.now(),
         lastMessageSenderId = "user_3",
         otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_5",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_6",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_7",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_8",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_9",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_10",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_11",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_12",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_13",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_14",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_15",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_16",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_17",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_18",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_19",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
+    ),
+    RoomData(
+        roomId = "room_20",
+        lastMessage = "See you soon!",
+        lastMessageTimestamp = Timestamp.now(),
+        lastMessageSenderId = "user_3",
+        otherParticipant = mockUsers[3] // Charlie Brown
     )
 )

@@ -14,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.AuthViewModel
+import com.aubynsamuel.flashsend.chatRoom.CropImageContract
 import com.aubynsamuel.flashsend.functions.showToast
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -52,11 +54,19 @@ fun EditProfileScreen(
     val storageRef = Firebase.storage.reference
     val coroutineScope = rememberCoroutineScope()
 
+    val cropImageLauncher = rememberLauncherForActivityResult(
+        contract = CropImageContract()
+    ) { croppedUri: Uri? ->
+        croppedUri?.let { profileUri = it }
+    }
     // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        profileUri = uri
+        uri?.let { nonNullUri ->
+            profileUri = nonNullUri
+            cropImageLauncher.launch(nonNullUri)
+        }
     }
 
     Column(
@@ -95,28 +105,17 @@ fun EditProfileScreen(
 
         // Profile Picture
         Box(modifier = Modifier.clickable { imagePickerLauncher.launch("image/*") }) {
-            if (profileUri == null && userData?.profileUrl == null) {
-                Icon(
-                    Icons.Default.AccountCircle,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(200.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-                AsyncImage(
-                    model = if (profileUri != null) profileUri else userData?.profileUrl,
-                    contentDescription = "Selected image",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(200.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .align(Alignment.Center),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            AsyncImage(
+                model = if (profileUri != null) profileUri else userData?.profileUrl,
+                contentDescription = "Selected image",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(200.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop,
+                error = rememberAsyncImagePainter(R.drawable.person)
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -157,7 +156,6 @@ fun EditProfileScreen(
 
         // Save Button
         Button(onClick = {
-            // Allow updating either field individually. If both are empty, nothing to update.
             if (username.isBlank() && profileUri == null) {
                 showToast(context, "Please update at least one field")
                 return@Button
@@ -165,10 +163,8 @@ fun EditProfileScreen(
             isLoading = true
             coroutineScope.launch {
                 try {
-                    // Build a map of changes to update.
                     val newData = mutableMapOf<String, Any>()
 
-                    // Add username if provided.
                     if (username.isNotBlank()) {
                         newData["username"] = username
                     }
@@ -186,6 +182,7 @@ fun EditProfileScreen(
                     if (newData.isNotEmpty()) {
                         authViewModel.updateUserDocument(newData)
                         showToast(context, "Profile updated successfully!")
+                        authViewModel.loadUserData()
                     } else {
                         showToast(context, "No updates provided")
                     }

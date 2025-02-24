@@ -71,19 +71,15 @@ fun CameraXScreen(
     var rotateValue by remember { mutableFloatStateOf(0f) }
 
 
-    // Camera configuration
     LaunchedEffect(lensFacing, selectedAspect, flashMode) {
         val cameraProvider = ProcessCameraProvider.getInstance(context).get()
 
-        // Prepare builder instances for preview and image capture
         val previewBuilder = Preview.Builder()
         val captureBuilder = ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .setFlashMode(flashMode)
 
-        // Apply different configurations based on the selected aspect ratio
         if (selectedAspect == "1:1") {
-            // For a square aspect ratio, set a target resolution (adjust as needed)
             val squareSize = android.util.Size(1080, 1080)
             previewBuilder.setTargetResolution(squareSize)
             captureBuilder.setTargetResolution(squareSize)
@@ -96,13 +92,11 @@ fun CameraXScreen(
             captureBuilder.setTargetAspectRatio(targetAspectRatio)
         }
 
-        // Build the preview and assign its surface provider
         val preview = previewBuilder.build().also {
             it.surfaceProvider = previewView.surfaceProvider
         }
         imageCapture = captureBuilder.build()
 
-        // Create the camera selector
         val cameraSelector = CameraSelector.Builder()
             .requireLensFacing(lensFacing)
             .build()
@@ -233,16 +227,13 @@ fun CameraXScreen(
             )
         )
 
-        // Camera controls overlay
         // ─── BOTTOM BAR WITH ZOOM SLIDER AND OTHER CONTROLS ─────────────────────
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-//                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
                 .padding(8.dp)
         ) {
-            // Zoom slider control
             Slider(
                 value = zoomRatio,
                 onValueChange = { newVal ->
@@ -371,25 +362,4 @@ private fun captureImage(
             }
         }
     )
-}
-
-@Composable
-@androidx.compose.ui.tooling.preview.Preview
-fun Prev() {
-    Box(
-        modifier = Modifier
-            .size(60.dp)
-            .background(Color.White, CircleShape)
-            .clickable(onClick = {})
-    ) {
-        Box(
-            modifier = Modifier
-                .animateContentSize()
-                .size(if (true) 55.dp else 60.dp)
-                .align(Alignment.Center)
-                .background(Color.White, CircleShape)
-                .border(width = 4.dp, shape = CircleShape, color = Color.Black)
-        ) {}
-    }
-
 }

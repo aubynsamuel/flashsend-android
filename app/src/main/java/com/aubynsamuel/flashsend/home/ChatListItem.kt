@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -31,13 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.formatMessageTime
 import com.aubynsamuel.flashsend.chatRoom.messageTypes.FullScreenImageViewer
 import com.aubynsamuel.flashsend.functions.RoomData
 import com.aubynsamuel.flashsend.functions.logger
-import com.aubynsamuel.flashsend.functions.showToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -68,6 +66,13 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
 
     LaunchedEffect(unreadCount) {
         chatViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
+        if (unreadCount > 0) {
+            if (!chatViewModel.unreadRoomIds.contains(room.roomId)) {
+                chatViewModel.unreadRoomIds.add(room.roomId)
+            }
+        } else {
+            chatViewModel.unreadRoomIds.remove(room.roomId)
+        }
     }
 
     getUnreadMessages(room.roomId, room.otherParticipant.userId)
@@ -105,39 +110,23 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
                 modifier = Modifier.fillMaxWidth(0.85f),
             ) {
 //                profile pic, username and last message
-                if (room.otherParticipant.profileUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = room.otherParticipant.profileUrl,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(50.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable(onClick = { isExpanded = true }),
-                        contentScale = ContentScale.Crop
-                    )
-                    if (isExpanded) {
-                        FullScreenImageViewer(room.otherParticipant.profileUrl) {
-                            isExpanded = false
-                        }
+                AsyncImage(
+                    model = room.otherParticipant.profileUrl,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(50.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable(onClick = { isExpanded = true }),
+                    contentScale = ContentScale.Crop,
+                    error = rememberAsyncImagePainter(R.drawable.person)
+                )
+                if (isExpanded) {
+                    FullScreenImageViewer(room.otherParticipant.profileUrl) {
+                        isExpanded = false
                     }
-                } else {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(52.dp)
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .clickable(onClick = {
-                                showToast(
-                                    context = context,
-                                    "No profile picture"
-                                )
-                            }),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
+
                 Column(
                     modifier = Modifier.fillMaxWidth(1f),
                     verticalArrangement = Arrangement.Center
@@ -196,32 +185,3 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun PrevChatItem() {
-//    ChatListItem(
-//        item, navController = rememberNavController(),
-//        chatViewModel =
-//    )
-//}
-//
-//val item = RoomData(
-//    roomId = "room_1",
-//    lastMessage = "Hey, how's it going with that",
-//    lastMessageTimestamp = Timestamp.now(),
-//    lastMessageSenderId = "user_1",
-//    otherParticipant = User(
-//        userId = "user_1",
-//        username = "Alice Johnson",
-//        profileUrl = "",
-//        deviceToken = "token_1"
-//    )
-//)
-
-//val user = User(
-//    userId = "user_1",
-//    username = "Alice Johnson",
-//    profileUrl = "",
-//    otherUsersDeviceToken = "token_1"
-//)

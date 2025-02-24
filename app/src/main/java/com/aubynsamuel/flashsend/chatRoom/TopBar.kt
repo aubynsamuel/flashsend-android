@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.MoreVert
@@ -31,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.functions.User
 import com.google.gson.Gson
 
@@ -73,25 +74,17 @@ fun HeaderBar(
                         .clickable(onClick = goBack),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                if (pic?.length != 0) {
-                    AsyncImage(
-                        model = pic,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(50.dp)
-                            .align(Alignment.CenterVertically),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(55.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.width(5.dp))
+                AsyncImage(
+                    model = pic,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(50.dp)
+                        .align(Alignment.CenterVertically),
+                    contentScale = ContentScale.Crop,
+                    error = rememberAsyncImagePainter(R.drawable.person)
+                )
 
                 Column {
                     Text(
@@ -142,15 +135,3 @@ fun HeaderBar(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun PrevHeader() {
-//    HeaderBar(
-//        name = "User",
-//        pic = "",
-//        netActivity = "",
-//        goBack = {},
-//        userData =
-//    )
-//}

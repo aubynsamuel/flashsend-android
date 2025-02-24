@@ -19,18 +19,6 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    // Animation for background gradient transition
-//    val transition = rememberInfiniteTransition()
-//    val colorOffset by transition.animateFloat(
-//        initialValue = 0f,
-//        targetValue = 1f,
-//        animationSpec = infiniteRepeatable(
-//            animation = tween(2000, easing = LinearEasing),
-//            repeatMode = RepeatMode.Reverse
-//        )
-//    )
-
-    // Lottie animation composition
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
     val progress by animateLottieCompositionAsState(
         composition = composition,
@@ -44,7 +32,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
     LaunchedEffect(authState) {
         delay(500)
         if (authState) {
-            navController.navigate("home") {
+            navController.navigate("main") {
                 popUpTo("loadingScreen") { inclusive = true }
             }
         } else {
@@ -54,27 +42,10 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
         }
     }
 
-    // Gradient background colors
-//    val gradientColors = listOf(
-//        MaterialTheme.colorScheme.primaryContainer,
-//        MaterialTheme.colorScheme.secondaryContainer,
-//        MaterialTheme.colorScheme.tertiaryContainer
-//    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-//            .background(
-//                Brush.sweepGradient(
-//                    colors = gradientColors,
-//                    center = androidx.compose.ui.geometry.Offset(
-//                        x = colorOffset * 1000,
-//                        y = colorOffset * 1000
-//                    )
-//                )
-//            ),
-        ,
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Column(
