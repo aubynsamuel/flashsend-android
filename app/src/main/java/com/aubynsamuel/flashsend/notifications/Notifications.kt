@@ -18,7 +18,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
-import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
@@ -43,9 +42,7 @@ fun Notifications(context: Context) {
                     sender = "Samuel",
                     id = "as",
                     sendersUserId = "",
-                    recipientsUserId = "",
-                    profileUrl = ""
-                )
+                    recipientsUserId = ""                )
             }), color = MaterialTheme.colorScheme.onBackground
         )
     }
@@ -59,7 +56,6 @@ fun showNotification(
     id: String,
     sendersUserId: String,
     recipientsUserId: String,
-    profileUrl: String
 ) {
     // Create an intent for opening the app
     val contentIntent = Intent(context, MainActivity::class.java).apply {
@@ -113,10 +109,7 @@ fun showNotification(
     )
 
     val newMessage = NotificationCompat.MessagingStyle.Message(
-        message, System.currentTimeMillis(), generateSender(
-            name = sender,
-            imageUrl = profileUrl
-        )
+        message, System.currentTimeMillis(), generateSender(name = sender)
     )
     ConversationHistoryManager.addMessage(id.toString(), newMessage)
     // Rebuild the MessagingStyle notification with the full conversation history.
@@ -126,15 +119,11 @@ fun showNotification(
     ConversationHistoryManager.getHistory(id.toString()).forEach { message ->
         messagingStyle.addMessage(message)
     }
-    val icon = IconCompat.createWithContentUri(profileUrl)
 
     val individualNotification = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
         .setSmallIcon(R.mipmap.ic_launcher_round)
-//        .setContentTitle(sender)
-//        .setContentText(messages)
         .setStyle(messagingStyle)
         .setAutoCancel(true)
-        .setSmallIcon(icon)
         .setContentIntent(contentPendingIntent)
         .addAction(replyAction)
         .addAction(R.mipmap.ic_launcher_round, "Mark As Read", markAsReadPendingIntent)

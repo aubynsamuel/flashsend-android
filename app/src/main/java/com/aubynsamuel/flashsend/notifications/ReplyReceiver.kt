@@ -10,7 +10,6 @@ import android.net.NetworkCapabilities
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
-import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
@@ -153,13 +152,7 @@ object ConversationHistoryManager {
 val person = Person.Builder().setName("You").build()
 
 
-fun generateSender(name: String, imageUrl: String?): Person {
+fun generateSender(name: String): Person {
     val senderBuilder = Person.Builder().setName(name)
-
-    // Add the imageUrl if it's not null
-    imageUrl?.let { url ->
-        val icon = IconCompat.createWithContentUri(url)
-        senderBuilder.setIcon(icon)
-    }
     return senderBuilder.build()
 }

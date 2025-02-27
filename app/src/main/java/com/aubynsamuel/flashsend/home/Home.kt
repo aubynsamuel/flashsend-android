@@ -218,7 +218,7 @@ fun HomeScreen(
                             text = "Profile",
                             onClick = {
                                 navController.navigate("main?initialPage=1") {
-                                    popUpTo("main?initialPage=0") { inclusive = true }
+                                    popUpTo("main?initialPage=0") { inclusive = false }
                                 }
                             },
                             icon = Icons.Default.Person
@@ -227,7 +227,7 @@ fun HomeScreen(
                             text = "Settings",
                             onClick = {
                                 navController.navigate("main?initialPage=2") {
-                                    popUpTo("main?initialPage=0") { inclusive = true }
+                                    popUpTo("main?initialPage=0") { inclusive = false }
                                 }
                             },
                             icon = Icons.Default.Settings
