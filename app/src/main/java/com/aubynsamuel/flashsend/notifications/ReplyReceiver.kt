@@ -8,7 +8,9 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.core.app.NotificationCompat
+import androidx.core.app.Person
 import androidx.core.app.RemoteInput
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
@@ -57,7 +59,7 @@ class ReplyReceiver : BroadcastReceiver() {
 
                 // Add the reply to the conversation history
                 val newMessage = NotificationCompat.MessagingStyle.Message(
-                    replyText, System.currentTimeMillis(), "You"
+                    replyText, System.currentTimeMillis(), person
                 )
                 val isConnected = isNetworkAvailable(context)
                 if (isConnected) {
@@ -79,7 +81,7 @@ class ReplyReceiver : BroadcastReceiver() {
         sendersUserId: String,
         recipientsUserId: String
     ) {
-        val messagingStyle = NotificationCompat.MessagingStyle("You")
+        val messagingStyle = NotificationCompat.MessagingStyle(person)
         ConversationHistoryManager.getHistory(notificationId)
             .forEach { it -> messagingStyle.addMessage(it) }
 
@@ -94,7 +96,7 @@ class ReplyReceiver : BroadcastReceiver() {
         )
         val remoteInput = RemoteInput.Builder(MainActivity.KEY_TEXT_REPLY).setLabel("Reply").build()
         val replyAction = NotificationCompat.Action.Builder(
-            R.mipmap.ic_launcher_foreground, "Reply", replyPendingIntent
+            R.mipmap.ic_launcher_round, "Reply", replyPendingIntent
         ).addRemoteInput(remoteInput).build()
 
         val markAsReadIntent = Intent(context, ActionReceiver::class.java).apply {
@@ -112,23 +114,16 @@ class ReplyReceiver : BroadcastReceiver() {
         )
 
         val updatedNotification = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setStyle(messagingStyle)
+            .setSmallIcon(R.mipmap.ic_launcher_round).setStyle(messagingStyle)
             .addAction(replyAction)
-            .addAction(R.mipmap.ic_launcher_foreground, "Mark As Read", markAsReadPendingIntent)
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setGroup(groupKey)
+            .addAction(R.mipmap.ic_launcher_round, "Mark As Read", markAsReadPendingIntent)
+            .setAutoCancel(true).setPriority(NotificationCompat.PRIORITY_HIGH).setGroup(groupKey)
             .build()
 
         val groupSummary = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setContentTitle("New Messages")
-            .setContentText("You have new messages")
-            .setAutoCancel(true)
-            .setGroup(groupKey)
-            .setGroupSummary(true)
-            .build()
+            .setSmallIcon(R.mipmap.ic_launcher_round).setContentTitle("New Messages")
+            .setContentText("You have new messages").setAutoCancel(true).setGroup(groupKey)
+            .setGroupSummary(true).build()
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -136,7 +131,6 @@ class ReplyReceiver : BroadcastReceiver() {
         notificationManager.notify(groupKey.hashCode(), groupSummary)
     }
 }
-
 
 object ConversationHistoryManager {
     // Map of conversationId to a list of messages
@@ -154,4 +148,18 @@ object ConversationHistoryManager {
     fun hasMessages(conversationId: String): Boolean {
         return getHistory(conversationId).isNotEmpty()
     }
+}
+
+val person = Person.Builder().setName("You").build()
+
+
+fun generateSender(name: String, imageUrl: String?): Person {
+    val senderBuilder = Person.Builder().setName(name)
+
+    // Add the imageUrl if it's not null
+    imageUrl?.let { url ->
+        val icon = IconCompat.createWithContentUri(url)
+        senderBuilder.setIcon(icon)
+    }
+    return senderBuilder.build()
 }

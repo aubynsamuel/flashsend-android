@@ -34,6 +34,7 @@ sealed class ChatState {
     data class Error(val message: String) : ChatState()
 }
 
+@Suppress("UNCHECKED_CAST")
 class ChatViewModel(context: Context) : ViewModel() {
     val unreadRoomIds = mutableStateListOf<String>()
 
@@ -147,7 +148,10 @@ class ChatViewModel(context: Context) : ViewModel() {
                                         longitude = (loc["longitude"] as? Number)?.toDouble() ?: 0.0
                                     )
                                 },
-                                duration = (data["duration"] as? Number)?.toLong()
+                                duration = (data["duration"] as? Number)?.toLong(),
+                                reactions = data["reactions"] as? MutableMap<String, String>
+                                    ?: mutableMapOf()
+
                             )
                         } catch (e: Exception) {
                             logger(
@@ -232,17 +236,13 @@ class ChatViewModel(context: Context) : ViewModel() {
                         if (unreadMessages.isNotEmpty()) {
                             val batch = firestore.batch()
                             unreadMessages.forEach { message ->
-                                val messageRef = firestore
-                                    .collection("rooms")
-                                    .document(roomId)
-                                    .collection("messages")
-                                    .document(message.id)
+                                val messageRef = firestore.collection("rooms").document(roomId)
+                                    .collection("messages").document(message.id)
                                 batch.update(messageRef, "read", true)
                             }
                             batch.commit().await()
                             Log.d(
-                                "ChatViewModel",
-                                "Marking ${unreadMessages.size} messages as read"
+                                "ChatViewModel", "Marking ${unreadMessages.size} messages as read"
                             )
                         }
                     }
@@ -409,7 +409,7 @@ class ChatViewModel(context: Context) : ViewModel() {
 
                         firestore.collection("rooms").document(roomId).update(
                             mapOf(
-                                "lastMessage" to "🔊 ${formatTime(duration)}",
+                                "lastMessage" to "🔊${formatTime(duration)}",
                                 "lastMessageTimestamp" to Timestamp.now(),
                                 "lastMessageSenderId" to userId
                             )
@@ -597,7 +597,9 @@ class ChatViewModel(context: Context) : ViewModel() {
                             Location(lat, lon)
                         },
                         duration = (data["duration"] as? Number)?.toLong(),
-                        roomId = roomId
+                        roomId = roomId,
+                        reactions = data["reactions"] as? MutableMap<String, String>
+                            ?: mutableMapOf()
                     )
                 } catch (e: Exception) {
                     Log.e("Prefetch", "Error parsing message ${doc.id}: ${e.message}")
@@ -615,6 +617,57 @@ class ChatViewModel(context: Context) : ViewModel() {
             Log.e("Prefetch", "Error fetching new messages for room $roomId: ${e.message}")
         }
     }
+
+    fun addReactionToMessage(
+        roomId: String,
+        messageId: String,
+        userId: String,
+        emoji: String,
+        messageContent: String
+    ) {
+        try {
+            Log.e("Reactions", "Adding reaction")
+            val messageRef = firestore.collection("rooms").document(roomId).collection("messages")
+                .document(messageId)
+
+            messageRef.get().addOnSuccessListener { document ->
+                val message = document.toObject(ChatMessage::class.java)
+                message?.let {
+                    val updatedReactions = it.reactions.toMutableMap()
+
+                    if (updatedReactions[userId] == emoji) {
+                        updatedReactions.remove(userId) // Remove reaction if already present
+                    } else {
+                        updatedReactions[userId] = emoji // Add or update reaction
+                    }
+
+                    messageRef.update("reactions", updatedReactions).addOnSuccessListener {
+                        Log.e("Reactions", "Reaction Added Successfully")
+                        // Now update the room's last message
+                        firestore.collection("rooms").document(roomId).update(
+                            mapOf(
+                                "lastMessage" to "reacted $emoji to $messageContent",
+                                "lastMessageTimestamp" to Timestamp.now(),
+                                "lastMessageSenderId" to userId
+                            )
+                        ).addOnSuccessListener {
+                            Log.e("Reactions", "Room's last message updated for reaction")
+                        }.addOnFailureListener { e ->
+                            Log.e(
+                                "Reactions",
+                                "Failed to update room's last message: ${e.message}"
+                            )
+                        }
+                    }.addOnFailureListener { e ->
+                        Log.e("Reactions", "Failed to update reactions: ${e.message}")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Reactions", "Error updating reaction", e)
+        }
+    }
+
 
     override fun onCleared() {
         super.onCleared()

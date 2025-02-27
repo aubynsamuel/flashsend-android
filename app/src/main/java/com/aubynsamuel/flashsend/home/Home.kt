@@ -33,9 +33,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.DropMenu
+import com.aubynsamuel.flashsend.chatRoom.EmptyChatPlaceholder
 import com.aubynsamuel.flashsend.chatRoom.PopUpMenu
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
 import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
@@ -45,7 +47,6 @@ import com.aubynsamuel.flashsend.notifications.NotificationRepository
 import com.aubynsamuel.flashsend.notifications.NotificationTokenManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,10 +157,12 @@ fun HomeScreen(
     LaunchedEffect(authState) {
         if (!authState) {
             navController.navigate("auth") {
-                popUpTo("home") { inclusive = true }
+                popUpTo("main?initialPage=0") { inclusive = true }
             }
         }
     }
+
+
 
     Scaffold(topBar = {
         Row(
@@ -215,7 +218,7 @@ fun HomeScreen(
                             text = "Profile",
                             onClick = {
                                 navController.navigate("main?initialPage=1") {
-                                    popUpTo(0)
+                                    popUpTo("main?initialPage=0") { inclusive = true }
                                 }
                             },
                             icon = Icons.Default.Person
@@ -224,7 +227,7 @@ fun HomeScreen(
                             text = "Settings",
                             onClick = {
                                 navController.navigate("main?initialPage=2") {
-                                    popUpTo("home")
+                                    popUpTo("main?initialPage=0") { inclusive = true }
                                 }
                             },
                             icon = Icons.Default.Settings
@@ -239,7 +242,8 @@ fun HomeScreen(
                             onClick = { authViewModel.logout() },
                             icon = Icons.AutoMirrored.Default.Logout
                         ),
-                    )
+                    ),
+                    reactions = {}
                 )
             }
         }
@@ -257,15 +261,24 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-            ) {
-                items(rooms) { room ->
-                    ChatListItem(
-                        room, navController,
-                        chatViewModel = chatViewModel
-                    )
+            if (rooms.isEmpty() && !isLoading) {
+                EmptyChatPlaceholder(
+                    lottieAnimation = R.raw.online_chat,
+                    message = "Press + to search users",
+                    speed = 0.6f,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) {
+                    items(rooms) { room ->
+                        ChatListItem(
+                            room, navController,
+                            chatViewModel = chatViewModel
+                        )
+                    }
                 }
             }
         }

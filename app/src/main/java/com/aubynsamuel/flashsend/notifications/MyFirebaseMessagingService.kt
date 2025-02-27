@@ -30,6 +30,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 id = roomId,
                 sendersUserId = sendersUserId,
                 recipientsUserId = recipientsUserId,
+                profileUrl = profileUrl
             )
         }
     }

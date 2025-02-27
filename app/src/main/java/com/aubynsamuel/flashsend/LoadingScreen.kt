@@ -55,7 +55,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
             // Lottie Animation
             LottieAnimation(
                 composition = composition,
-                progress = progress,
+                progress = { progress },
                 modifier = Modifier.size(200.dp)
             )
 

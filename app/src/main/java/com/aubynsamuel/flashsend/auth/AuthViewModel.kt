@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aubynsamuel.flashsend.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.NewUser
+import com.aubynsamuel.flashsend.home.CacheHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,8 @@ import kotlinx.coroutines.tasks.await
 class AuthViewModel(private val repository: AuthRepository, context: Context) :
     ViewModel() {
     private val appContext = context.applicationContext
+
+    private val cacheHelper = CacheHelper(context = context)
 
     private val _authState = MutableStateFlow(repository.isUserLoggedIn())
     val authState: StateFlow<Boolean> = _authState
@@ -73,7 +76,8 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
                 if (userDataMap != null) {
                     val originalProfileUrl = userDataMap["profileUrl"] as? String ?: ""
                     // Get the locally cached URI for the profile image.
-                    val cachedUri = MediaCacheManager.getMediaUri(appContext, originalProfileUrl)
+                    val cachedUri =
+                        MediaCacheManager.getMediaUri(appContext, originalProfileUrl)
                     val user = NewUser(
                         userId = userId,
                         username = userDataMap["username"] as? String ?: "Unknown User",
@@ -120,5 +124,11 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
     fun logout() {
         repository.logout()
         _authState.value = false
+        cacheHelper.clearRooms()
     }
+
+    fun clearMessage() {
+        _message.value = null
+    }
+
 }

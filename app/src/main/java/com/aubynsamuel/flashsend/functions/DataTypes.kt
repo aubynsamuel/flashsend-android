@@ -1,5 +1,6 @@
 package com.aubynsamuel.flashsend.functions
 
+import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import java.io.Serializable
 import java.util.Date
@@ -28,28 +29,29 @@ data class NewUser(
     var email: String = ""
 ) : Serializable
 
+@Keep
 data class ChatMessage(
-    val id: String = "",
-    val content: String = "",
-    val image: String? = null,
-    val audio: String? = null,
-    val createdAt: Date = Date(),
-    val senderId: String = "",
-    val senderName: String = "",
-    val replyTo: String? = null,
-    val read: Boolean = false,
-    val type: String = "text",
-    val delivered: Boolean = false,
-    val location: Location? = null,
-    val duration: Long? = null
+    var id: String = "",
+    var content: String = "",
+    var image: String? = null,
+    var audio: String? = null,
+    var createdAt: Date = Date(),
+    var senderId: String = "",
+    var senderName: String = "",
+    var replyTo: String? = null,
+    var read: Boolean = false,
+    var type: String = "text",
+    var delivered: Boolean = false,
+    var location: Location? = null,
+    var duration: Long? = null,
+    var reactions: MutableMap<String, String> = mutableMapOf()
 )
 
 data class Location(
-    val latitude: Double,
-    val longitude: Double
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0
 )
 
-//settings
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 data class SettingsState(

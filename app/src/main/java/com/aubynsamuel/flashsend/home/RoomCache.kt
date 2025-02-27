@@ -32,6 +32,10 @@ class CacheHelper(context: Context) {
         }
     }
 
+    fun clearRooms() {
+        sharedPreferences.edit().remove("cached_rooms").apply()
+    }
+
     private class TimestampTypeAdapter : JsonSerializer<Timestamp>, JsonDeserializer<Timestamp> {
         override fun serialize(
             src: Timestamp,

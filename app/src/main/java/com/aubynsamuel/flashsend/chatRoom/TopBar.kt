@@ -58,48 +58,51 @@ fun HeaderBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 //            Back button, profile pic and name/network status
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = {
-                    val userJson = Uri.encode(Gson().toJson(userData))
-                    navController.navigate("otherProfileScreen/$userJson")
-                })
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = "back button",
                     modifier = Modifier
                         .padding(start = 5.dp)
-                        .size(30.dp)
+                        .size(25.dp)
                         .clickable(onClick = goBack),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.width(5.dp))
-                AsyncImage(
-                    model = pic,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(50.dp)
-                        .align(Alignment.CenterVertically),
-                    contentScale = ContentScale.Crop,
-                    error = rememberAsyncImagePainter(R.drawable.person)
-                )
-
-                Column {
-                    Text(
-                        text = name,
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+//                profile pic and name/network status
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable(onClick = {
+                        val userJson = Uri.encode(Gson().toJson(userData))
+                        navController.navigate("otherProfileScreen/$userJson")
+                    })
+                ) {
+                    AsyncImage(
+                        model = pic,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(45.dp)
+                            .align(Alignment.CenterVertically),
+                        contentScale = ContentScale.Crop,
+                        error = rememberAsyncImagePainter(R.drawable.person)
                     )
-                    if (netActivity.isNotEmpty()) {
+
+                    Column {
                         Text(
-                            text = netActivity,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 11.dp),
+                            text = name,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(start = 10.dp),
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
+                        if (netActivity.isNotEmpty()) {
+                            Text(
+                                text = netActivity,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 11.dp),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
                     }
                 }
 
@@ -129,7 +132,8 @@ fun HeaderBar(
                 PopUpMenu(
                     expanded = expanded, { expanded = !expanded },
                     modifier = Modifier,
-                    dropItems = chatOptionsList
+                    dropItems = chatOptionsList,
+                    reactions = {}
                 )
             }
         }

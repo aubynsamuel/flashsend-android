@@ -25,9 +25,9 @@ android {
 
     buildTypes {
         release {
-            val bool = false
-            isMinifyEnabled = bool
-            isShrinkResources = bool
+            val boolean = false
+            isMinifyEnabled = boolean
+            isShrinkResources = boolean
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.barcode.scanning)
 
-    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation(libs.accompanist.pager)
 
 
     // Room Database

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,12 +28,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.MediaCacheManager
+import com.aubynsamuel.flashsend.chatRoom.vibrateDevice
 import com.aubynsamuel.flashsend.functions.ChatMessage
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-fun ImageMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
+fun ImageMessage(
+    message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16, showPopUp: () -> Unit
+) {
     var isExpanded by remember { mutableStateOf(false) }
     message.image?.let { imageUrl ->
         val context = LocalContext.current
@@ -47,17 +51,19 @@ fun ImageMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
 
         Column {
             AsyncImage(
-                model = mediaUri,
-                contentDescription = "Image message",
-                modifier = Modifier
+                model = mediaUri, contentDescription = "Image message", modifier = Modifier
 //                    .width(250.dp)
                     .heightIn(min = 30.dp, max = 250.dp)
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        RoundedCornerShape(8.dp)
+                        MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
                     )
                     .fillMaxWidth()
-                    .clickable { isExpanded = true },
+                    .pointerInput(Unit) {
+                        detectTapGestures(onLongPress = {
+                            vibrateDevice(context)
+                            showPopUp()
+                        }, onTap = { isExpanded = true })
+                    },
                 contentScale = ContentScale.FillWidth
             )
             if (message.content.isNotEmpty()) {
@@ -95,27 +101,22 @@ fun FullScreenImageViewer(imageUri: String, onDismiss: () -> Unit) {
     )
 
     Popup(onDismissRequest = onDismiss) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background.copy(alpha = computedAlpha))
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures(
-                        onVerticalDrag = { _: PointerInputChange, dragAmount: Float ->
-                            dragOffset += dragAmount
-                        },
-                        onDragEnd = {
-                            if (abs(dragOffset) > dragThreshold) {
-                                // Dismiss the viewer if drag exceeds threshold
-                                onDismiss()
-                            } else {
-                                // Otherwise, animate the image back to its original position
-                                dragOffset = 0f
-                            }
-                        }
-                    )
-                }
-        ) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background.copy(alpha = computedAlpha))
+            .pointerInput(Unit) {
+                detectVerticalDragGestures(onVerticalDrag = { _: PointerInputChange, dragAmount: Float ->
+                    dragOffset += dragAmount
+                }, onDragEnd = {
+                    if (abs(dragOffset) > dragThreshold) {
+                        // Dismiss the viewer if drag exceeds threshold
+                        onDismiss()
+                    } else {
+                        // Otherwise, animate the image back to its original position
+                        dragOffset = 0f
+                    }
+                })
+            }) {
             Column {
                 Icon(
                     Icons.Default.Close,
@@ -129,16 +130,14 @@ fun FullScreenImageViewer(imageUri: String, onDismiss: () -> Unit) {
                         .offset { IntOffset(x = 0, y = dragOffset.roundToInt()) },
                     tint = MaterialTheme.colorScheme.onBackground
                 )
-                AsyncImage(
-                    model = imageUri,
+                AsyncImage(model = imageUri,
                     contentDescription = "Expanded Image",
                     modifier = Modifier
                         .fillMaxSize()
                         // Move the image according to the drag offset
                         .offset { IntOffset(x = 0, y = dragOffset.roundToInt()) }
                         .alpha(computedAlpha),
-                    contentScale = ContentScale.Fit
-                )
+                    contentScale = ContentScale.Fit)
             }
         }
     }

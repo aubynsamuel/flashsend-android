@@ -33,6 +33,10 @@ fun createRoomId(userId: String, currentUserId: String): String {
 
 fun createFile(context: Context): File {
     val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-    // Here we use the app's cache directory; you might prefer filesDir if you need persistence.
     return File.createTempFile("JPEG_${timestamp}_", ".jpg", context.cacheDir)
+}
+
+fun formatMessageTime(date: Date): String {
+    val formater = SimpleDateFormat("h:m a", Locale.US)
+    return formater.format(date).lowercase()
 }

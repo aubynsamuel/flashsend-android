@@ -24,7 +24,7 @@ class BaselineProfileGenerator {
         println("Manual interaction phase started. You have 60 seconds to interact with the app...")
 
         // Pause execution to allow manual interactions (60 seconds in this case)
-        Thread.sleep(60000)
+        Thread.sleep(20000)
 
         // Optionally, add a log to indicate the end of manual interaction phase
         println("Manual interaction phase ended.")

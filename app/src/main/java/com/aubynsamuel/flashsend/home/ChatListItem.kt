@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,9 +31,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
-import com.aubynsamuel.flashsend.chatRoom.formatMessageTime
 import com.aubynsamuel.flashsend.chatRoom.messageTypes.FullScreenImageViewer
 import com.aubynsamuel.flashsend.functions.RoomData
+import com.aubynsamuel.flashsend.functions.formatMessageTime
 import com.aubynsamuel.flashsend.functions.logger
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
@@ -44,7 +43,7 @@ import java.net.URLEncoder
 @Composable
 fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: ChatViewModel) {
     val firestore = FirebaseFirestore.getInstance()
-    val context = LocalContext.current
+//    val context = LocalContext.current
     var unreadCount by remember { mutableIntStateOf(0) }
     var isExpanded by remember { mutableStateOf(false) }
     val auth = FirebaseAuth.getInstance()

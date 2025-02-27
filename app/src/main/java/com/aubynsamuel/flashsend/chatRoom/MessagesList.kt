@@ -30,7 +30,8 @@ fun MessagesList(
     scrollState: LazyListState,
     coroutineScope: CoroutineScope,
     roomId: String,
-    fontSize: Int
+    fontSize: Int,
+    chatViewModel: ChatViewModel
 ) {
     val groupedMessages = remember(messages) {
         messages.groupBy { message ->
@@ -62,7 +63,9 @@ fun MessagesList(
                         ),
                     coroutineScope = coroutineScope,
                     roomId = roomId,
-                    fontSize = fontSize
+                    fontSize = fontSize,
+                    chatViewModel = chatViewModel,
+                    currentUserId = currentUserId
                 )
             }
             // Header for Date
@@ -72,6 +75,7 @@ fun MessagesList(
         }
     }
 }
+
 
 @Composable
 fun DateHeader(date: String) {

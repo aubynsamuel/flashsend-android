@@ -14,13 +14,15 @@ fun PopUpMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
     modifier: Modifier,
-    dropItems: List<DropMenu>
+    dropItems: List<DropMenu>,
+    reactions: @Composable () -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss,
         modifier = modifier
     ) {
+        reactions()
         dropItems.forEach { dropItem ->
             DropdownMenuItem(
                 leadingIcon = {

@@ -40,9 +40,11 @@ import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.createRoomId
 import com.aubynsamuel.flashsend.notifications.ConversationHistoryManager
+import com.aubynsamuel.flashsend.notifications.person
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
@@ -170,6 +172,12 @@ fun ChatScreen(
         previousMessageCount = messages.size
     }
 
+    var showEmpty by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(500)
+        showEmpty = true
+    }
+
     Scaffold(
         topBar = {
             val userData = User(
@@ -266,16 +274,29 @@ fun ChatScreen(
                         .fillMaxSize()
                         .padding(top = 0.dp, bottom = 5.dp)
                 ) {
-                    MessagesList(
-                        messages = messages,
-                        currentUserId = currentUserId,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 15.dp),
-                        scrollState = listState, coroutineScope = coroutineScope,
-                        roomId = roomId,
-                        fontSize = fontSize.fontSize
-                    )
+                    if (messages.isEmpty() && showEmpty) {
+                        EmptyChatPlaceholder(
+                            lottieAnimation = R.raw.chat,
+                            message = "Send a message to start a conversation",
+                            speed = 1f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 15.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        MessagesList(
+                            messages = messages,
+                            currentUserId = currentUserId,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 15.dp),
+                            scrollState = listState, coroutineScope = coroutineScope,
+                            roomId = roomId,
+                            fontSize = fontSize.fontSize,
+                            chatViewModel = chatViewModel
+                        )
+                    }
                     MessageInput(
                         messageText = messageText,
                         onMessageChange = { messageText = it },
@@ -289,7 +310,7 @@ fun ChatScreen(
                                 )
                                 vibrateDevice(context)
                                 val newMessage = NotificationCompat.MessagingStyle.Message(
-                                    messageText, System.currentTimeMillis(), "You"
+                                    messageText, System.currentTimeMillis(), person
                                 )
                                 val hasMessages = ConversationHistoryManager.hasMessages(roomId)
                                 if (hasMessages) {
@@ -317,6 +338,7 @@ fun ChatScreen(
                         recipientToken = deviceToken
                     )
                 }
+
                 androidx.compose.animation.AnimatedVisibility(
                     visible = showOverlay,
                     modifier = Modifier

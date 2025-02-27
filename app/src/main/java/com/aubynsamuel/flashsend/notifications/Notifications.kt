@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
@@ -42,7 +43,8 @@ fun Notifications(context: Context) {
                     sender = "Samuel",
                     id = "as",
                     sendersUserId = "",
-                    recipientsUserId = ""
+                    recipientsUserId = "",
+                    profileUrl = ""
                 )
             }), color = MaterialTheme.colorScheme.onBackground
         )
@@ -56,7 +58,8 @@ fun showNotification(
     sender: String = "Unknown",
     id: String,
     sendersUserId: String,
-    recipientsUserId: String
+    recipientsUserId: String,
+    profileUrl: String
 ) {
     // Create an intent for opening the app
     val contentIntent = Intent(context, MainActivity::class.java).apply {
@@ -88,7 +91,7 @@ fun showNotification(
         .setLabel("Reply")
         .build()
     val replyAction = NotificationCompat.Action.Builder(
-        R.mipmap.ic_launcher_foreground, "Reply", replyPendingIntent
+        R.mipmap.ic_launcher_round, "Reply", replyPendingIntent
     )
         .addRemoteInput(remoteInput)
         .build()
@@ -110,16 +113,20 @@ fun showNotification(
     )
 
     val newMessage = NotificationCompat.MessagingStyle.Message(
-        message, System.currentTimeMillis(), sender
+        message, System.currentTimeMillis(), generateSender(
+            name = sender,
+            imageUrl = profileUrl
+        )
     )
     ConversationHistoryManager.addMessage(id.toString(), newMessage)
     // Rebuild the MessagingStyle notification with the full conversation history.
-    val messagingStyle = NotificationCompat.MessagingStyle("You")
+    val messagingStyle = NotificationCompat.MessagingStyle(person)
 
     // Append each message in the history
     ConversationHistoryManager.getHistory(id.toString()).forEach { message ->
         messagingStyle.addMessage(message)
     }
+    val icon = IconCompat.createWithContentUri(profileUrl)
 
     val individualNotification = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
         .setSmallIcon(R.mipmap.ic_launcher_round)
@@ -127,9 +134,10 @@ fun showNotification(
 //        .setContentText(messages)
         .setStyle(messagingStyle)
         .setAutoCancel(true)
+        .setSmallIcon(icon)
         .setContentIntent(contentPendingIntent)
         .addAction(replyAction)
-        .addAction(R.mipmap.ic_launcher_foreground, "Mark As Read", markAsReadPendingIntent)
+        .addAction(R.mipmap.ic_launcher_round, "Mark As Read", markAsReadPendingIntent)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setGroup(groupKey)
         .build()

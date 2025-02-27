@@ -22,7 +22,8 @@ fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
         delivered = delivered,
         location = location,
         duration = duration,
-        roomId = roomId
+        roomId = roomId,
+        reactions = reactions
     )
 }
 
@@ -41,6 +42,7 @@ fun MessageEntity.toChatMessage(): ChatMessage {
         type = type,
         delivered = delivered,
         location = location,
-        duration = duration
+        duration = duration,
+        reactions = reactions
     )
 }

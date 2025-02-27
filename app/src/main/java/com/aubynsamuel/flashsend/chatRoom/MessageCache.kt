@@ -2,6 +2,7 @@ package com.aubynsamuel.flashsend.chatRoom
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.aubynsamuel.flashsend.functions.Location
@@ -14,8 +15,7 @@ private const val TAG = "ChatDatabase"
 // Room Entity
 @Entity(tableName = "messages")
 data class MessageEntity(
-    @PrimaryKey
-    val id: String,
+    @PrimaryKey val id: String,
     val content: String,
     val image: String?,
     val audio: String?,
@@ -30,7 +30,9 @@ data class MessageEntity(
     @TypeConverters(LocationConverter::class)
     val location: Location?,
     val duration: Long?,
-    val roomId: String
+    val roomId: String,
+    @TypeConverters(ReactionConverter::class)
+    val reactions: MutableMap<String, String> = mutableMapOf()
 )
 
 // Type Converters
@@ -82,6 +84,41 @@ class LocationConverter {
     }
 }
 
+@Keep
+class ReactionConverter() {
+    @TypeConverter
+    fun fromReactionsMap(reactions: Map<String, String>?): String? {
+        if (reactions == null) return null
+
+        return reactions.entries.joinToString(",") { (key, value) ->
+            "${key.replace(":", "\\:").replace(",", "\\,")}:${
+                value.replace(":", "\\:").replace(",", "\\,")
+            }"
+        }
+    }
+
+    @TypeConverter
+    fun toReactionsMap(reactionsString: String?): Map<String, String>? {
+        if (reactionsString.isNullOrEmpty()) return emptyMap()
+
+        return try {
+            reactionsString.split(",").associate { pair ->
+                val keyValue = pair.split(":")
+                if (keyValue.size != 2) {
+                    throw IllegalArgumentException("Invalid key-value pair: $pair")
+                }
+                val key = keyValue[0].replace("\\:", ":").replace("\\,", ",")
+                val value = keyValue[1].replace("\\:", ":").replace("\\,", ",")
+                key to value
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyMap()
+        }
+    }
+
+}
+
 // DAO
 @Dao
 interface MessageDao {
@@ -109,7 +146,7 @@ interface MessageDao {
 
 // Database
 @Database(entities = [MessageEntity::class], version = 1, exportSchema = false)
-@TypeConverters(DateConverter::class, LocationConverter::class)
+@TypeConverters(DateConverter::class, LocationConverter::class, ReactionConverter::class)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun messageDao(): MessageDao
 
@@ -121,22 +158,18 @@ abstract class ChatDatabase : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 Log.d(TAG, "Creating new ChatDatabase instance")
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    ChatDatabase::class.java,
-                    "chat_database"
-                )
-                    .addCallback(object : Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            Log.d(TAG, "onCreate: Database created at path: ${db.path}")
-                        }
+                    context.applicationContext, ChatDatabase::class.java, "chat_database"
+                ).addCallback(object : Callback() {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        Log.d(TAG, "onCreate: Database created at path: ${db.path}")
+                    }
 
-                        override fun onOpen(db: SupportSQLiteDatabase) {
-                            super.onOpen(db)
-                            Log.d(TAG, "onOpen: Database opened at path: ${db.path}")
-                        }
-                    })
-                    .build()
+                    override fun onOpen(db: SupportSQLiteDatabase) {
+                        super.onOpen(db)
+                        Log.d(TAG, "onOpen: Database opened at path: ${db.path}")
+                    }
+                }).build()
                 INSTANCE = instance
                 Log.d(TAG, "ChatDatabase instance created and assigned")
                 instance

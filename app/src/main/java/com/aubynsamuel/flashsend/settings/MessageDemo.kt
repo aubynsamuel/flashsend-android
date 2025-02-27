@@ -66,6 +66,8 @@ fun DemoMessage(
                         ImageMessage(
                             message = message,
                             isFromMe = isFromMe,
+                            fontSize = fontSize,
+                            showPopUp = {},
                         )
                     }
 
@@ -78,7 +80,10 @@ fun DemoMessage(
                     }
 
                     "location" -> {
-                        LocationMessage(message = message)
+                        LocationMessage(
+                            message = message,
+                            showPopUp = {},
+                        )
                     }
 
                     else -> {

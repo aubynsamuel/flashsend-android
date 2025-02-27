@@ -170,7 +170,7 @@ fun SetUserDetailsScreen(
 
                     showToast(context, "Profile updated successfully!")
                     navController.navigate("main?initialPage=0") {
-                        popUpTo(0)
+                        popUpTo("setUserDetails") { inclusive = true }
                     }
                 } catch (e: Exception) {
                     showToast(context, "Error: ${e.message}", true)

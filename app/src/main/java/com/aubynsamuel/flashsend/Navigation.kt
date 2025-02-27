@@ -214,7 +214,8 @@ fun ChatAppNavigation() {
         }
         composable(route = "otherProfileScreen/{userJson}",
             arguments = listOf(navArgument("userJson") { type = NavType.StringType }),
-            enterTransition = { slideInVertically() }) { backStackEntry ->
+            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) })
+        { backStackEntry ->
             val userJson = backStackEntry.arguments?.getString("userJson")
             val userData = Gson().fromJson(userJson, User::class.java)
             OtherUserProfile(navController = navController, userData = userData)

@@ -74,14 +74,6 @@ class AuthRepository(private val auth: FirebaseAuth) {
         }
     }
 
-//    fun signInWithGoogle(): Result<String> {
-//        return try {
-//            Result.success("Google sign in successful!")
-//        } catch (e: Exception) {
-//            Result.failure(e)
-//        }
-//    }
-
     fun isUserLoggedIn(): Boolean {
         return auth.currentUser != null
     }

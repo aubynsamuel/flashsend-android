@@ -24,7 +24,6 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     private val cacheHelper = CacheHelper(context = context)
 
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
