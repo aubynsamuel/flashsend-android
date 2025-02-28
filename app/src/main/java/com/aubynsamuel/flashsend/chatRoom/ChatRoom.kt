@@ -32,13 +32,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.Screen
-import com.aubynsamuel.flashsend.auth.AuthViewModel
+import com.aubynsamuel.flashsend.auth.CurrentUser
 import com.aubynsamuel.flashsend.functions.ConnectivityStatus
 import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.createRoomId
+import com.aubynsamuel.flashsend.navigation.Screen
 import com.aubynsamuel.flashsend.notifications.ConversationHistoryManager
 import com.aubynsamuel.flashsend.notifications.person
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
@@ -57,7 +57,6 @@ fun ChatScreen(
     deviceToken: String,
     profileUrl: String,
     settingsViewModel: SettingsViewModel,
-    authViewModel: AuthViewModel
 ) {
     val context = LocalContext.current
 
@@ -66,7 +65,8 @@ fun ChatScreen(
     val chatViewModel: ChatViewModel = viewModel {
         ChatViewModel(context)
     }
-    val userData by authViewModel.userData.collectAsState()
+    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
+
     var connectivityViewModel: ConnectivityViewModel = viewModel {
         ConnectivityViewModel(NetworkConnectivityObserver(context))
     }
@@ -96,7 +96,6 @@ fun ChatScreen(
     }
 
     val audioPermission = Manifest.permission.RECORD_AUDIO
-
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -172,10 +171,10 @@ fun ChatScreen(
         previousMessageCount = messages.size
     }
 
-    var showEmpty by remember { mutableStateOf(false) }
+    var showEmptyMessagesAnimation by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(500)
-        showEmpty = true
+        showEmptyMessagesAnimation = true
     }
 
     Scaffold(
@@ -255,7 +254,7 @@ fun ChatScreen(
             Box {
 //                Background Image
                 Image(
-                    painterResource(id = R.drawable.d2a77609f5d97b9081b117c8f699bd37),
+                    painterResource(id = R.drawable.chat_room_background),
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxSize(), contentScale = ContentScale.FillBounds,
@@ -274,7 +273,7 @@ fun ChatScreen(
                         .fillMaxSize()
                         .padding(top = 0.dp, bottom = 5.dp)
                 ) {
-                    if (messages.isEmpty() && showEmpty) {
+                    if (messages.isEmpty() && showEmptyMessagesAnimation) {
                         EmptyChatPlaceholder(
                             lottieAnimation = R.raw.chat,
                             message = "Send a message to start a conversation",
@@ -291,7 +290,7 @@ fun ChatScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 15.dp),
-                            scrollState = listState, coroutineScope = coroutineScope,
+                            scrollState = listState,
                             roomId = roomId,
                             fontSize = fontSize.fontSize,
                             chatViewModel = chatViewModel

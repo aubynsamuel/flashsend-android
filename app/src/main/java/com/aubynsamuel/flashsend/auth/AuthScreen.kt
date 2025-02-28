@@ -64,7 +64,9 @@ fun AuthScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             // Lottie Animation
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.chatmessagewithphone))
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(R.raw.chatmessagewithphone)
+            )
             val progress by animateLottieCompositionAsState(
                 composition = composition,
                 iterations = LottieConstants.IterateForever,

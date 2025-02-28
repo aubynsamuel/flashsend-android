@@ -26,7 +26,6 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
         speed = 2.0f
     )
 
-    // Navigation logic
     val authState by authViewModel.authState.collectAsState()
 
     LaunchedEffect(authState) {
@@ -52,7 +51,6 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Lottie Animation
             LottieAnimation(
                 composition = composition,
                 progress = { progress },
@@ -75,7 +73,6 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
 
-            // Animated dots
             AnimatedDots()
         }
     }

@@ -35,7 +35,6 @@ class ActionReceiver : BroadcastReceiver() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             notificationManager.cancel(notificationId.hashCode())
-//            Toast.makeText(context, "messages marked as read", Toast.LENGTH_SHORT).show()
         }
     }
 }

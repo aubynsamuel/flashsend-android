@@ -69,25 +69,27 @@ fun MessageInput(
     ) { isGranted: Boolean ->
         if (isGranted) {
             // Permission granted, get the location
-            getCurrentLocation(context) { lat, lon ->
-                if (lat != null && lon != null) {
-                    chatViewModel.sendLocationMessage(
-                        lat,
-                        lon,
-                        userData?.username ?: "",
-                        roomId,
-                        userData?.userId ?: "",
-                        userData?.profileUrl ?: "",
-                        recipientToken
-                    )
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Unable to retrieve location",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+            getCurrentLocation(
+                context = context,
+                onLocationResult = { lat: Double?, lon: Double? ->
+                    if (lat != null && lon != null) {
+                        chatViewModel.sendLocationMessage(
+                            lat,
+                            lon,
+                            userData?.username ?: "",
+                            roomId,
+                            userData?.userId ?: "",
+                            userData?.profileUrl ?: "",
+                            recipientToken
+                        )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Unable to retrieve location",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
         } else {
             Toast.makeText(
                 context,
@@ -100,11 +102,6 @@ fun MessageInput(
 //    val density = LocalDensity.current
 //    val isKeyboardVisible =
 //        WindowInsets.ime.getBottom(density) > 0
-
-//    val keyboardImePosition by animateFloatAsState(
-//        if (isKeyboardVisible) -10f else 0f,
-//        animationSpec = tween(5),
-//    )
     val transition =
         updateTransition(targetState = messageText.isNotBlank(), label = "messageTransition")
     val translateX by transition.animateFloat(

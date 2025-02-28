@@ -52,9 +52,8 @@ fun AuthForm(
     val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
     val context = LocalContext.current
 
-    // Define a rounded shape for the text fields
     val fieldShape = RoundedCornerShape(20.dp)
-//    val fieldHeight = 50.dp
+
     Column(
         modifier = Modifier.fillMaxWidth(0.85f), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -173,7 +172,11 @@ fun AuthForm(
             )
         ) {
             if (isLoggingIn) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.align(
+                        Alignment.CenterVertically
+                    )
+                )
             } else {
                 Text(text = if (isLogin) "Login" else "Sign Up", fontSize = 20.sp)
             }

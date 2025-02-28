@@ -9,24 +9,27 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.aubynsamuel.flashsend.auth.AuthViewModel
+import com.aubynsamuel.flashsend.auth.CurrentUser
 import com.aubynsamuel.flashsend.functions.SettingsState
 import com.aubynsamuel.flashsend.functions.ThemeMode
 import com.aubynsamuel.flashsend.mockData.messageExample
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel, navController: NavController, authViewModel: AuthViewModel,
+    viewModel: SettingsViewModel, navController: NavController,
 
     ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
+
     val uiState by viewModel.uiState.collectAsState()
     var showResetDialog by rememberSaveable { mutableStateOf(false) }
 

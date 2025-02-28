@@ -117,12 +117,6 @@ fun OtherUserProfile(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-
-//                    Text(
-//                        text = userData?.email ?: "Email",
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-//                    )
                 }
             }
 
@@ -139,26 +133,11 @@ fun OtherUserProfile(
                         label = "Username",
                         value = decodedUsername
                     )
-
-//                    ProfileDetailItem(
-//                        icon = Icons.Default.Email,
-//                        label = "Email",
-//                        value = userData?.email ?: "Not set"
-//                    )
                 }
             }
 
             // Action Buttons
             Spacer(modifier = Modifier.height(24.dp))
-
-//            FilledTonalButton(
-//                onClick = { navController.navigate("editProfile") },
-//                modifier = Modifier.fillMaxWidth(0.8f)
-//            ) {
-//                Icon(Icons.Default.Edit, contentDescription = null)
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Text("Edit Profile")
-//            }
 
             Spacer(modifier = Modifier.height(8.dp))
             Card(
@@ -178,30 +157,8 @@ fun OtherUserProfile(
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(top = 5.dp)
             )
-
-//            Button(
-//                onClick = {
-//                    authViewModel.logout()
-//                    navController.navigate("auth") {
-//                        popUpTo(0)
-//                    }
-//                },
-//                colors = ButtonDefaults.buttonColors(
-//                    containerColor = MaterialTheme.colorScheme.errorContainer,
-//                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-//                ),
-//                modifier = Modifier.fillMaxWidth(0.8f)
-//            ) {
-//                Icon(Icons.AutoMirrored.Default.Logout, contentDescription = null)
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Text("Log Out")
-//            }
         }
     }
-
-//    LaunchedEffect(Unit) {
-//        authViewModel.loadUserData()
-//    }
 }
 
 @Composable

@@ -33,22 +33,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.auth.AuthViewModel
+import com.aubynsamuel.flashsend.auth.CurrentUser
 import com.aubynsamuel.flashsend.chatRoom.messageTypes.FullScreenImageViewer
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    authViewModel: AuthViewModel,
     navController: NavController,
-//    modifier: Modifier = Modifier
 ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
+
     var isExpanded by remember { mutableStateOf(false) }
 
     Scaffold(topBar = {
@@ -58,15 +58,6 @@ fun ProfileScreen(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 titleContentColor = MaterialTheme.colorScheme.primary
             ),
-//                navigationIcon = {
-//                    Icon(
-//                        Icons.AutoMirrored.Default.ArrowBack,
-//                        contentDescription = "Back Button",
-//                        modifier = Modifier
-//                            .padding(start = 9.dp)
-//                            .clickable(onClick = { navController.popBackStack() })
-//                    )
-//                }
         )
     }) { paddingValues ->
         Column(

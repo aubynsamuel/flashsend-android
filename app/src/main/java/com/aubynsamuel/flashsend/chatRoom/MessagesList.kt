@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aubynsamuel.flashsend.functions.ChatMessage
-import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -28,7 +27,6 @@ fun MessagesList(
     currentUserId: String,
     modifier: Modifier = Modifier,
     scrollState: LazyListState,
-    coroutineScope: CoroutineScope,
     roomId: String,
     fontSize: Int,
     chatViewModel: ChatViewModel
@@ -61,7 +59,6 @@ fun MessagesList(
                             start = if (message.senderId == currentUserId) 60.dp else 0.dp,
                             end = if (message.senderId == currentUserId) 0.dp else 60.dp
                         ),
-                    coroutineScope = coroutineScope,
                     roomId = roomId,
                     fontSize = fontSize,
                     chatViewModel = chatViewModel,

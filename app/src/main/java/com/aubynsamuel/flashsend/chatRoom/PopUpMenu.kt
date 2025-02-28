@@ -45,14 +45,3 @@ data class DropMenu(
     val onClick: () -> Unit,
     val icon: ImageVector? = null
 )
-
-//@Preview
-//@Composable
-//fun PrevPopUpMenu() {
-//    PopUpMenu(
-//        expanded = true,
-//        onDismiss = { },
-//        modifier = Modifier
-//    )
-//
-//}

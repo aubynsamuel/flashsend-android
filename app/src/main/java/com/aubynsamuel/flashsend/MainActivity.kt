@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.navigation.ChatAppNavigation
 import com.aubynsamuel.flashsend.settings.SettingsRepository
 import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.aubynsamuel.flashsend.settings.SettingsViewModelFactory
@@ -39,17 +40,14 @@ class MainActivity : ComponentActivity() {
             }
         }
         setContent {
-            // Instantiate your DataStore and repository from the application context
             val context = LocalContext.current
             val dataStore = context.applicationContext.dataStore
             val settingsRepository = remember { SettingsRepository(dataStore) }
             val settingsViewModel: SettingsViewModel = viewModel(
                 factory = SettingsViewModelFactory(settingsRepository)
             )
-            // Collect settings state to extract the theme mode
             val settingsState by settingsViewModel.uiState.collectAsState()
 
-            // Pass the themeMode to FlashSendTheme
             FlashSendTheme(themeMode = settingsState.themeMode) {
                 ChatAppNavigation()
             }

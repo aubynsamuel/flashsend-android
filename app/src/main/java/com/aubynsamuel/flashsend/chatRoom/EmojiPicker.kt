@@ -40,13 +40,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ReactionPicker(onReactionSelected: (String) -> Unit) {
-    // Hardcoded list for frequently used emojis (initial view)
     val frequentlyUsedEmojis = listOf("😀", "❤️", "😂", "😭", "👍")
 
-    // State to control full emoji picker dialog visibility
     var showFullPicker by remember { mutableStateOf(false) }
 
-    // Optional animation (vertical bobbing effect)
     var animated by remember { mutableStateOf(false) }
     val transY = animateFloatAsState(
         targetValue = if (animated) -2f else 2f,
@@ -59,7 +56,6 @@ fun ReactionPicker(onReactionSelected: (String) -> Unit) {
         }
     }
 
-    // Main row with initial emojis and the add button
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -85,7 +81,6 @@ fun ReactionPicker(onReactionSelected: (String) -> Unit) {
         )
     }
 
-    // Full emoji picker dialog (if enabled)
     if (showFullPicker) {
         EmojiPickerDialog(
             emojiCategories = emojiCategories,
@@ -106,7 +101,6 @@ fun EmojiPickerDialog(
     onDismiss: () -> Unit
 ) {
     val categories = emojiCategories.keys.toList()
-    // Fix: Updated PagerState initialization
     val pagerState = rememberPagerState(initialPage = 0)
     val coroutineScope = rememberCoroutineScope()
 
@@ -116,7 +110,6 @@ fun EmojiPickerDialog(
         title = { Text(text = "Select Emoji", fontSize = 18.sp) },
         text = {
             Column {
-                // Horizontal scrollable tabs for categories
                 ScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
                     edgePadding = 8.dp
@@ -140,7 +133,6 @@ fun EmojiPickerDialog(
                     }
                 }
 
-                // Swipeable content area - Fixed HorizontalPager
                 HorizontalPager(
                     count = categories.size,
                     state = pagerState,
@@ -149,7 +141,6 @@ fun EmojiPickerDialog(
                     val categoryName = categories[page]
                     val emojis = emojiCategories[categoryName] ?: emptyList()
 
-                    // Fixed LazyVerticalGrid
                     LazyVerticalGrid(
                         columns = GridCells.Adaptive(minSize = 36.dp),
                         contentPadding = PaddingValues(8.dp),

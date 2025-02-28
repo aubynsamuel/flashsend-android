@@ -3,7 +3,7 @@ package com.aubynsamuel.flashsend.auth
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aubynsamuel.flashsend.MediaCacheManager
+import com.aubynsamuel.flashsend.functions.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.NewUser
 import com.aubynsamuel.flashsend.home.CacheHelper
 import com.google.firebase.auth.FirebaseAuth
@@ -21,8 +21,6 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
 
     private val _authState = MutableStateFlow(repository.isUserLoggedIn())
     val authState: StateFlow<Boolean> = _authState
-
-    val userData = MutableStateFlow<NewUser?>(null)
 
     private val _isLoggingIn = MutableStateFlow(false)
     val isLoggingIn: StateFlow<Boolean> = _isLoggingIn
@@ -85,7 +83,7 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
                         deviceToken = userDataMap["deviceToken"] as? String ?: "",
                         email = userDataMap["email"] as? String ?: ""
                     )
-                    userData.value = user
+                    CurrentUser.updateUser(user)
                 } else {
                     _message.value = "User data not found"
                 }
@@ -130,5 +128,4 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
     fun clearMessage() {
         _message.value = null
     }
-
 }

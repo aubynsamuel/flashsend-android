@@ -29,12 +29,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.messageTypes.FullScreenImageViewer
 import com.aubynsamuel.flashsend.functions.RoomData
 import com.aubynsamuel.flashsend.functions.formatMessageTime
 import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,7 +43,6 @@ import java.net.URLEncoder
 @Composable
 fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: ChatViewModel) {
     val firestore = FirebaseFirestore.getInstance()
-//    val context = LocalContext.current
     var unreadCount by remember { mutableIntStateOf(0) }
     var isExpanded by remember { mutableStateOf(false) }
     val auth = FirebaseAuth.getInstance()

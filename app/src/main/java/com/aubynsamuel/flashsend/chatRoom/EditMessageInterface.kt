@@ -12,8 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.aubynsamuel.flashsend.functions.ChatMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun EditMessageDialog(
@@ -21,10 +19,8 @@ fun EditMessageDialog(
     message: ChatMessage,
     initialText: String,
     onDismiss: () -> Unit,
-    onMessageEdited: (ChatMessage) -> Unit,
-    coroutineScope: CoroutineScope,
-
-    ) {
+    onMessageEdited: (ChatMessage) -> Unit
+) {
     var editText by remember { mutableStateOf(initialText) }
     val context = LocalContext.current
 
@@ -45,32 +41,30 @@ fun EditMessageDialog(
             TextButton(
                 onClick = {
                     if (editText.isNotBlank()) {
-                        coroutineScope.launch {
-                            updateMessageInFirebase(
-                                roomId = roomId,
-                                messageId = message.id,
-                                newContent = editText,
-                                onSuccess = {
-                                    // Create a copy of the message with updated content.
-                                    val updatedMessage = message.copy(content = editText)
-                                    onMessageEdited(updatedMessage)
-                                    Toast.makeText(
-                                        context,
-                                        "Message edited successfully",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                },
-                                onFailure = { e ->
-                                    Toast.makeText(
-                                        context,
-                                        "Failed to update message",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                },
-                                context = context
-                            )
-                        }
+                        updateMessageInFirebase(
+                            roomId = roomId,
+                            messageId = message.id,
+                            newContent = editText,
+                            onSuccess = {
+                                // Create a copy of the message with updated content.
+                                val updatedMessage = message.copy(content = editText)
+                                onMessageEdited(updatedMessage)
+                                Toast.makeText(
+                                    context,
+                                    "Message edited successfully",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            },
+                            onFailure = { e ->
+                                Toast.makeText(
+                                    context,
+                                    "Failed to update message",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            context = context
+                        )
                     }
                 }
             ) {

@@ -9,7 +9,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.aubynsamuel.flashsend.functions.ChatMessage
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -18,7 +19,6 @@ fun DeleteMessageDialog(
     roomId: String,
     onDismiss: () -> Unit,
     onMessageDeleted: () -> Unit,
-    coroutineScope: CoroutineScope,
     showDialog: Boolean,
     onDeletionFailure: () -> Unit
 ) {
@@ -32,12 +32,10 @@ fun DeleteMessageDialog(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        coroutineScope.launch {
-                            handleDelete(
-                                message, roomId, onMessageDeleted,
-                                context, onDeletionFailure
-                            )
-                        }
+                        handleDelete(
+                            message, roomId, onMessageDeleted,
+                            context, onDeletionFailure
+                        )
                     }
                 ) {
                     Text("Yes", color = Color.Red)
@@ -56,29 +54,28 @@ fun DeleteMessageDialog(
     }
 }
 
-private suspend fun handleDelete(
+@OptIn(DelicateCoroutinesApi::class)
+private fun handleDelete(
     message: ChatMessage,
     roomId: String,
     onMessageDeleted: () -> Unit,
     context: Context,
     onDeletionFailure: () -> Unit
 ) {
-
     try {
         val db = FirebaseFirestore.getInstance()
         val roomRef = db.collection("rooms").document(roomId)
         val messageRef = roomRef.collection("messages").document(message.id)
+        val messageDao = ChatDatabase.getDatabase(context).messageDao()
 
         messageRef.delete()
             .addOnSuccessListener {
                 onMessageDeleted()
-
+                GlobalScope.launch { messageDao.deleteMessage(message.id) }
             }
             .addOnFailureListener { error ->
                 onDeletionFailure
             }
-        val messageDao = ChatDatabase.getDatabase(context).messageDao()
-        messageDao.deleteMessage(message.id)
     } catch (error: Exception) {
         println("Failed to delete message: ${error.message}")
     }

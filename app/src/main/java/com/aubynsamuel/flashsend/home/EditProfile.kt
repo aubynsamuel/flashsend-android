@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +30,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.AuthViewModel
+import com.aubynsamuel.flashsend.auth.CurrentUser
 import com.aubynsamuel.flashsend.chatRoom.CropImageContract
 import com.aubynsamuel.flashsend.functions.showToast
 import com.google.firebase.ktx.Firebase
@@ -46,7 +49,8 @@ fun EditProfileScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
 ) {
-    val userData by authViewModel.userData.collectAsState()
+    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     var username by remember { mutableStateOf(userData?.username ?: "") }
     var profileUri by remember { mutableStateOf<Uri?>(null) }

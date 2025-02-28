@@ -3,7 +3,7 @@ package com.aubynsamuel.flashsend.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aubynsamuel.flashsend.MediaCacheManager
+import com.aubynsamuel.flashsend.functions.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.RoomData
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.logger

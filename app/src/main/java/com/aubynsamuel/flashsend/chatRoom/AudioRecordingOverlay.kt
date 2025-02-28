@@ -1,7 +1,6 @@
 package com.aubynsamuel.flashsend.chatRoom
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -47,7 +46,6 @@ fun AudioRecordingOverlay(
     recordingStartTime: Long,
     resetRecording: () -> Unit,
     sendAudioMessage: () -> Unit,
-    modifier: Modifier = Modifier.animateContentSize()
 ) {
     var playbackTime by remember { mutableLongStateOf(0L) }
 
@@ -89,7 +87,7 @@ fun AudioRecordingOverlay(
         )
 
         Text(
-            text = formatTime(playbackTime),
+            text = formatAudioTime(playbackTime),
             color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
@@ -119,8 +117,6 @@ fun AudioRecordingOverlay(
                             contentDescription = "Discard",
                             tint = Color.White
                         )
-//                                Spacer(modifier = Modifier.width(4.dp))
-//                                Text("Discard", color = Color.White)
                     }
                 }
 
@@ -142,8 +138,6 @@ fun AudioRecordingOverlay(
                             contentDescription = "Send",
                             tint = Color.White
                         )
-//                                Spacer(modifier = Modifier.width(4.dp))
-//                                Text("Send", color = Color.White)
                     }
                 }
             }
@@ -151,7 +145,7 @@ fun AudioRecordingOverlay(
     }
 }
 
-fun formatTime(milliseconds: Long): String {
+fun formatAudioTime(milliseconds: Long): String {
     val minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds)
     val seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
             TimeUnit.MINUTES.toSeconds(minutes)

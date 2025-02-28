@@ -34,45 +34,39 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.aubynsamuel.flashsend.MediaCacheManager
 import com.aubynsamuel.flashsend.functions.ChatMessage
+import com.aubynsamuel.flashsend.functions.MediaCacheManager
 import com.aubynsamuel.flashsend.mockData.messageExample
 import kotlinx.coroutines.delay
 
 @Composable
 fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
     val context = LocalContext.current
-    // Start with the original URL as a fallback.
+    // Original URL as fallback
     var mediaUri by remember { mutableStateOf(Uri.parse(message.audio)) }
 
-    // Retrieve the cached URI.
     LaunchedEffect(message.audio) {
         val cachedUri = MediaCacheManager.getMediaUri(context, message.audio.toString())
         Log.d("CachedAudioMessage", "Retrieved media URI: $cachedUri")
         mediaUri = cachedUri
     }
 
-    // Create and remember an ExoPlayer instance.
     val exoPlayer = remember { ExoPlayer.Builder(context).build() }
 
-    // Whenever the mediaUri changes, update the player's media item.
     LaunchedEffect(mediaUri) {
         Log.d("CachedAudioMessage", "Updating ExoPlayer with new mediaUri: $mediaUri")
         exoPlayer.setMediaItem(MediaItem.fromUri(mediaUri))
         exoPlayer.prepare()
     }
 
-    // Player states
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(message.duration?.toLong() ?: 0L) }
 
-    // Update duration when player is ready
     LaunchedEffect(exoPlayer) {
         duration = exoPlayer.duration.takeIf { it > 0 } ?: (message.duration ?: 0L)
     }
 
-    // Add player listener to handle playback state changes
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -98,19 +92,17 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
         }
     }
 
-    // Update current position while playing
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             currentPosition = exoPlayer.currentPosition.coerceAtMost(duration)
             delay(200L)
-            // Update duration in case it was loaded asynchronously
+
             if (duration == 0L) {
                 duration = exoPlayer.duration.takeIf { it > 0 } ?: (message.duration ?: 0L)
             }
         }
     }
 
-    // Your UI layout
     Column(
         modifier = Modifier
             .padding(8.dp)

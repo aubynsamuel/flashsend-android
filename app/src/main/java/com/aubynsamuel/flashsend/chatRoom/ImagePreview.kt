@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.aubynsamuel.flashsend.auth.AuthViewModel
+import com.aubynsamuel.flashsend.auth.CurrentUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,7 +42,6 @@ fun ImagePreviewScreen(
     imageUri: Uri,
     chatViewModel: ChatViewModel = viewModel(),
     navController: NavController,
-    authViewModel: AuthViewModel,
     roomId: String,
     takenFromCamera: String?,
     profileUrl: String,
@@ -52,9 +51,10 @@ fun ImagePreviewScreen(
     val context = LocalContext.current
     var selectedPicture by remember { mutableStateOf<Uri?>(imageUri) }
     var croppedPicture by remember { mutableStateOf<Uri?>(selectedPicture) }
-    val userData by authViewModel.userData.collectAsState()
 
     var loading by remember { mutableStateOf(false) }
+
+    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
 
     val cropImageLauncher = rememberLauncherForActivityResult(
         contract = CropImageContract()

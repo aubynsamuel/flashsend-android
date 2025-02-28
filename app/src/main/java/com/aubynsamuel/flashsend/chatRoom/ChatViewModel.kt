@@ -253,7 +253,6 @@ class ChatViewModel(context: Context) : ViewModel() {
         }
     }
 
-
     fun toggleRecording(context: Context) {
         if (_isRecording.value) {
             stopRecording()
@@ -393,7 +392,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 roomId?.let { roomId ->
                     currentUserId?.let { userId ->
                         val messageData = hashMapOf(
-                            "content" to "🔊 ${formatTime(duration)}",
+                            "content" to "🔊 ${formatAudioTime(duration)}",
                             "createdAt" to Timestamp.now(),
                             "senderId" to userId,
                             "senderName" to senderName,
@@ -409,7 +408,7 @@ class ChatViewModel(context: Context) : ViewModel() {
 
                         firestore.collection("rooms").document(roomId).update(
                             mapOf(
-                                "lastMessage" to "🔊${formatTime(duration)}",
+                                "lastMessage" to "🔊${formatAudioTime(duration)}",
                                 "lastMessageTimestamp" to Timestamp.now(),
                                 "lastMessageSenderId" to userId
                             )
@@ -417,7 +416,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                         onSendNotification(
                             recipientsToken,
                             senderName,
-                            "🔊 ${formatTime(duration)}",
+                            "🔊 ${formatAudioTime(duration)}",
                             roomId,
                             otherUserId.toString(),
                             userId,

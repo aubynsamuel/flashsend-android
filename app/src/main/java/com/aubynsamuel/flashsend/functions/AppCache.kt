@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend
+package com.aubynsamuel.flashsend.functions
 
 import android.content.Context
 import android.net.Uri
@@ -94,7 +94,6 @@ object MediaCacheManager {
             val fileSize = file.length()
             if (file.delete()) {
                 totalSize -= fileSize
-//
             }
         }
     }

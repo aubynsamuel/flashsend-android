@@ -10,12 +10,6 @@ import com.aubynsamuel.flashsend.functions.ChatMessage
 import java.util.Date
 import java.util.Random
 
-//data class Message(
-//    val text: String,
-//    val time: Long,
-//    val isFromMe: Boolean
-//)
-
 @Suppress("unused", "UnusedVariable")
 fun generateMockMessages(parsedId: String): List<ChatMessage> {
     val messages = mutableListOf<ChatMessage>()

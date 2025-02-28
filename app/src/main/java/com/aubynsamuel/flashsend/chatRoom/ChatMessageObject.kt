@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +38,6 @@ import com.aubynsamuel.flashsend.functions.ChatMessage
 import com.aubynsamuel.flashsend.functions.copyTextToClipboard
 import com.aubynsamuel.flashsend.functions.formatMessageTime
 import com.aubynsamuel.flashsend.mockData.messageExample
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun ChatMessageObject(
@@ -47,7 +45,6 @@ fun ChatMessageObject(
     isFromMe: Boolean,
     modifier: Modifier = Modifier,
     roomId: String = "",
-    coroutineScope: CoroutineScope,
     fontSize: Int,
     chatViewModel: ChatViewModel,
     currentUserId: String
@@ -77,7 +74,6 @@ fun ChatMessageObject(
                     context, "Message could not be deleted, Try again", Toast.LENGTH_SHORT
                 ).show()
             },
-            coroutineScope = coroutineScope,
             showDialog = showDeleteDialog,
         )
         if (showEditDialog) {
@@ -89,9 +85,7 @@ fun ChatMessageObject(
                 onMessageEdited = { updatedMessage ->
                     showEditDialog = false
                 },
-                coroutineScope = coroutineScope,
-
-                )
+            )
         }
 //       Content
         Surface(
@@ -192,7 +186,6 @@ fun ChatMessageObject(
                     }
 
                     else -> {
-                        // Fallback to a text message
                         TextMessage(message = message, isFromMe = isFromMe)
                     }
                 }
@@ -244,7 +237,6 @@ fun PrevChatMessage() {
         isFromMe = true,
         modifier = Modifier,
         roomId = "",
-        coroutineScope = rememberCoroutineScope(),
         fontSize = 15,
         chatViewModel = ChatViewModel(LocalContext.current),
         currentUserId = ""

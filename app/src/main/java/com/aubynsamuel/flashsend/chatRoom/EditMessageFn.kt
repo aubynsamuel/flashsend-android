@@ -2,8 +2,12 @@ package com.aubynsamuel.flashsend.chatRoom
 
 import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-suspend fun updateMessageInFirebase(
+@OptIn(DelicateCoroutinesApi::class)
+fun updateMessageInFirebase(
     roomId: String,
     messageId: String,
     newContent: String,
@@ -12,7 +16,6 @@ suspend fun updateMessageInFirebase(
     context: Context
 ) {
     val messageDao = ChatDatabase.getDatabase(context).messageDao()
-    messageDao.editMessage(messageId, newContent)
     val db = FirebaseFirestore.getInstance()
 
     val messageRef = db.collection("rooms")
@@ -21,6 +24,9 @@ suspend fun updateMessageInFirebase(
         .document(messageId)
 
     messageRef.update("content", newContent)
-        .addOnSuccessListener { onSuccess() }
+        .addOnSuccessListener {
+            onSuccess()
+            GlobalScope.launch { messageDao.editMessage(messageId, newContent) }
+        }
         .addOnFailureListener { exception -> onFailure(exception) }
 }

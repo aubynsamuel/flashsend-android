@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.aubynsamuel.flashsend.Screen
 import com.aubynsamuel.flashsend.functions.User
 import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
