@@ -43,7 +43,6 @@ import com.aubynsamuel.flashsend.functions.ConnectivityStatus
 import com.aubynsamuel.flashsend.functions.ConnectivityViewModel
 import com.aubynsamuel.flashsend.functions.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.functions.logger
-import com.aubynsamuel.flashsend.navigation.PagerStateObject
 import com.aubynsamuel.flashsend.notifications.NotificationRepository
 import com.aubynsamuel.flashsend.notifications.NotificationTokenManager
 import com.google.firebase.auth.FirebaseAuth
@@ -216,14 +215,18 @@ fun HomeScreen(
                         DropMenu(
                             text = "Profile",
                             onClick = {
-                                PagerStateObject.setPage(1)
+                                navController.navigate("main?initialPage=1") {
+                                    popUpTo("main?initialPage=0") { inclusive = false }
+                                }
                             },
                             icon = Icons.Default.Person
                         ),
                         DropMenu(
                             text = "Settings",
                             onClick = {
-                                PagerStateObject.setPage(2)
+                                navController.navigate("main?initialPage=2") {
+                                    popUpTo("main?initialPage=0") { inclusive = false }
+                                }
                             },
                             icon = Icons.Default.Settings
                         ),

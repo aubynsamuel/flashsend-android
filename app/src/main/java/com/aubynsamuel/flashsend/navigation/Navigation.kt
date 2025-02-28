@@ -9,7 +9,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -63,8 +62,6 @@ fun ChatAppNavigation() {
         factory = SettingsViewModelFactory(settingsRepository)
     )
 
-    val saveableStateHolder = rememberSaveableStateHolder()
-
     NavHost(
         navController = navController,
         startDestination = "loadingScreen",
@@ -83,12 +80,14 @@ fun ChatAppNavigation() {
                 defaultValue = 0
             })
         ) { backStackEntry ->
+            val initialPage = backStackEntry.arguments?.getInt("initialPage") ?: 0
             MainBottomNavScreen(
                 navController = navController,
                 authViewModelInstance = authViewModelInstance,
                 chatViewModel = chatViewModel,
                 settingsViewModel = settingsViewModel,
                 context = context,
+                initialPage = initialPage
             )
         }
         composable(
@@ -103,16 +102,14 @@ fun ChatAppNavigation() {
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             val deviceToken = backStackEntry.arguments?.getString("deviceToken") ?: ""
             val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
-            saveableStateHolder.SaveableStateProvider(Screen.ChatRoom.route) {
-                ChatScreen(
-                    navController = navController,
-                    username = username,
-                    userId = userId,
-                    deviceToken = deviceToken,
-                    profileUrl = profileUrl,
-                    settingsViewModel = settingsViewModel,
-                )
-            }
+            ChatScreen(
+                navController = navController,
+                username = username,
+                userId = userId,
+                deviceToken = deviceToken,
+                profileUrl = profileUrl,
+                settingsViewModel = settingsViewModel,
+            )
         }
         composable(
             "searchUsers",

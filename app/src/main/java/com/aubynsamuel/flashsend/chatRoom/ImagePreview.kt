@@ -82,10 +82,7 @@ fun ImagePreviewScreen(
     }
 
     fun onCancel() {
-        if (takenFromCamera == "1") {
-            navController.popBackStack()
-            navController.popBackStack()
-        } else navController.popBackStack()
+        navController.popBackStack()
     }
 
     fun onSend(imageUrl: String) {

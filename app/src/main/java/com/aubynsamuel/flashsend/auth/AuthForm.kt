@@ -131,9 +131,6 @@ fun AuthForm(
                 .clickable {
                     if (email.isNotBlank()) {
                         authViewModel.resetPassword(email)
-                        Toast.makeText(
-                            context, "Reset link has been sent to your email", Toast.LENGTH_LONG
-                        ).show()
                     } else {
                         Toast.makeText(
                             context, "Please enter your email address", Toast.LENGTH_LONG

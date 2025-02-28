@@ -1,6 +1,7 @@
 package com.aubynsamuel.flashsend.navigation
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,18 +20,21 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.auth.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
+import com.aubynsamuel.flashsend.functions.showToast
 import com.aubynsamuel.flashsend.home.HomeScreen
 import com.aubynsamuel.flashsend.home.ProfileScreen
 import com.aubynsamuel.flashsend.settings.SettingsScreen
@@ -38,8 +42,7 @@ import com.aubynsamuel.flashsend.settings.SettingsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -50,19 +53,36 @@ fun MainBottomNavScreen(
     chatViewModel: ChatViewModel,
     settingsViewModel: SettingsViewModel,
     context: Context,
+    initialPage: Int = 0
 ) {
     val bottomNavItems = listOf(
         BottomNavItem("home", Icons.AutoMirrored.Default.Chat, "Chats"),
         BottomNavItem("profileScreen", Icons.Default.Person, "Profile"),
         BottomNavItem("settings", Icons.Default.Settings, "Settings")
     )
-    val page by PagerStateObject.page.collectAsStateWithLifecycle()
-    val pagerState = rememberPagerState(initialPage = page)
-    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(page) {
-        pagerState.scrollToPage(page)
-    }
+    val pagerState = rememberPagerState(initialPage = initialPage)
+    val coroutineScope = rememberCoroutineScope()
+    var backButtonPressed by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true, onBack = {
+        if (pagerState.currentPage != 0) {
+            coroutineScope.launch {
+                pagerState.scrollToPage(0)
+            }
+        } else {
+            if (backButtonPressed) {
+                (context as? MainActivity)?.finish()
+            } else {
+                backButtonPressed = true
+                showToast(context, "Press again to exit")
+                coroutineScope.launch {
+                    delay(2000)
+                    backButtonPressed = false
+                }
+            }
+        }
+    })
 
     Column(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
@@ -140,13 +160,5 @@ fun MainBottomNavScreen(
                 )
             }
         }
-    }
-}
-
-object PagerStateObject {
-    private val _page = MutableStateFlow(0)
-    val page = _page.asStateFlow()
-    fun setPage(number: Int) {
-        _page.value = number
     }
 }

@@ -31,7 +31,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
     LaunchedEffect(authState) {
         delay(500)
         if (authState) {
-            navController.navigate("main") {
+            navController.navigate("main?initialPage=0") {
                 popUpTo("loadingScreen") { inclusive = true }
             }
         } else {
