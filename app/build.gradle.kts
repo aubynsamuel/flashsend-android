@@ -47,6 +47,7 @@ android {
 }
 
 dependencies {
+    // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
@@ -54,8 +55,11 @@ dependencies {
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.barcode.scanning)
 
+    // Horizontal pager
     implementation(libs.accompanist.pager)
 
+    // Credentials Manager
+    implementation("androidx.credentials:credentials:1.5.0-rc01")
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -75,11 +79,10 @@ dependencies {
 
     // Google maps
     implementation(libs.play.services.maps)
-    implementation(libs.play.services.location) // Latest version as of now
+    implementation(libs.play.services.location)
 
     // Image Cropping
     implementation(libs.ucrop)
-
 
     // Media player
     implementation(libs.androidx.media3.exoplayer)
@@ -109,7 +112,6 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.messaging.ktx)
-
 
     // Navigation lib
     implementation(libs.androidx.navigation.compose)

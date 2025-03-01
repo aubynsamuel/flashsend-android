@@ -1,6 +1,9 @@
 package com.aubynsamuel.flashsend.auth
 
 import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aubynsamuel.flashsend.functions.MediaCacheManager
@@ -13,9 +16,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class AuthViewModel(private val repository: AuthRepository, context: Context) :
     ViewModel() {
     private val appContext = context.applicationContext
+
+    val appCredentialsManager = AppCredentialsManager(appContext)
 
     private val cacheHelper = CacheHelper(context = context)
 
@@ -31,6 +37,20 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val firebase = FirebaseFirestore.getInstance()
 
+    suspend fun saveCredentials(email: String, password: String) {
+        try {
+            val credentialSaved = appCredentialsManager.registerPassword(email, password)
+            if (!credentialSaved) {
+                Log.d(
+                    "AuthViewModel",
+                    "Credentials were not saved - this may be normal if user declined"
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Error saving credentials: ${e.message}")
+        }
+    }
+
     fun signUp(email: String, password: String) {
         _isLoggingIn.value = true
         viewModelScope.launch {
@@ -39,7 +59,7 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
                 _authState.value = true
                 _message.value = it
                 _isLoggingIn.value = false
-
+                saveCredentials(email, password)
             }.onFailure {
                 _isLoggingIn.value = false
                 _message.value = it.message
@@ -101,6 +121,7 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
                 _authState.value = true
                 _message.value = it
                 _isLoggingIn.value = false
+                saveCredentials(email, password)
             }.onFailure {
                 _message.value = it.message
                 _isLoggingIn.value = false

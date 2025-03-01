@@ -1,6 +1,8 @@
 package com.aubynsamuel.flashsend.auth
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -40,7 +44,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aubynsamuel.flashsend.functions.showToast
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@OptIn(DelicateCoroutinesApi::class)
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun AuthForm(
     isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel
@@ -51,8 +58,22 @@ fun AuthForm(
     var passwordVisible by remember { mutableStateOf(false) }
     val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
     val context = LocalContext.current
-
     val fieldShape = RoundedCornerShape(20.dp)
+    var requestCredentials by remember { mutableStateOf(false) }
+
+    LaunchedEffect(requestCredentials) {
+        if (isLogin && requestCredentials) {
+            try {
+                val credentials = authViewModel.appCredentialsManager.getCredential()
+                credentials?.let { (savedEmail, savedPassword) ->
+                    email = savedEmail
+                    password = savedPassword
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(0.85f), horizontalAlignment = Alignment.CenterHorizontally
@@ -71,7 +92,11 @@ fun AuthForm(
             ),
             singleLine = true,
             shape = fieldShape,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    requestCredentials = it.isFocused
+                }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -99,7 +124,11 @@ fun AuthForm(
             },
             singleLine = true,
             shape = fieldShape,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    requestCredentials = it.isFocused
+                }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -119,7 +148,10 @@ fun AuthForm(
                 shape = fieldShape,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 8.dp),
+                leadingIcon = {
+                    Icon(Icons.Default.Lock, contentDescription = "Confirm Password")
+                },
             )
         }
 
