@@ -36,6 +36,7 @@ sealed class ChatState {
 
 @Suppress("UNCHECKED_CAST")
 class ChatViewModel(context: Context) : ViewModel() {
+    private val tag = "ChatViewModel"
     val unreadRoomIds = mutableStateListOf<String>()
 
     private val firestore = FirebaseFirestore.getInstance()
@@ -75,7 +76,7 @@ class ChatViewModel(context: Context) : ViewModel() {
         this.otherUserId = otherUserId
 
         Log.d(
-            "ChatViewModel",
+            tag,
             "Initializing chat: roomId=$roomId, currentUserId=$currentUserId, otherUserId=$otherUserId"
         )
 
@@ -87,7 +88,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 launch {
                     messageDao.getMessagesForRoom(roomId).collect { cachedMessages ->
                         Log.d(
-                            "ChatViewModel",
+                            tag,
                             "Received ${cachedMessages.size} cached messages from local database"
                         )
                         val chatMessages = cachedMessages.map { it.toChatMessage() }
@@ -102,7 +103,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 // Initialize Firestore listener for real-time updates.
 //                initializeMessageListener()
             } catch (e: Exception) {
-                logger("chatPack", "Error initializing chat$e")
+                logger(tag, "Error initializing chat$e")
                 _chatState.value = ChatState.Error("Failed to initialize chat: ${e.message}")
             }
         }
@@ -111,20 +112,20 @@ class ChatViewModel(context: Context) : ViewModel() {
     fun initializeMessageListener() {
         roomId?.let { roomId ->
             messageListener?.remove()
-            Log.d("ChatViewModel", "Initializing Firestore message listener for roomId=$roomId")
+            Log.d(tag, "Initializing Firestore message listener for roomId=$roomId")
             val messagesRef = firestore.collection("rooms").document(roomId).collection("messages")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
 
             messageListener = messagesRef.addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    logger("chatPack", "Error in message listener: ${error.message}")
+                    logger(tag, "Error in message listener: ${error.message}")
                     _chatState.value = ChatState.Error("Error loading messages: ${error.message}")
                     return@addSnapshotListener
                 }
 
                 snapshot?.let { querySnapshot ->
                     Log.d(
-                        "ChatViewModel",
+                        tag,
                         "Firestore snapshot received with ${querySnapshot.documents.size} documents"
                     )
                     val messagesList = querySnapshot.documents.mapNotNull { doc ->
@@ -162,7 +163,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                             null
                         }
                     }
-                    Log.d("ChatViewModel", "Processed ${messagesList.size} messages from snapshot")
+                    Log.d(tag, "Processed ${messagesList.size} messages from snapshot")
                     _messages.value = messagesList
 
                     querySnapshot.documentChanges.forEach { change ->
@@ -171,7 +172,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                             viewModelScope.launch {
                                 messageDao.deleteMessage(deletedMessageId)
                                 Log.d(
-                                    "ChatViewModel",
+                                    tag,
                                     "Message $deletedMessageId deleted successfully"
                                 )
 
@@ -182,18 +183,18 @@ class ChatViewModel(context: Context) : ViewModel() {
                         val messageEntities = messagesList.map { it.toMessageEntity(roomId) }
                         try {
                             messageDao.insertMessages(messageEntities)
-                            Log.d("ChatViewModel", "Messages stored successfully")
+                            Log.d(tag, "Messages stored successfully")
                         } catch (e: Exception) {
-                            logger("chatPack", "Error storing messages in local database $e")
+                            logger(tag, "Error storing messages in local database $e")
                         }
                     }
                     _chatState.value = ChatState.Success(messagesList)
                 } ?: run {
-                    Log.d("ChatViewModel", "Firestore snapshot is null")
+                    Log.d(tag, "Firestore snapshot is null")
                 }
             }
         } ?: run {
-            logger("chatPack", "RoomId is null when trying to initialize message listener")
+            logger(tag, "RoomId is null when trying to initialize message listener")
             _chatState.value = ChatState.Error("Room ID is not set")
         }
     }
@@ -202,12 +203,12 @@ class ChatViewModel(context: Context) : ViewModel() {
         roomId: String, currentUserId: String, otherUserId: String
     ) {
         try {
-            Log.d("ChatViewModel", "Checking if room exists for roomId=$roomId")
+            Log.d(tag, "Checking if room exists for roomId=$roomId")
             val roomRef = firestore.collection("rooms").document(roomId)
             val room = roomRef.get().await()
 
             if (!room.exists()) {
-                Log.d("ChatViewModel", "Room does not exist. Creating new room with roomId=$roomId")
+                Log.d(tag, "Room does not exist. Creating new room with roomId=$roomId")
                 val roomData = hashMapOf(
                     "participants" to listOf(currentUserId, otherUserId),
                     "createdAt" to Timestamp.now(),
@@ -215,12 +216,12 @@ class ChatViewModel(context: Context) : ViewModel() {
                     "lastMessageTimestamp" to Timestamp.now()
                 )
                 roomRef.set(roomData).await()
-                Log.d("ChatViewModel", "Room created successfully for roomId=$roomId")
+                Log.d(tag, "Room created successfully for roomId=$roomId")
             } else {
-                Log.d("ChatViewModel", "Room already exists for roomId=$roomId")
+                Log.d(tag, "Room already exists for roomId=$roomId")
             }
         } catch (e: Exception) {
-            logger("chatPack", "Error creating room if needed $e")
+            logger(tag, "Error creating room if needed $e")
             throw e
         }
     }
@@ -242,13 +243,13 @@ class ChatViewModel(context: Context) : ViewModel() {
                             }
                             batch.commit().await()
                             Log.d(
-                                "ChatViewModel", "Marking ${unreadMessages.size} messages as read"
+                                tag, "Marking ${unreadMessages.size} messages as read"
                             )
                         }
                     }
                 }
             } catch (e: Exception) {
-                logger("chatPack", "Error marking messages as read $e")
+                logger(tag, "Error marking messages as read $e")
             }
         }
     }
@@ -284,7 +285,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 startTime = System.currentTimeMillis()
             }
         } catch (e: Exception) {
-            Log.e("AudioRecorder", "Error starting recording", e)
+            Log.e(tag, "Error starting recording", e)
         }
     }
 
@@ -331,7 +332,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                 roomId?.let { roomId ->
                     currentUserId?.let { userId ->
                         Log.d(
-                            "ChatViewModel",
+                            tag,
                             "Sending message: content='$content', senderId=$userId, senderName=$senderName, roomId=$roomId"
                         )
                         val messageData = hashMapOf(
@@ -349,7 +350,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                             firestore.collection("rooms").document(roomId).collection("messages")
                                 .add(messageData).await()
                         Log.d(
-                            "ChatViewModel",
+                            tag,
                             "Message sent to Firestore with document id=${addedDoc.id}"
                         )
 
@@ -372,13 +373,13 @@ class ChatViewModel(context: Context) : ViewModel() {
                             profileUrl
                         )
                         Log.d(
-                            "ChatViewModel",
+                            tag,
                             "Room's last message updated successfully for roomId=$roomId"
                         )
                     }
                 }
             } catch (e: Exception) {
-                logger("chatPack", "Error sending message $e")
+                logger(tag, "Error sending message $e")
                 _chatState.value = ChatState.Error("Failed to send message: ${e.message}")
             }
         }
@@ -425,7 +426,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error sending audio message", e)
+                Log.e(tag, "Error sending audio message", e)
             }
         }
     }
@@ -460,7 +461,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                         val addedDoc =
                             firestore.collection("rooms").document(roomId).collection("messages")
                                 .add(messageData).await()
-                        Log.d("ChatViewModel", "Image message sent with id=${addedDoc.id}")
+                        Log.d(tag, "Image message sent with id=${addedDoc.id}")
 
                         firestore.collection("rooms").document(roomId).update(
                             mapOf(
@@ -481,7 +482,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error sending image message", e)
+                Log.e(tag, "Error sending image message", e)
             }
         }
     }
@@ -515,7 +516,7 @@ class ChatViewModel(context: Context) : ViewModel() {
 
                 val addedDoc = firestore.collection("rooms").document(roomId).collection("messages")
                     .add(messageData).await()
-                Log.d("ChatViewModel", "Location message sent with id=${addedDoc.id}")
+                Log.d(tag, "Location message sent with id=${addedDoc.id}")
 
                 firestore.collection("rooms").document(roomId).update(
                     mapOf(
@@ -534,7 +535,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     profileUrl
                 )
             } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error sending location message", e)
+                Log.e(tag, "Error sending location message", e)
             }
         }
     }
@@ -547,7 +548,7 @@ class ChatViewModel(context: Context) : ViewModel() {
             storageRef.putFile(imageUri).await()
             storageRef.downloadUrl.await().toString()
         } catch (e: Exception) {
-            Log.e("ChatViewModel", "Error uploading image", e)
+            Log.e(tag, "Error uploading image", e)
             null
         }
     }
@@ -558,7 +559,7 @@ class ChatViewModel(context: Context) : ViewModel() {
             storageRef.putFile(Uri.fromFile(file)).await()
             storageRef.downloadUrl.await().toString()
         } catch (e: Exception) {
-            Log.e("ChatViewModel", "Error uploading audio", e)
+            Log.e(tag, "Error uploading audio", e)
             null
         }
         audioFile = null
@@ -601,19 +602,19 @@ class ChatViewModel(context: Context) : ViewModel() {
                             ?: mutableMapOf()
                     )
                 } catch (e: Exception) {
-                    Log.e("Prefetch", "Error parsing message ${doc.id}: ${e.message}")
+                    Log.e(tag, "Error parsing message ${doc.id}: ${e.message}")
                     null
                 }
             }
 
             if (newMessages.isNotEmpty()) {
                 messageDao.insertMessages(newMessages)
-                Log.d("Prefetch", "Inserted ${newMessages.size} new messages into local DB.")
+                Log.d(tag, "Inserted ${newMessages.size} new messages into local DB.")
             } else {
-                Log.d("Prefetch", "No new messages found for room: $roomId.")
+                Log.d(tag, "No new messages found for room: $roomId.")
             }
         } catch (e: Exception) {
-            Log.e("Prefetch", "Error fetching new messages for room $roomId: ${e.message}")
+            Log.e(tag, "Error fetching new messages for room $roomId: ${e.message}")
         }
     }
 
@@ -625,7 +626,7 @@ class ChatViewModel(context: Context) : ViewModel() {
         messageContent: String
     ) {
         try {
-            Log.e("Reactions", "Adding reaction")
+            Log.e(tag, "Adding reaction")
             val messageRef = firestore.collection("rooms").document(roomId).collection("messages")
                 .document(messageId)
 
@@ -641,7 +642,7 @@ class ChatViewModel(context: Context) : ViewModel() {
                     }
 
                     messageRef.update("reactions", updatedReactions).addOnSuccessListener {
-                        Log.e("Reactions", "Reaction Added Successfully")
+                        Log.e(tag, "Reaction Added Successfully")
                         // Now update the room's last message
                         firestore.collection("rooms").document(roomId).update(
                             mapOf(
@@ -650,27 +651,27 @@ class ChatViewModel(context: Context) : ViewModel() {
                                 "lastMessageSenderId" to userId
                             )
                         ).addOnSuccessListener {
-                            Log.e("Reactions", "Room's last message updated for reaction")
+                            Log.e(tag, "Room's last message updated for reaction")
                         }.addOnFailureListener { e ->
                             Log.e(
-                                "Reactions",
+                                tag,
                                 "Failed to update room's last message: ${e.message}"
                             )
                         }
                     }.addOnFailureListener { e ->
-                        Log.e("Reactions", "Failed to update reactions: ${e.message}")
+                        Log.e(tag, "Failed to update reactions: ${e.message}")
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e("Reactions", "Error updating reaction", e)
+            Log.e(tag, "Error updating reaction", e)
         }
     }
 
 
     override fun onCleared() {
         super.onCleared()
-        Log.d("OnCleared", "onCleared: Removing Firestore message listener and media recorder")
+        Log.d(tag, "onCleared: Removing Firestore message listener and media recorder")
         messageListener?.remove()
         stopRecording()
     }

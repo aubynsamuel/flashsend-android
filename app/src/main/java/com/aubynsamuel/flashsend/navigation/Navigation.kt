@@ -46,6 +46,7 @@ import com.google.gson.Gson
 fun ChatAppNavigation() {
     val context: Context = LocalContext.current
     val navController = rememberNavController()
+    val tag = "Navigation"
 
     val authViewModelInstance: AuthViewModel = viewModel {
         AuthViewModel(
@@ -187,7 +188,7 @@ fun ChatAppNavigation() {
                 profileUrl = profileUrl,
                 deviceToken = deviceToken,
                 onError = { error ->
-                    logger("CameraX", error.message.toString())
+                    logger(tag, error.message.toString())
                 })
         }
     }

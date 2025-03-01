@@ -26,7 +26,10 @@ import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 
+
 class MainActivity : ComponentActivity() {
+    private val tag = "MainActivityLogs"
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +39,7 @@ class MainActivity : ComponentActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val token = task.result
-                logger("FCMToken", token)
+                logger(tag, token)
             }
         }
         setContent {

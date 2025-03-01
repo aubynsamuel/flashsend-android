@@ -1,14 +1,15 @@
 [versions]
 accompanistPager = "0.28.0"
 accompanistSystemuicontroller = "0.30.0"
-agp = "8.8.1"
+agp = "8.8.2"
 barcodeScanning = "17.3.0"
 benchmarkMacroJunit4 = "1.3.3"
 cameraCore = "1.4.1"
 coilCompose = "2.4.0"
 converterGson = "2.11.0"
-datastorePreferences = "1.1.2"
-firebaseBom = "33.9.0"
+credentials = "1.5.0-rc01"
+datastorePreferences = "1.1.3"
+firebaseBom = "33.10.0"
 gson = "2.10.1"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -16,14 +17,13 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.0"
+activityCompose = "1.10.1"
 composeBom = "2025.02.00"
 lottieCompose = "6.3.0"
 media3Exoplayer = "1.5.1"
 media3Ui = "1.5.1"
-navVersion = "2.8.7"
+navVersion = "2.8.8"
 playServicesLocation = "21.3.0"
-playServicesMaps = "19.0.0"
 profileinstaller = "1.4.1"
 retrofit = "2.11.0"
 roomCompilerVersion = "2.6.1"
@@ -43,6 +43,7 @@ androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", versi
 androidx-camera-mlkit-vision = { module = "androidx.camera:camera-mlkit-vision", version.ref = "cameraCore" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
@@ -76,7 +77,6 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 ucrop = { module = "com.github.yalantis:ucrop", version.ref = "ucrop" }

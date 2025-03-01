@@ -58,6 +58,7 @@ fun ChatScreen(
     profileUrl: String,
     settingsViewModel: SettingsViewModel,
 ) {
+    val tag = "ChatRoom"
     val context = LocalContext.current
 
 //    initializations
@@ -144,12 +145,12 @@ fun ChatScreen(
     }
 
     LaunchedEffect(roomId, currentUserId, userId) {
-        Log.d("ChatScreen", "Initializing chat with roomId: $roomId")
+        Log.d(tag, "Initializing chat with roomId: $roomId")
         chatViewModel.initialize(roomId, currentUserId, userId)
     }
     LaunchedEffect(connectivityStatus) {
         if (connectivityStatus is ConnectivityStatus.Available) {
-            Log.d("ChatScreen", "Re-initializing chatroom listener with roomId: $roomId")
+            Log.d(tag, "Re-initializing chatroom listener with roomId: $roomId")
             netActivity = ""
             chatViewModel.initializeMessageListener()
         } else

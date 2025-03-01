@@ -41,11 +41,10 @@ fun SearchUsersScreen(
     navController: NavController,
 ) {
     val auth = FirebaseAuth.getInstance()
-
+    val tag = "SearchUsersScreen"
     val currentUsername by remember { mutableStateOf(auth.currentUser?.uid) }
 
-
-    logger("homePack", currentUsername.toString())
+    logger(tag, currentUsername.toString())
 
     var searchText by remember { mutableStateOf(("")) }
     var filteredUsers by remember { mutableStateOf<List<User>>(emptyList()) }

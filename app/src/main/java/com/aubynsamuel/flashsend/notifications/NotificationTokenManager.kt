@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 object NotificationTokenManager {
     private const val PREFS_NAME = "notification_prefs"
     private const val TOKEN_KEY = "deviceToken"
+    private const val TAG = "NotificationTokenManager"
 
     /**
      * Initializes and updates the token if it has changed.
@@ -14,7 +15,7 @@ object NotificationTokenManager {
     fun initializeAndUpdateToken(context: Context, userId: String, newToken: String) {
         val cachedToken = getStoredToken(context)
         if (cachedToken == newToken) {
-            Log.d("NotificationTokenManager", "Token has not changed, no updates needed.")
+            Log.d(TAG, "Token has not changed, no updates needed.")
             return
         }
         updateUserToken(context, userId, newToken)
@@ -31,11 +32,11 @@ object NotificationTokenManager {
 
         userDocRef.update("deviceToken", token)
             .addOnSuccessListener {
-                Log.d("NotificationTokenManager", "FCM token updated successfully.")
+                Log.d(TAG, "FCM token updated successfully.")
                 cacheToken(context, token)
             }
             .addOnFailureListener { e ->
-                Log.e("NotificationTokenManager", "Error updating user token", e)
+                Log.e(TAG, "Error updating user token", e)
             }
     }
 

@@ -24,6 +24,7 @@ import com.aubynsamuel.flashsend.functions.MediaCacheManager
 fun ImageMessage(
     message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16, showPopUp: () -> Unit
 ) {
+    val tag = "ImageMessage"
     var isExpanded by remember { mutableStateOf(false) }
     message.image?.let { imageUrl ->
         val context = LocalContext.current
@@ -31,7 +32,7 @@ fun ImageMessage(
 
         LaunchedEffect(imageUrl) {
             val cachedUri = MediaCacheManager.getMediaUri(context, imageUrl)
-            Log.d("ImageMessage", "Retrieved cached image URI: $cachedUri")
+            Log.d(tag, "Retrieved cached image URI: $cachedUri")
             mediaUri = cachedUri
         }
 

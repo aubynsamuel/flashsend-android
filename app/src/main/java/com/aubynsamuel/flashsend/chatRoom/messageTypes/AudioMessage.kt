@@ -41,20 +41,21 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
+    val tag = "AudioMessage"
     val context = LocalContext.current
     // Original URL as fallback
     var mediaUri by remember { mutableStateOf(Uri.parse(message.audio)) }
 
     LaunchedEffect(message.audio) {
         val cachedUri = MediaCacheManager.getMediaUri(context, message.audio.toString())
-        Log.d("CachedAudioMessage", "Retrieved media URI: $cachedUri")
+        Log.d(tag, "Retrieved media URI: $cachedUri")
         mediaUri = cachedUri
     }
 
     val exoPlayer = remember { ExoPlayer.Builder(context).build() }
 
     LaunchedEffect(mediaUri) {
-        Log.d("CachedAudioMessage", "Updating ExoPlayer with new mediaUri: $mediaUri")
+        Log.d(tag, "Updating ExoPlayer with new mediaUri: $mediaUri")
         exoPlayer.setMediaItem(MediaItem.fromUri(mediaUri))
         exoPlayer.prepare()
     }
@@ -75,13 +76,13 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
                     currentPosition = 0L
                     exoPlayer.seekTo(0)
                     exoPlayer.pause()
-                    Log.d("CachedAudioMessage", "Playback ended, reset player")
+                    Log.d(tag, "Playback ended, reset player")
                 }
             }
 
             override fun onIsPlayingChanged(playing: Boolean) {
                 isPlaying = playing
-                Log.d("CachedAudioMessage", "Playback state changed: isPlaying = $playing")
+                Log.d(tag, "Playback state changed: isPlaying = $playing")
             }
         }
 

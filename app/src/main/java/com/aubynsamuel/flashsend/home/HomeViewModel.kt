@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class HomeViewModel(context: Context) : ViewModel() {
+    private val tag = "HomeViewModel"
     private val appContext = context.applicationContext
     private val _rooms = MutableStateFlow<List<RoomData>>(emptyList())
     val rooms: StateFlow<List<RoomData>> = _rooms
@@ -41,7 +42,7 @@ class HomeViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             val cachedRooms = cacheHelper.loadRooms()
             _rooms.value = cachedRooms
-            logger("RoomCache", "Cached rooms loaded ${cachedRooms.size}")
+            logger(tag, "Cached rooms loaded ${cachedRooms.size}")
         }
     }
 
@@ -109,7 +110,7 @@ class HomeViewModel(context: Context) : ViewModel() {
                             userCache[otherUserId] = updatedUser
                             updatedUser
                         } catch (e: Exception) {
-                            logger("homePack", message = e.message.toString())
+                            logger(tag, message = e.message.toString())
                             null
                         } ?: return@mapNotNull null
 

@@ -20,6 +20,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ReplyReceiver : BroadcastReceiver() {
+    private val tag = "ReplyReceiver"
     @OptIn(DelicateCoroutinesApi::class)
     override fun onReceive(context: Context, intent: Intent) {
         val repository = NotificationRepository()
@@ -52,7 +53,7 @@ class ReplyReceiver : BroadcastReceiver() {
                             replyText = replyText
                         )
                     } catch (e: Exception) {
-                        logger("NetWorkError", e.message.toString())
+                        logger(tag, e.message.toString())
                     }
                 }
 

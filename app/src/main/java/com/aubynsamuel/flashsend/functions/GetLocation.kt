@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 
 fun getCurrentLocation(
     context: Context,
@@ -19,7 +21,12 @@ fun getCurrentLocation(
         onLocationResult(null, null)
         return
     }
-    fusedLocationClient.lastLocation
+    val cancellationTokenSource = CancellationTokenSource()
+
+    fusedLocationClient.getCurrentLocation(
+        Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+        cancellationTokenSource.token
+    )
         .addOnSuccessListener { location ->
             if (location != null) {
                 onLocationResult(location.latitude, location.longitude)

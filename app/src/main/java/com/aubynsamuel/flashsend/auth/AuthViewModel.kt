@@ -19,6 +19,8 @@ import kotlinx.coroutines.tasks.await
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class AuthViewModel(private val repository: AuthRepository, context: Context) :
     ViewModel() {
+    private val tag = "AuthViewModel"
+
     private val appContext = context.applicationContext
 
     val appCredentialsManager = AppCredentialsManager(appContext)
@@ -42,12 +44,12 @@ class AuthViewModel(private val repository: AuthRepository, context: Context) :
             val credentialSaved = appCredentialsManager.registerPassword(email, password)
             if (!credentialSaved) {
                 Log.d(
-                    "AuthViewModel",
+                    tag,
                     "Credentials were not saved - this may be normal if user declined"
                 )
             }
         } catch (e: Exception) {
-            Log.e("AuthViewModel", "Error saving credentials: ${e.message}")
+            Log.e(tag, "Error saving credentials: ${e.message}")
         }
     }
 

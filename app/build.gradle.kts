@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.accompanist.pager)
 
     // Credentials Manager
-    implementation("androidx.credentials:credentials:1.5.0-rc01")
+    implementation(libs.androidx.credentials)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -78,7 +78,6 @@ dependencies {
     implementation(libs.lottie.compose)
 
     // Google maps
-    implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
     // Image Cropping

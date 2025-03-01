@@ -208,7 +208,7 @@ private fun FontSizeSelector(
     }
 }
 
-// ResetConfirmationDialog.kt
+// ResetConfirmationDialog
 @Composable
 fun ResetConfirmationDialog(
     onConfirm: () -> Unit,
@@ -231,7 +231,7 @@ fun ResetConfirmationDialog(
     )
 }
 
-// SettingsTopAppBar.kt
+// SettingsTopAppBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsTopAppBar(
@@ -260,7 +260,7 @@ fun SettingsTopAppBar(
     )
 }
 
-// SettingsSection.kt
+// SettingsSection
 @Composable
 fun SettingsSection(
     title: String,

@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 
 class ActionReceiver : BroadcastReceiver() {
     @OptIn(DelicateCoroutinesApi::class)
+    private val tag = "ActionReceiver"
     override fun onReceive(context: Context, intent: Intent) {
         val repository = NotificationRepository()
         val notificationId = intent.data
@@ -25,7 +26,7 @@ class ActionReceiver : BroadcastReceiver() {
                         roomId = roomId,
                     )
                 } catch (e: Exception) {
-                    logger("NetWorkError", e.message.toString())
+                    logger(tag, e.message.toString())
                 }
             }
 

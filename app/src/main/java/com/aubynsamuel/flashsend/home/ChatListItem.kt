@@ -47,13 +47,14 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
     var isExpanded by remember { mutableStateOf(false) }
     val auth = FirebaseAuth.getInstance()
     val currentUserId = auth.currentUser?.uid ?: return
+    val tag = "ChatListItem"
 
     fun getUnreadMessages(roomId: String, otherUserId: String) {
         firestore.collection("rooms").document(roomId).collection("messages")
             .where(Filter.equalTo("read", false)).where(Filter.equalTo("senderId", otherUserId))
             .addSnapshotListener { snapShot, error ->
                 if (error != null) {
-                    logger("chatPack", error.message.toString())
+                    logger(tag, error.message.toString())
                     return@addSnapshotListener
                 }
                 snapShot?.let {

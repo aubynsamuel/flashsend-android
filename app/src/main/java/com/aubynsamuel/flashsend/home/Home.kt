@@ -62,15 +62,16 @@ fun HomeScreen(
     val notificationRepository = NotificationRepository()
     val user = FirebaseAuth.getInstance().currentUser
     var retrievedToken by remember { mutableStateOf("") }
+    val tag = "homeLogs"
     fun getFCMToken() {
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Log.e("FCM", "Fetching FCM token failed", task.exception)
+                    Log.e(tag, "Fetching FCM token failed", task.exception)
                     return@addOnCompleteListener
                 }
                 retrievedToken = task.result
-                Log.d("FCM", "FCM Token: $retrievedToken")
+                Log.d(tag, "FCM Token: $retrievedToken")
             }
     }
 
@@ -118,7 +119,7 @@ fun HomeScreen(
         try {
             notificationRepository.checkServerHealth()
         } catch (e: Exception) {
-            logger("NetWorkError", e.message.toString())
+            logger(tag, e.message.toString())
         }
     }
     LaunchedEffect(retrievedToken) {
@@ -128,16 +129,16 @@ fun HomeScreen(
                     context, user.uid, retrievedToken.toString()
                 )
             } else {
-                Log.w("NotificationTokenChange", "User not signed in; cannot update token.")
+                Log.w(tag, "User not signed in; cannot update token.")
             }
         } catch (e: Exception) {
-            logger("NetWorkError", e.message.toString())
+            logger(tag, e.message.toString())
         }
         try {
             getFCMToken()
             notificationRepository.checkServerHealth()
         } catch (e: Exception) {
-            logger("NetWorkError", e.message.toString())
+            logger(tag, e.message.toString())
         }
     }
     LaunchedEffect(retrievedToken) {
@@ -147,10 +148,10 @@ fun HomeScreen(
                     context, user.uid, retrievedToken.toString()
                 )
             } else {
-                Log.w("NotificationTokenChange", "User not signed in; cannot update token.")
+                Log.w(tag, "User not signed in; cannot update token.")
             }
         } catch (e: Exception) {
-            logger("NetWorkError", e.message.toString())
+            logger(tag, e.message.toString())
         }
     }
 

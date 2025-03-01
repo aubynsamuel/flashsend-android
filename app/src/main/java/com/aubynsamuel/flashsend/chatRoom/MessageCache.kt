@@ -10,7 +10,7 @@ import com.aubynsamuel.flashsend.functions.logger
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
-private const val TAG = "ChatDatabase"
+private const val ChatDataBaseLogs = "ChatDatabase"
 
 // Room Entity
 @Entity(tableName = "messages")
@@ -156,22 +156,22 @@ abstract class ChatDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): ChatDatabase {
             return INSTANCE ?: synchronized(this) {
-                Log.d(TAG, "Creating new ChatDatabase instance")
+                Log.d(ChatDataBaseLogs, "Creating new ChatDatabase instance")
                 val instance = Room.databaseBuilder(
                     context.applicationContext, ChatDatabase::class.java, "chat_database"
                 ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        Log.d(TAG, "onCreate: Database created at path: ${db.path}")
+                        Log.d(ChatDataBaseLogs, "onCreate: Database created at path: ${db.path}")
                     }
 
                     override fun onOpen(db: SupportSQLiteDatabase) {
                         super.onOpen(db)
-                        Log.d(TAG, "onOpen: Database opened at path: ${db.path}")
+                        Log.d(ChatDataBaseLogs, "onOpen: Database opened at path: ${db.path}")
                     }
                 }).build()
                 INSTANCE = instance
-                Log.d(TAG, "ChatDatabase instance created and assigned")
+                Log.d(ChatDataBaseLogs, "ChatDatabase instance created and assigned")
                 instance
             }
         }

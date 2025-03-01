@@ -2,7 +2,6 @@ package com.aubynsamuel.flashsend.functions
 
 import com.aubynsamuel.flashsend.chatRoom.MessageEntity
 
-// Extension functions for conversions with logging.
 fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
 //    Log.d(
 //        "ChatViewModel",

@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
 class CacheHelper(context: Context) {
+    private val tag = "roomCache"
     private val sharedPreferences = context.getSharedPreferences("app_cache", Context.MODE_PRIVATE)
     private val gson = GsonBuilder()
         .registerTypeAdapter(Timestamp::class.java, TimestampTypeAdapter())
@@ -27,7 +28,7 @@ class CacheHelper(context: Context) {
                 gson.fromJson(it, type) ?: emptyList()
             } ?: emptyList()
         } catch (e: Exception) {
-            logger("homePack", e.message.toString())
+            logger(tag, e.message.toString())
             emptyList()
         }
     }
