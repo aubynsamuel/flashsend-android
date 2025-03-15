@@ -1,5 +1,7 @@
 package com.aubynsamuel.flashsend.auth
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +21,7 @@ import com.airbnb.lottie.compose.*
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.functions.showToast
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun AuthScreen(
     navController: NavController, authViewModel: AuthViewModel

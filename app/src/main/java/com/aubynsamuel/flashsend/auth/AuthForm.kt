@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,15 +61,18 @@ fun AuthForm(
     val context = LocalContext.current
     val fieldShape = RoundedCornerShape(20.dp)
     var requestCredentials by remember { mutableStateOf(false) }
+    var credentialsDialogViewCount by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(requestCredentials) {
-        if (isLogin && requestCredentials) {
+    LaunchedEffect(requestCredentials == true) {
+        if (isLogin && (credentialsDialogViewCount < 3)) {
             try {
                 val credentials = authViewModel.appCredentialsManager.getCredential()
                 credentials?.let { (savedEmail, savedPassword) ->
                     email = savedEmail
                     password = savedPassword
                 }
+                credentialsDialogViewCount++
+                requestCredentials = false
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -95,7 +99,7 @@ fun AuthForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged {
-                    requestCredentials = it.isFocused
+                    if (email.isBlank()) requestCredentials = it.isFocused
                 }
         )
 
@@ -127,7 +131,7 @@ fun AuthForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged {
-                    requestCredentials = it.isFocused
+                    if (password.isBlank()) requestCredentials = it.isFocused
                 }
         )
 

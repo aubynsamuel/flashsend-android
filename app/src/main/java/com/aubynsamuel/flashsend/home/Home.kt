@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -48,6 +49,7 @@ import com.aubynsamuel.flashsend.notifications.NotificationTokenManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -232,8 +234,8 @@ fun HomeScreen(
                             icon = Icons.Default.Settings
                         ),
                         DropMenu(
-                            text = "QRScannerScreen",
-                            onClick = { navController.navigate("QRScannerScreen") },
+                            text = "notifications",
+                            onClick = { navController.navigate("notifications") },
                             icon = Icons.Default.QrCodeScanner
                         ),
                         DropMenu(

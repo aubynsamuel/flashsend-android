@@ -29,20 +29,21 @@ fun Notifications(context: Context) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        val messages = listOf<String>(
-//            "Hello Junior", "No bs today", "I don't like it",
-//            "Alright reply to this one"
-//        )
+        val messages = listOf<String>(
+            "Hello Junior", "No bs today", "I don't like it",
+            "Alright reply to this one"
+        )
         Text(
             text = "Show a notification",
             modifier = Modifier.clickable(onClick = {
                 showNotification(
                     context,
-                    message = "Alright reply to this one",
+                    message = messages.random(),
                     sender = "Samuel",
                     id = "as",
                     sendersUserId = "",
-                    recipientsUserId = ""                )
+                    recipientsUserId = ""
+                )
             }), color = MaterialTheme.colorScheme.onBackground
         )
     }

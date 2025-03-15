@@ -41,7 +41,7 @@ import com.aubynsamuel.flashsend.settings.dataStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 
-@RequiresApi(Build.VERSION_CODES.R)
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun ChatAppNavigation() {
     val context: Context = LocalContext.current

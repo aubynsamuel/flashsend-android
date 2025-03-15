@@ -20,17 +20,29 @@ A modern Android chat application built with Jetpack Compose that enables real-t
 
 ## Screenshots
 
-<!-- Add your screenshots here -->
-*Screenshots coming soon*
+![Authentication Screen](screenShots/authentication.jpg)
+![Chats Screen](screenShots/chats_screen.jpg)
+![Chat Room](screenShots/chatRoom.jpg)
+![Message Actions & Reactions](screenShots/message_actions_and_reactions.jpg)
+![Settings Screen](screenShots/settings_screen.jpg)
+![Notifications](screenShots/notifications.jpg)
+![Dark Mode](screenShots/dark_mode.jpg)
+![Chat Room Alternative](screenShots/chatRoom1.jpg)
+![Search Users](screenShots/search_users.jpg)
+![Edit Profile](screenShots/edit_profile.jpg)
+![Record Audio](screenShots/record_audio.jpg)
+![Profile Screen](screenShots/profile_screen.jpg)
 
 ## Tech Stack
 
 ### Frontend
+
 - **Jetpack Compose**: Modern UI toolkit for building native Android UI
 - **Material 3**: Latest Material Design components and theming
 - **Kotlin Coroutines & Flow**: For asynchronous programming and reactive streams
 
 ### Backend & Services
+
 - **Firebase Authentication**: User authentication and management
 - **Firebase Realtime Database**: Data storage and synchronization
 - **Firebase Cloud Messaging (FCM)**: Push notifications
