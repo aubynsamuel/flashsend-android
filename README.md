@@ -18,20 +18,24 @@ A modern Android chat application built with Jetpack Compose that enables real-t
 - **QR code scanning**: Add users by scanning their code
 - **Offline support**: Basic functionality when offline with automatic reconnection
 
-## Screenshots
+## Screenshots 📱
 
-![Authentication Screen](screenShots/authentication.jpg)
-![Chats Screen](screenShots/chats_screen.jpg)
-![Chat Room](screenShots/chatRoom.jpg)
-![Message Actions & Reactions](screenShots/message_actions_and_reactions.jpg)
-![Settings Screen](screenShots/settings_screen.jpg)
-![Notifications](screenShots/notifications.jpg)
-![Dark Mode](screenShots/dark_mode.jpg)
-![Chat Room Alternative](screenShots/chatRoom1.jpg)
-![Search Users](screenShots/search_users.jpg)
-![Edit Profile](screenShots/edit_profile.jpg)
-![Record Audio](screenShots/record_audio.jpg)
-![Profile Screen](screenShots/profile_screen.jpg)
+Here are some previews of the app:
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 25px;">
+    <img src="screenShots/authentication.jpg" width="200" alt="Authentication Screen">
+    <img src="screenShots/chats_screen.jpg" width="200" alt="Chats Screen">
+    <img src="screenShots/chatRoom.jpg" width="200" alt="Chat Room">
+    <img src="screenShots/message_actions_and_reactions.jpg" width="200" alt="Message Actions & Reactions">
+    <img src="screenShots/record_audio.jpg" width="200" alt="Record Audio">
+    <img src="screenShots/chatRoom1.jpg" width="200" alt="Chat Room Alternative">
+    <img src="screenShots/dark_mode.jpg" width="200" alt="Dark Mode">
+    <img src="screenShots/notifications.jpg" width="200" alt="Notifications">
+    <img src="screenShots/profile_screen.jpg" width="200" alt="Profile Screen">
+    <img src="screenShots/settings_screen.jpg" width="200" alt="Settings Screen">
+    <img src="screenShots/edit_profile.jpg" width="200" alt="Edit Profile">
+    <img src="screenShots/search_users.jpg" width="200" alt="Search Users">
+</div>
 
 ## Tech Stack
 
