@@ -11,16 +11,15 @@ A modern Android chat application built with Jetpack Compose that enables real-t
 - **Message management**: Edit and delete your sent messages
 - **Modern UI**: Built with Material 3 and Jetpack Compose
 - **Dark/Light themes**: Customizable appearance based on user preference
-- **Notifications**: Push notifications for new messages with quick reply functionality
-- **User profiles**: View and edit profile information
+- **Notifications**: Push notifications for new messages with reply and mark as read functionality
+- **User profiles**: View and edit your profile information
 - **Firebase integration**: Authentication, real-time database, cloud messaging
 - **Camera integration**: Take photos directly within the app
-- **QR code scanning**: Add users by scanning their code
 - **Offline support**: Basic functionality when offline with automatic reconnection
 
 ## Screenshots 📱
 
-Here are some previews of the app:
+Here are some screenshots of the app:
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 25px;">
     <img src="screenShots/authentication.jpg" width="200" alt="Authentication Screen">
