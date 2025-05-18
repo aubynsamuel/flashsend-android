@@ -13,7 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="BaselineProfile">
+      <SelectionState runConfigName="Baseline">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

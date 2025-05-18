@@ -1,10 +1,17 @@
 package com.aubynsamuel.flashsend.home
 
 import android.content.Context
+import androidx.core.content.edit
 import com.aubynsamuel.flashsend.functions.RoomData
 import com.aubynsamuel.flashsend.functions.logger
 import com.google.firebase.Timestamp
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
@@ -17,7 +24,7 @@ class CacheHelper(context: Context) {
 
     fun saveRooms(rooms: List<RoomData>) {
         val json = gson.toJson(rooms)
-        sharedPreferences.edit().putString("cached_rooms", json).apply()
+        sharedPreferences.edit() { putString("cached_rooms", json) }
     }
 
     fun loadRooms(): List<RoomData> {
@@ -41,7 +48,7 @@ class CacheHelper(context: Context) {
         override fun serialize(
             src: Timestamp,
             typeOfSrc: Type,
-            context: JsonSerializationContext
+            context: JsonSerializationContext,
         ): JsonElement {
             return JsonObject().apply {
                 addProperty("seconds", src.seconds)
@@ -52,7 +59,7 @@ class CacheHelper(context: Context) {
         override fun deserialize(
             json: JsonElement,
             typeOfT: Type,
-            context: JsonDeserializationContext
+            context: JsonDeserializationContext,
         ): Timestamp {
             val jsonObject = json.asJsonObject
             return Timestamp(
