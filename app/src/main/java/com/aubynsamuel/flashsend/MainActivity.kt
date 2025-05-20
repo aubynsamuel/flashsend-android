@@ -16,12 +16,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aubynsamuel.flashsend.functions.logger
+import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.navigation.ChatAppNavigation
-import com.aubynsamuel.flashsend.settings.SettingsRepository
-import com.aubynsamuel.flashsend.settings.SettingsViewModel
-import com.aubynsamuel.flashsend.settings.SettingsViewModelFactory
 import com.aubynsamuel.flashsend.settings.dataStore
+import com.aubynsamuel.flashsend.settings.domain.SettingsRepository
+import com.aubynsamuel.flashsend.settings.domain.SettingsViewModel
+import com.aubynsamuel.flashsend.settings.domain.SettingsViewModelFactory
 import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging

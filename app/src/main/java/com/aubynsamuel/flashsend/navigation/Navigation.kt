@@ -1,7 +1,6 @@
 package com.aubynsamuel.flashsend.navigation
 
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.slideInHorizontally
@@ -11,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,26 +18,26 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.aubynsamuel.flashsend.LoadingScreen
-import com.aubynsamuel.flashsend.auth.AuthRepository
-import com.aubynsamuel.flashsend.auth.AuthScreen
-import com.aubynsamuel.flashsend.auth.AuthViewModel
-import com.aubynsamuel.flashsend.auth.SetUserDetailsScreen
-import com.aubynsamuel.flashsend.chatRoom.CameraXScreen
-import com.aubynsamuel.flashsend.chatRoom.ChatScreen
-import com.aubynsamuel.flashsend.chatRoom.ChatViewModel
-import com.aubynsamuel.flashsend.chatRoom.ImagePreviewScreen
-import com.aubynsamuel.flashsend.chatRoom.OtherUserProfile
+import com.aubynsamuel.flashsend.auth.domain.AuthRepository
+import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
+import com.aubynsamuel.flashsend.auth.presentation.screens.AuthScreen
+import com.aubynsamuel.flashsend.auth.presentation.screens.SetUserDetailsScreen
 import com.aubynsamuel.flashsend.chatRoom.QRScannerScreen
-import com.aubynsamuel.flashsend.functions.User
-import com.aubynsamuel.flashsend.functions.logger
-import com.aubynsamuel.flashsend.functions.showToast
-import com.aubynsamuel.flashsend.home.EditProfileScreen
-import com.aubynsamuel.flashsend.home.SearchUsersScreen
-import com.aubynsamuel.flashsend.notifications.Notifications
-import com.aubynsamuel.flashsend.settings.SettingsRepository
-import com.aubynsamuel.flashsend.settings.SettingsViewModel
-import com.aubynsamuel.flashsend.settings.SettingsViewModelFactory
+import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
+import com.aubynsamuel.flashsend.chatRoom.presentation.screens.CameraXScreen
+import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ChatScreen
+import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ImagePreviewScreen
+import com.aubynsamuel.flashsend.chatRoom.presentation.screens.OtherUserProfileScreen
+import com.aubynsamuel.flashsend.core.domain.logger
+import com.aubynsamuel.flashsend.core.domain.showToast
+import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
+import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
+import com.aubynsamuel.flashsend.notifications.domain.Notifications
 import com.aubynsamuel.flashsend.settings.dataStore
+import com.aubynsamuel.flashsend.settings.domain.SettingsRepository
+import com.aubynsamuel.flashsend.settings.domain.SettingsViewModel
+import com.aubynsamuel.flashsend.settings.domain.SettingsViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 
@@ -143,7 +143,7 @@ fun ChatAppNavigation() {
         { backStackEntry ->
             val userJson = backStackEntry.arguments?.getString("userJson")
             val userData = Gson().fromJson(userJson, User::class.java)
-            OtherUserProfile(navController = navController, userData = userData)
+            OtherUserProfileScreen(navController = navController, userData = userData)
         }
         composable(route = Screen.ImagePreview.route,
             arguments = listOf(navArgument("imageUri") { type = NavType.StringType },
@@ -163,7 +163,7 @@ fun ChatAppNavigation() {
                 showToast(context, "An error occurred, Invalid image format")
                 return@composable
             }
-            val imageUri = Uri.parse(imageUriStr)
+            val imageUri = imageUriStr.toUri()
             ImagePreviewScreen(
                 navController = navController,
                 imageUri = imageUri,

@@ -21,5 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.aubynsamuel.flashsend.notifications.* { *; }
--keep class com.aubynsamuel.flashsend.functions.ChatMessage { *; }
--keep class com.aubynsamuel.flashsend.functions.Location { *; }
+-keep class com.aubynsamuel.flashsend.core.model.ChatMessage { *; }
+-keep class com.aubynsamuel.flashsend.core.model.Location { *; }

@@ -1,0 +1,225 @@
+package com.aubynsamuel.flashsend.auth.presentation.components
+
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
+import com.aubynsamuel.flashsend.core.domain.showToast
+import kotlinx.coroutines.DelicateCoroutinesApi
+
+@OptIn(DelicateCoroutinesApi::class)
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@Composable
+fun AuthForm(
+    isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
+    val context = LocalContext.current
+    val fieldShape = RoundedCornerShape(20.dp)
+    var requestCredentials by remember { mutableStateOf(false) }
+    var credentialsDialogViewCount by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(requestCredentials == true) {
+        if (isLogin && (credentialsDialogViewCount < 3)) {
+            try {
+                val credentials = authViewModel.appCredentialsManager.getCredential()
+                credentials?.let { (savedEmail, savedPassword) ->
+                    email = savedEmail
+                    password = savedPassword
+                }
+                credentialsDialogViewCount++
+                requestCredentials = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(0.85f), horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            leadingIcon = {
+                Icon(Icons.Default.Email, contentDescription = "Email")
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+                capitalization = KeyboardCapitalization.Sentences
+            ),
+            singleLine = true,
+            shape = fieldShape,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    if (email.isBlank()) requestCredentials = it.isFocused
+                }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            leadingIcon = {
+                Icon(Icons.Default.Lock, contentDescription = "Password")
+            },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = if (isLogin) ImeAction.Done else ImeAction.Next,
+                capitalization = KeyboardCapitalization.Sentences
+            ),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide Password" else "Show Password"
+                    )
+                }
+            },
+            singleLine = true,
+            shape = fieldShape,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    if (password.isBlank()) requestCredentials = it.isFocused
+                }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AnimatedVisibility(visible = !isLogin) {
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Confirm Password") },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                singleLine = true,
+                shape = fieldShape,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                leadingIcon = {
+                    Icon(Icons.Default.Lock, contentDescription = "Confirm Password")
+                },
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Forgot Password?", modifier = Modifier
+                .align(Alignment.End)
+                .clickable {
+                    if (email.isNotBlank()) {
+                        authViewModel.resetPassword(email)
+                    } else {
+                        Toast.makeText(
+                            context, "Please enter your email address", Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }, color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    if (isLogin) {
+                        authViewModel.login(email, password)
+                    } else {
+                        if (confirmPassword.isBlank()) {
+                            showToast(context, "Please confirm your password")
+                        } else if (confirmPassword != password) {
+                            showToast(context, "Passwords do not match")
+                        } else {
+                            authViewModel.signUp(email, password)
+                        }
+                    }
+                } else {
+                    showToast(context, "Email and password cannot be empty")
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(50.dp),
+            shape = fieldShape,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            if (isLoggingIn) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.align(
+                        Alignment.CenterVertically
+                    )
+                )
+            } else {
+                Text(text = if (isLogin) "Login" else "Sign Up", fontSize = 20.sp)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable { onToggleMode() })
+    }
+}
