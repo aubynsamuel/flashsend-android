@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -23,20 +22,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
+import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.core.domain.MediaCacheManager
 import com.aubynsamuel.flashsend.core.model.ChatMessage
 
 @Composable
 fun ImageMessage(
-    message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16, showPopUp: () -> Unit
+    message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16, showPopUp: () -> Unit,
 ) {
     val tag = "ImageMessage"
     var isExpanded by remember { mutableStateOf(false) }
     message.image?.let { imageUrl ->
         val context = LocalContext.current
-        var mediaUri by remember { mutableStateOf(Uri.parse(imageUrl)) }
+        var mediaUri by remember { mutableStateOf(imageUrl.toUri()) }
 
         LaunchedEffect(imageUrl) {
             val cachedUri = MediaCacheManager.getMediaUri(context, imageUrl)

@@ -29,13 +29,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -44,15 +42,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.delay
 
 @OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun AuthForm(
-    isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel
+    isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -61,24 +60,20 @@ fun AuthForm(
     val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
     val context = LocalContext.current
     val fieldShape = RoundedCornerShape(20.dp)
-    var requestCredentials by remember { mutableStateOf(false) }
-    var credentialsDialogViewCount by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(requestCredentials == true) {
-        if (isLogin && (credentialsDialogViewCount < 3)) {
-            try {
-                val credentials = authViewModel.appCredentialsManager.getCredential()
-                credentials?.let { (savedEmail, savedPassword) ->
-                    email = savedEmail
-                    password = savedPassword
-                }
-                credentialsDialogViewCount++
-                requestCredentials = false
-            } catch (e: Exception) {
-                e.printStackTrace()
+    LaunchedEffect(Unit) {
+        delay(3000)
+        try {
+            val credentials = authViewModel.appCredentialsManager.getCredential()
+            credentials?.let { (savedEmail, savedPassword) ->
+                email = savedEmail
+                password = savedPassword
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
+
 
     Column(
         modifier = Modifier.fillMaxWidth(0.85f), horizontalAlignment = Alignment.CenterHorizontally
@@ -99,9 +94,6 @@ fun AuthForm(
             shape = fieldShape,
             modifier = Modifier
                 .fillMaxWidth()
-                .onFocusChanged {
-                    if (email.isBlank()) requestCredentials = it.isFocused
-                }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -131,9 +123,6 @@ fun AuthForm(
             shape = fieldShape,
             modifier = Modifier
                 .fillMaxWidth()
-                .onFocusChanged {
-                    if (password.isBlank()) requestCredentials = it.isFocused
-                }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -218,7 +207,8 @@ fun AuthForm(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
+        Text(
+            text = if (isLogin) "Don't have an account? Sign Up" else "Already have an account? Login",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onToggleMode() })
     }

@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="FlashSend">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-28T15:43:15.596023300Z">
+        <DropdownSelection timestamp="2025-05-21T13:08:44.775114900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=be255d6a" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RZ8T604Q31H" />
             </handle>
           </Target>
         </DropdownSelection>

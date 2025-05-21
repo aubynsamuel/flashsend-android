@@ -11,6 +11,8 @@ import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.DateConverter
 import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.LocationConverter
 import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.ReactionConverter
 
+internal const val ChatDataBaseLogs = "ChatDatabase"
+
 @Database(entities = [MessageEntity::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class, LocationConverter::class, ReactionConverter::class)
 abstract class ChatDatabase : RoomDatabase() {

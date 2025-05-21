@@ -32,13 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.MainActivity
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
 import com.aubynsamuel.flashsend.home.presentation.screens.HomeScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.ProfileScreen
-import com.aubynsamuel.flashsend.settings.domain.SettingsViewModel
-import com.aubynsamuel.flashsend.settings.presentation.SettingsScreen
+import com.aubynsamuel.flashsend.settings.presentation.screens.SettingsScreen
+import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState

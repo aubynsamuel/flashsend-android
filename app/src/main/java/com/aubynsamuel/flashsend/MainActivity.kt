@@ -8,25 +8,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aubynsamuel.flashsend.core.domain.dataStore
 import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.navigation.ChatAppNavigation
-import com.aubynsamuel.flashsend.settings.dataStore
-import com.aubynsamuel.flashsend.settings.domain.SettingsRepository
-import com.aubynsamuel.flashsend.settings.domain.SettingsViewModel
+import com.aubynsamuel.flashsend.settings.data.SettingsRepository
 import com.aubynsamuel.flashsend.settings.domain.SettingsViewModelFactory
+import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val tag = "MainActivityLogs"
 
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = viewModel(
                 factory = SettingsViewModelFactory(settingsRepository)
             )
-            val settingsState by settingsViewModel.uiState.collectAsState()
+            val settingsState by settingsViewModel.settingsState.collectAsStateWithLifecycle()
 
             FlashSendTheme(themeMode = settingsState.themeMode) {
                 ChatAppNavigation()

@@ -3,9 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.baselineprofile)
-    id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
     id("kotlin-kapt")
-
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -118,6 +119,11 @@ dependencies {
     //Retrofit API
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+
+    // Dependency Injection
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.android.compiler)
 
     // Default libs
     implementation(libs.androidx.core.ktx)

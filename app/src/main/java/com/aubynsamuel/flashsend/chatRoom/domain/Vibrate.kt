@@ -22,5 +22,4 @@ fun vibrateDevice(context: Context) {
         @Suppress("DEPRECATION")
         vibrator.vibrate(50)
     }
-
 }

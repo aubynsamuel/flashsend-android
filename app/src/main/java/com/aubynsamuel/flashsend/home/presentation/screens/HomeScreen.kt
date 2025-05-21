@@ -47,23 +47,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.DropMenu
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.EmptyChatPlaceholder
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.PopUpMenu
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.ConnectivityViewModel
-import com.aubynsamuel.flashsend.core.domain.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.home.domain.HomeViewModel
 import com.aubynsamuel.flashsend.home.presentation.components.ChatListItem
-import com.aubynsamuel.flashsend.notifications.domain.NotificationRepository
-import com.aubynsamuel.flashsend.notifications.domain.NotificationTokenManager
+import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
+import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
+import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -74,12 +73,10 @@ fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
     context: Context,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
 ) {
-    val homeViewModel: HomeViewModel = viewModel {
-        HomeViewModel(context)
-    }
-    val notificationRepository = NotificationRepository()
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val notificationRepository = ApiRequestsRepository()
     val user = FirebaseAuth.getInstance().currentUser
     var retrievedToken by remember { mutableStateOf("") }
     val tag = "homeLogs"
@@ -95,9 +92,7 @@ fun HomeScreen(
             }
     }
 
-    var connectivityViewModel: ConnectivityViewModel = viewModel {
-        ConnectivityViewModel(NetworkConnectivityObserver(context))
-    }
+    var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     val rooms by homeViewModel.rooms.collectAsState()

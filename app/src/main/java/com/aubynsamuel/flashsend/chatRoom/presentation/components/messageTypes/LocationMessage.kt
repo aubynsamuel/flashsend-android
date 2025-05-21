@@ -1,7 +1,6 @@
 package com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +12,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
@@ -32,7 +32,7 @@ fun LocationMessage(message: ChatMessage, showPopUp: () -> Unit) {
                     vibrateDevice(context)
                     showPopUp()
                 }, onTap = {
-                    val uri = Uri.parse("geo:${location.latitude},${location.longitude}")
+                    val uri = "geo:${location.latitude},${location.longitude}".toUri()
                     Intent(Intent.ACTION_VIEW, uri).apply {
                         setPackage("com.google.android.apps.maps")
                         context.startActivity(this)

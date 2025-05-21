@@ -48,7 +48,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.getCurrentLocation
 import com.aubynsamuel.flashsend.core.model.NewUser
 

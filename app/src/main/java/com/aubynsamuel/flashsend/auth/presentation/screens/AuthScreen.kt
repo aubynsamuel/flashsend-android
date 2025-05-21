@@ -36,8 +36,8 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
 import com.aubynsamuel.flashsend.auth.presentation.components.AuthForm
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

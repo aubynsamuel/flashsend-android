@@ -29,7 +29,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import kotlinx.coroutines.delay
 
 @Composable

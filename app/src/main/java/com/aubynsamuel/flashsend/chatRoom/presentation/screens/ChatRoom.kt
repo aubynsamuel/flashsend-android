@@ -40,12 +40,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatState
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.AudioRecordingOverlay
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.DropMenu
@@ -54,16 +52,17 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.components.HeaderBar
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.MessageInput
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.MessagesList
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.ScrollToBottom
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatState
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.ConnectivityViewModel
-import com.aubynsamuel.flashsend.core.domain.NetworkConnectivityObserver
 import com.aubynsamuel.flashsend.core.domain.createRoomId
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.core.state.CurrentUser
 import com.aubynsamuel.flashsend.navigation.Screen
-import com.aubynsamuel.flashsend.notifications.services.ConversationHistoryManager
-import com.aubynsamuel.flashsend.notifications.services.person
-import com.aubynsamuel.flashsend.settings.domain.SettingsViewModel
+import com.aubynsamuel.flashsend.notifications.data.services.ConversationHistoryManager
+import com.aubynsamuel.flashsend.notifications.data.services.person
+import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
@@ -79,20 +78,16 @@ fun ChatScreen(
     deviceToken: String,
     profileUrl: String,
     settingsViewModel: SettingsViewModel,
+    chatViewModel: ChatViewModel,
 ) {
     val tag = "ChatRoom"
     val context = LocalContext.current
 
 //    initializations
     val auth = FirebaseAuth.getInstance()
-    val chatViewModel: ChatViewModel = viewModel {
-        ChatViewModel(context)
-    }
     val userData by CurrentUser.userData.collectAsStateWithLifecycle()
 
-    var connectivityViewModel: ConnectivityViewModel = viewModel {
-        ConnectivityViewModel(NetworkConnectivityObserver(context))
-    }
+    var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
 
 //    state variables
     val currentUserId = auth.currentUser?.uid ?: return
@@ -104,7 +99,7 @@ fun ChatScreen(
     val decodedUsername = URLDecoder.decode(username, "UTF-8")
     val isRecording by chatViewModel.isRecording.collectAsState()
     val showOverlay by chatViewModel.showRecordingOverlay.collectAsState()
-    val fontSize by settingsViewModel.uiState.collectAsState()
+    val fontSize by settingsViewModel.settingsState.collectAsState()
     val chatState by chatViewModel.chatState.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()

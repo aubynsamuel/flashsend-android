@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage

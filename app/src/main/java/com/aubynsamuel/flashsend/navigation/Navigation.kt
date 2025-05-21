@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,27 +19,25 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.aubynsamuel.flashsend.LoadingScreen
-import com.aubynsamuel.flashsend.auth.domain.AuthRepository
-import com.aubynsamuel.flashsend.auth.domain.AuthViewModel
 import com.aubynsamuel.flashsend.auth.presentation.screens.AuthScreen
 import com.aubynsamuel.flashsend.auth.presentation.screens.SetUserDetailsScreen
-import com.aubynsamuel.flashsend.chatRoom.QRScannerScreen
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
+import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.CameraXScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ChatScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ImagePreviewScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.OtherUserProfileScreen
+import com.aubynsamuel.flashsend.chatRoom.presentation.screens.QRScannerScreen
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
+import com.aubynsamuel.flashsend.core.domain.dataStore
 import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.domain.showToast
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
-import com.aubynsamuel.flashsend.notifications.domain.Notifications
-import com.aubynsamuel.flashsend.settings.dataStore
-import com.aubynsamuel.flashsend.settings.domain.SettingsRepository
-import com.aubynsamuel.flashsend.settings.domain.SettingsViewModel
+import com.aubynsamuel.flashsend.notifications.presentation.NotificationTestScreen
+import com.aubynsamuel.flashsend.settings.data.SettingsRepository
 import com.aubynsamuel.flashsend.settings.domain.SettingsViewModelFactory
-import com.google.firebase.auth.FirebaseAuth
+import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.google.gson.Gson
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -48,15 +47,8 @@ fun ChatAppNavigation() {
     val navController = rememberNavController()
     val tag = "Navigation"
 
-    val authViewModelInstance: AuthViewModel = viewModel {
-        AuthViewModel(
-            repository = AuthRepository(FirebaseAuth.getInstance()),
-            context = context
-        )
-    }
-    val chatViewModel: ChatViewModel = viewModel {
-        ChatViewModel(context = context)
-    }
+    val authViewModelInstance: AuthViewModel = hiltViewModel()
+    val chatViewModel: ChatViewModel = hiltViewModel()
     val dataStore = context.applicationContext.dataStore
     val settingsRepository = SettingsRepository(dataStore)
     val settingsViewModel = viewModel<SettingsViewModel>(
@@ -94,7 +86,8 @@ fun ChatAppNavigation() {
         composable(
             route = Screen.ChatRoom.route,
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) },
-            arguments = listOf(navArgument("username") { type = NavType.StringType },
+            arguments = listOf(
+                navArgument("username") { type = NavType.StringType },
                 navArgument("userId") { type = NavType.StringType },
                 navArgument("deviceToken") { type = NavType.StringType },
                 navArgument("profileUrl") { type = NavType.StringType })
@@ -110,6 +103,7 @@ fun ChatAppNavigation() {
                 deviceToken = deviceToken,
                 profileUrl = profileUrl,
                 settingsViewModel = settingsViewModel,
+                chatViewModel = chatViewModel,
             )
         }
         composable(
@@ -120,7 +114,7 @@ fun ChatAppNavigation() {
         composable(
             "notifications",
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
-            Notifications(context = context)
+            NotificationTestScreen(context = context)
         }
         composable(
             "QRScannerScreen",
@@ -137,7 +131,8 @@ fun ChatAppNavigation() {
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }) {
             EditProfileScreen(navController, authViewModel = authViewModelInstance)
         }
-        composable(route = "otherProfileScreen/{userJson}",
+        composable(
+            route = "otherProfileScreen/{userJson}",
             arguments = listOf(navArgument("userJson") { type = NavType.StringType }),
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) })
         { backStackEntry ->
@@ -145,8 +140,10 @@ fun ChatAppNavigation() {
             val userData = Gson().fromJson(userJson, User::class.java)
             OtherUserProfileScreen(navController = navController, userData = userData)
         }
-        composable(route = Screen.ImagePreview.route,
-            arguments = listOf(navArgument("imageUri") { type = NavType.StringType },
+        composable(
+            route = Screen.ImagePreview.route,
+            arguments = listOf(
+                navArgument("imageUri") { type = NavType.StringType },
                 navArgument("roomId") { type = NavType.StringType },
                 navArgument("takenFromCamera") { type = NavType.StringType },
                 navArgument("profileUrl") { type = NavType.StringType },
@@ -174,8 +171,10 @@ fun ChatAppNavigation() {
                 recipientsToken = recipientsToken
             )
         }
-        composable(route = Screen.CameraX.route,
-            arguments = listOf(navArgument("roomId") { type = NavType.StringType },
+        composable(
+            route = Screen.CameraX.route,
+            arguments = listOf(
+                navArgument("roomId") { type = NavType.StringType },
                 navArgument("profileUrl") { type = NavType.StringType },
                 navArgument("deviceToken") { type = NavType.StringType }),
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) })
@@ -183,7 +182,8 @@ fun ChatAppNavigation() {
             val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
             val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
             val deviceToken = backStackEntry.arguments?.getString("deviceToken") ?: ""
-            CameraXScreen(navController = navController,
+            CameraXScreen(
+                navController = navController,
                 roomId = roomId,
                 profileUrl = profileUrl,
                 deviceToken = deviceToken,

@@ -10,20 +10,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.net.HttpURLConnection
 import java.net.URL
+import javax.inject.Inject
 
-// Represents different network states.
 sealed class ConnectivityStatus {
-    object Available : ConnectivityStatus() // Internet is reachable
-    object Unavailable : ConnectivityStatus() // Internet is unreachable
+    object Available : ConnectivityStatus()
+    object Unavailable : ConnectivityStatus()
 }
 
-// Define an interface for the observer.
 interface ConnectivityObserver {
     fun observe(): Flow<ConnectivityStatus>
 }
 
-// Implementation of the ConnectivityObserver using ConnectivityManager.
-class NetworkConnectivityObserver(context: Context) : ConnectivityObserver {
+class NetworkConnectivityObserver @Inject constructor(context: Context) :
+    ConnectivityObserver {
 
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -44,7 +43,7 @@ class NetworkConnectivityObserver(context: Context) : ConnectivityObserver {
             // Optional: handle changes in network capabilities.
             override fun onCapabilitiesChanged(
                 network: Network,
-                networkCapabilities: NetworkCapabilities
+                networkCapabilities: NetworkCapabilities,
             ) {
                 checkInternetReachability { isReachable ->
                     trySend(if (isReachable) ConnectivityStatus.Available else ConnectivityStatus.Unavailable).isSuccess

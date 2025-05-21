@@ -44,11 +44,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
 import com.aubynsamuel.flashsend.chatRoom.domain.CropImageContract
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.state.CurrentUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,12 +57,12 @@ import kotlinx.coroutines.withContext
 @Composable
 fun ImagePreviewScreen(
     imageUri: Uri,
-    chatViewModel: ChatViewModel = viewModel(),
+    chatViewModel: ChatViewModel,
     navController: NavController,
     roomId: String,
     takenFromCamera: String?,
     profileUrl: String,
-    recipientsToken: String
+    recipientsToken: String,
 ) {
     var caption by remember { mutableStateOf("") }
     val context = LocalContext.current

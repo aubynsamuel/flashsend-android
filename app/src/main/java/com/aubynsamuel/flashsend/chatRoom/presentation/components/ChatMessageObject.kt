@@ -30,12 +30,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aubynsamuel.flashsend.chatRoom.domain.ChatViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.AudioMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.TextMessage
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.mock.messageExample
 import com.aubynsamuel.flashsend.core.domain.copyTextToClipboard
 import com.aubynsamuel.flashsend.core.domain.formatMessageTime
@@ -241,7 +242,7 @@ fun PrevChatMessage() {
         modifier = Modifier,
         roomId = "",
         fontSize = 15,
-        chatViewModel = ChatViewModel(LocalContext.current),
+        chatViewModel = hiltViewModel(),
         currentUserId = ""
     )
 }

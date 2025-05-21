@@ -3,35 +3,38 @@ accompanistPager = "0.28.0"
 accompanistSystemuicontroller = "0.30.0"
 agp = "8.8.2"
 barcodeScanning = "17.3.0"
-benchmarkMacroJunit4 = "1.3.3"
-cameraCore = "1.4.1"
+benchmarkMacroJunit4 = "1.3.4"
+cameraCore = "1.4.2"
 coilCompose = "2.4.0"
 converterGson = "2.11.0"
-credentials = "1.5.0-rc01"
-datastorePreferences = "1.1.3"
-firebaseBom = "33.10.0"
+credentials = "1.5.0"
+datastorePreferences = "1.1.7"
+firebaseBom = "33.14.0"
 gson = "2.10.1"
-kotlin = "2.0.0"
-coreKtx = "1.15.0"
+hiltAndroid = "2.56.2"
+hiltAndroidCompiler = "2.56.2"
+hiltNavigationCompose = "1.2.0"
+kotlin = "2.0.21"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.7"
+lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.02.00"
+composeBom = "2025.05.01"
 lottieCompose = "6.3.0"
-media3Exoplayer = "1.5.1"
-media3Ui = "1.5.1"
-navVersion = "2.8.8"
+media3Exoplayer = "1.7.1"
+media3Ui = "1.7.1"
+navVersion = "2.9.0"
 playServicesLocation = "21.3.0"
 profileinstaller = "1.4.1"
 retrofit = "2.11.0"
-roomCompilerVersion = "2.6.1"
-roomKtx = "2.6.1"
-roomRuntime = "2.6.1"
+roomCompilerVersion = "2.7.1"
+roomKtx = "2.7.1"
+roomRuntime = "2.7.1"
 ucrop = "2.2.10"
 uiautomator = "2.3.0"
-baselineprofile = "1.3.3"
+baselineprofile = "1.3.4"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -45,6 +48,7 @@ androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Ui" }
@@ -61,6 +65,8 @@ firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx"
 firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx" }
 firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

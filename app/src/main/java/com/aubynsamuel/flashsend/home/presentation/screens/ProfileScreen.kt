@@ -45,8 +45,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.FullScreenImageViewer
+import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.core.state.CurrentUser
+import com.aubynsamuel.flashsend.home.presentation.components.ProfileDetailItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)
