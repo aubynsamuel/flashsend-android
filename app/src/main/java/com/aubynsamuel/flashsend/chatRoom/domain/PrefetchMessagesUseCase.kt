@@ -6,6 +6,7 @@ import javax.inject.Inject
 class PrefetchMessagesUseCase @Inject constructor(
     private val messageRepository: MessageRepository,
 ) {
+
     suspend operator fun invoke(roomId: String) {
         messageRepository.prefetchNewMessagesForRoom(roomId)
     }

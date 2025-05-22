@@ -1,7 +1,9 @@
 package com.aubynsamuel.flashsend.chatRoom.data.remote
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.aubynsamuel.flashsend.chatRoom.data.local.ChatDatabase
 import com.aubynsamuel.flashsend.chatRoom.data.local.MessageDao
 import com.aubynsamuel.flashsend.chatRoom.data.local.toChatMessage
@@ -18,6 +20,7 @@ import com.google.firebase.firestore.Query
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
@@ -59,10 +62,11 @@ class MessageRepository @Inject constructor(
     }
 
     suspend fun getMessagesForRoom(roomId: String): List<ChatMessage> {
-        var chatMessages = emptyList<ChatMessage>()
-        messageDao.getMessagesForRoom(roomId)
-            .collect { messages -> chatMessages = messages.map { it.toChatMessage() } }
-        return chatMessages
+        return messageDao.getMessagesForRoom(roomId)
+            .map { messageEntities ->
+                messageEntities.map { it.toChatMessage() }
+            }
+            .first()
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -214,8 +218,10 @@ class MessageRepository @Inject constructor(
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun prefetchNewMessagesForRoom(roomId: String) {
         val cachedMessages = messageDao.getMessagesForRoom(roomId).first()
+        Log.d(tag, "Got ${cachedMessages.size} from Messages prefetch, roomId:$roomId")
         val lastCachedTime: Date = cachedMessages.firstOrNull()?.createdAt ?: Date(0)
 
         try {

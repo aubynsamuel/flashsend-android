@@ -45,7 +45,7 @@ fun EditMessageDialog(
             TextButton(
                 onClick = {
                     if (editText.isNotBlank()) {
-                        chatViewModel.UpdateMessage(
+                        chatViewModel.updateMessage(
                             roomId = roomId,
                             messageId = message.id,
                             newContent = editText,

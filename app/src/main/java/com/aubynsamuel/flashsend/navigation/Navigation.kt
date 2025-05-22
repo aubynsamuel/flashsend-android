@@ -95,7 +95,6 @@ fun ChatAppNavigation() {
                 deviceToken = deviceToken,
                 profileUrl = profileUrl,
                 settingsViewModel = settingsViewModel,
-                chatViewModel = chatViewModel,
             )
         }
         composable(

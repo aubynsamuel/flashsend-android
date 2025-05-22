@@ -78,13 +78,13 @@ fun ChatScreen(
     deviceToken: String,
     profileUrl: String,
     settingsViewModel: SettingsViewModel,
-    chatViewModel: ChatViewModel,
 ) {
     val tag = "ChatRoom"
     val context = LocalContext.current
 
 //    initializations
     val auth = FirebaseAuth.getInstance()
+    val chatViewModel: ChatViewModel = hiltViewModel()
     val userData by CurrentUser.userData.collectAsStateWithLifecycle()
 
     var connectivityViewModel: ConnectivityViewModel = hiltViewModel()

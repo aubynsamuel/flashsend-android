@@ -73,23 +73,18 @@ class ChatViewModel @Inject constructor(
         this.currentUserId = currentUserId
         this.otherUserId = otherUserId
 
-        Log.d(
-            tag,
-            "Initializing chat: roomId=$roomId, currentUserId=$currentUserId, otherUserId=$otherUserId"
-        )
+        Log.d(tag, "Initializing chat: roomId=$roomId")
 
         viewModelScope.launch {
             try {
                 _chatState.value = ChatState.Loading
+                var retrievedMessages: List<ChatMessage> = getMessagesUseCase(roomId)
+                Log.d(tag, "Received ${retrievedMessages.size} messages from localdb")
+                _messages.value = retrievedMessages
+                _chatState.value = ChatState.Success(retrievedMessages)
 
                 // Create the room if needed
                 initializeChatUseCase(roomId, currentUserId, otherUserId)
-
-                // Subscribe to messages from the local database
-                var retrievedMessages: List<ChatMessage> = getMessagesUseCase(roomId)
-                Log.d(tag, "Received ${retrievedMessages.size} messages")
-                _messages.value = retrievedMessages
-                _chatState.value = ChatState.Success(retrievedMessages)
             } catch (e: Exception) {
                 logger(tag, "Error initializing chat: $e")
                 _chatState.value = ChatState.Error("Failed to initialize chat: ${e.message}")
@@ -281,7 +276,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun UpdateMessage(
+    fun updateMessage(
         roomId: String,
         messageId: String,
         newContent: String,
@@ -298,11 +293,7 @@ class ChatViewModel @Inject constructor(
     }
 
     suspend fun prefetchNewMessagesForRoom(roomId: String) {
-        try {
-            prefetchMessagesUseCase(roomId)
-        } catch (e: Exception) {
-            logger(tag, "Error prefetching messages: $e")
-        }
+        prefetchMessagesUseCase(roomId)
     }
 
     override fun onCleared() {
