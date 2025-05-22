@@ -285,7 +285,8 @@ fun HomeScreen(
                     items(rooms) { room ->
                         ChatListItem(
                             room, navController,
-                            chatViewModel = chatViewModel
+                            chatViewModel = chatViewModel,
+                            homeViewModel = homeViewModel
                         )
                     }
                 }

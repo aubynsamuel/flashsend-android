@@ -102,9 +102,10 @@ fun ProfileScreen(
                     )
 
                     if (isExpanded) {
-                        FullScreenImageViewer(userData?.profileUrl.toString()) {
-                            isExpanded = false
-                        }
+                        FullScreenImageViewer(
+                            imageUri = userData?.profileUrl.toString(),
+                            onDismiss = { isExpanded = false }
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -156,26 +157,6 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Edit Profile")
             }
-
-//            Spacer(modifier = Modifier.height(16.dp))
-
-//            Button(
-//                onClick = {
-//                    authViewModel.logout()
-//                    navController.navigate("auth") {
-//                        popUpTo(0)
-//                    }
-//                },
-//                colors = ButtonDefaults.buttonColors(
-//                    containerColor = MaterialTheme.colorScheme.errorContainer,
-//                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-//                ),
-//                modifier = Modifier.fillMaxWidth(0.8f)
-//            ) {
-//                Icon(Icons.AutoMirrored.Default.Logout, contentDescription = null)
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Text("Log Out")
-//            }
         }
     }
 }

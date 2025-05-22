@@ -8,6 +8,7 @@ import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.model.RoomData
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.home.data.RoomsCache
+import com.aubynsamuel.flashsend.home.domain.GetUnreadMessagesUseCase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,26 +22,23 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(context: Context) : ViewModel() {
-    private val tag = "HomeViewModel"
+class HomeViewModel @Inject constructor(
+    private val getUnreadMessagesUseCase: GetUnreadMessagesUseCase,
+    context: Context,
+) : ViewModel() {
     private val appContext = context.applicationContext
     private val _rooms = MutableStateFlow<List<RoomData>>(emptyList())
-    val rooms: StateFlow<List<RoomData>> = _rooms
-
+    private val tag = "HomeViewModel"
     private val cacheHelper = RoomsCache(context = context)
-
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
-
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
-
     private val userCache = mutableMapOf<String, User>()
-
     private var roomsListenerRegistration: ListenerRegistration? = null
+    val rooms: StateFlow<List<RoomData>> = _rooms
+    val isLoading: StateFlow<Boolean> = _isLoading
+    val error: StateFlow<String?> = _error
 
     private fun loadCachedRooms() {
         viewModelScope.launch {
@@ -57,6 +55,14 @@ class HomeViewModel @Inject constructor(context: Context) : ViewModel() {
         } else {
             _error.value = "User not authenticated"
         }
+    }
+
+    fun getUnreadMessages(
+        roomId: String,
+        otherUserId: String,
+        callBack: (value: Int) -> Unit,
+    ) {
+        getUnreadMessagesUseCase(roomId, otherUserId, callBack)
     }
 
     private fun listenToRooms() {

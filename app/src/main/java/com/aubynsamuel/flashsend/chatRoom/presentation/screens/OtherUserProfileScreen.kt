@@ -113,9 +113,9 @@ fun OtherUserProfileScreen(
                     )
 
                     if (isExpanded) {
-                        FullScreenImageViewer(userData.profileUrl.toString()) {
-                            isExpanded = false
-                        }
+                        FullScreenImageViewer(
+                            imageUri = userData.profileUrl.toString(),
+                            onDismiss = { isExpanded = false })
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

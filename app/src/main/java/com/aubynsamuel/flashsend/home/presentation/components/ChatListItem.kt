@@ -38,36 +38,23 @@ import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.formatMessageTime
-import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.model.RoomData
+import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
 import com.aubynsamuel.flashsend.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.FirebaseFirestore
 import java.net.URLEncoder
 
 @Composable
-fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: ChatViewModel) {
-    val firestore = FirebaseFirestore.getInstance()
+fun ChatListItem(
+    room: RoomData,
+    navController: NavController,
+    chatViewModel: ChatViewModel,
+    homeViewModel: HomeViewModel,
+) {
     var unreadCount by remember { mutableIntStateOf(0) }
     var isExpanded by remember { mutableStateOf(false) }
     val auth = FirebaseAuth.getInstance()
     val currentUserId = auth.currentUser?.uid ?: return
-    val tag = "ChatListItem"
-
-    fun getUnreadMessages(roomId: String, otherUserId: String) {
-        firestore.collection("rooms").document(roomId).collection("messages")
-            .where(Filter.equalTo("read", false)).where(Filter.equalTo("senderId", otherUserId))
-            .addSnapshotListener { snapShot, error ->
-                if (error != null) {
-                    logger(tag, error.message.toString())
-                    return@addSnapshotListener
-                }
-                snapShot?.let {
-                    unreadCount = it.documents.size
-                }
-            }
-    }
 
     LaunchedEffect(unreadCount) {
         chatViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
@@ -80,9 +67,13 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
         }
     }
 
-    getUnreadMessages(room.roomId, room.otherParticipant.userId)
+    LaunchedEffect(Unit) {
+        homeViewModel.getUnreadMessages(
+            room.roomId,
+            room.otherParticipant.userId
+        ) { value -> unreadCount = value }
+    }
 
-//    Chat list item card
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,9 +118,10 @@ fun ChatListItem(room: RoomData, navController: NavController, chatViewModel: Ch
                     error = rememberAsyncImagePainter(R.drawable.person)
                 )
                 if (isExpanded) {
-                    FullScreenImageViewer(room.otherParticipant.profileUrl) {
-                        isExpanded = false
-                    }
+                    FullScreenImageViewer(
+                        imageUri = room.otherParticipant.profileUrl,
+                        onDismiss = { isExpanded = false }
+                    )
                 }
 
                 Column(

@@ -42,20 +42,21 @@ fun FullScreenImageViewer(imageUri: String, onDismiss: () -> Unit) {
     )
 
     Popup(onDismissRequest = onDismiss) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background.copy(alpha = computedAlpha))
-            .pointerInput(Unit) {
-                detectVerticalDragGestures(onVerticalDrag = { _: PointerInputChange, dragAmount: Float ->
-                    dragOffset += dragAmount
-                }, onDragEnd = {
-                    if (abs(dragOffset) > dragThreshold) {
-                        onDismiss()
-                    } else {
-                        dragOffset = 0f
-                    }
-                })
-            }) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background.copy(alpha = computedAlpha))
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(onVerticalDrag = { _: PointerInputChange, dragAmount: Float ->
+                        dragOffset += dragAmount
+                    }, onDragEnd = {
+                        if (abs(dragOffset) > dragThreshold) {
+                            onDismiss()
+                        } else {
+                            dragOffset = 0f
+                        }
+                    })
+                }) {
             Column {
                 Icon(
                     Icons.Default.Close,
@@ -69,7 +70,8 @@ fun FullScreenImageViewer(imageUri: String, onDismiss: () -> Unit) {
                         .offset { IntOffset(x = 0, y = dragOffset.roundToInt()) },
                     tint = MaterialTheme.colorScheme.onBackground
                 )
-                AsyncImage(model = imageUri,
+                AsyncImage(
+                    model = imageUri,
                     contentDescription = "Expanded Image",
                     modifier = Modifier
                         .fillMaxSize()

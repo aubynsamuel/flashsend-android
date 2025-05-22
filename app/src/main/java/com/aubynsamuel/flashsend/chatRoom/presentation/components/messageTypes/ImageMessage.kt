@@ -77,7 +77,10 @@ fun ImageMessage(
                 )
             }
             if (isExpanded) {
-                FullScreenImageViewer(mediaUri.toString()) { isExpanded = false }
+                FullScreenImageViewer(
+                    imageUri = mediaUri.toString(),
+                    onDismiss = { isExpanded = false },
+                )
             }
         }
     }
