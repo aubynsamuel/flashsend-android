@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,15 +27,12 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ImagePreviewScree
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.OtherUserProfileScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.QRScannerScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
-import com.aubynsamuel.flashsend.core.domain.dataStore
 import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.domain.showToast
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
 import com.aubynsamuel.flashsend.notifications.presentation.NotificationTestScreen
-import com.aubynsamuel.flashsend.settings.data.SettingsRepository
-import com.aubynsamuel.flashsend.settings.domain.SettingsViewModelFactory
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.google.gson.Gson
 
@@ -49,11 +45,7 @@ fun ChatAppNavigation() {
 
     val authViewModelInstance: AuthViewModel = hiltViewModel()
     val chatViewModel: ChatViewModel = hiltViewModel()
-    val dataStore = context.applicationContext.dataStore
-    val settingsRepository = SettingsRepository(dataStore)
-    val settingsViewModel = viewModel<SettingsViewModel>(
-        factory = SettingsViewModelFactory(settingsRepository)
-    )
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,

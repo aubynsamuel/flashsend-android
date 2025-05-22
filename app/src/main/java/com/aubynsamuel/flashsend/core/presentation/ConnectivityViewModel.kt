@@ -1,7 +1,9 @@
-package com.aubynsamuel.flashsend.core.domain
+package com.aubynsamuel.flashsend.core.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
+import com.aubynsamuel.flashsend.core.data.NetworkConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

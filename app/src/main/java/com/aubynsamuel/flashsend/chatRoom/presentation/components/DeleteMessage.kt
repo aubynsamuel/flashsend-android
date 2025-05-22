@@ -7,7 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.aubynsamuel.flashsend.chatRoom.data.ChatDatabase
+import com.aubynsamuel.flashsend.chatRoom.data.local.ChatDatabase
 import com.aubynsamuel.flashsend.core.model.ChatMessage
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.DelicateCoroutinesApi

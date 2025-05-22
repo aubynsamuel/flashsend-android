@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
+import com.aubynsamuel.flashsend.chatRoom.domain.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
-import com.aubynsamuel.flashsend.core.domain.MediaCacheManager
+import com.aubynsamuel.flashsend.core.data.MediaCacheManager
 import com.aubynsamuel.flashsend.core.model.ChatMessage
 
 @Composable

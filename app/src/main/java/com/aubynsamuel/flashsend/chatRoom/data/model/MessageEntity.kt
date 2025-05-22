@@ -1,11 +1,11 @@
-package com.aubynsamuel.flashsend.chatRoom.data
+package com.aubynsamuel.flashsend.chatRoom.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.DateConverter
-import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.LocationConverter
-import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.ReactionConverter
+import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.DateConverter
+import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.LocationConverter
+import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.ReactionConverter
 import com.aubynsamuel.flashsend.core.model.Location
 import java.util.Date
 

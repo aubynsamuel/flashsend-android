@@ -34,20 +34,7 @@ class AppCredentialsManager(private val context: Context) {
 
                 Log.d(tag, "Password credential successfully registered: $result")
                 true
-            } catch (e: CreateCredentialException) {
-                if (true) {
-                    Log.e(
-                        tag,
-                        "No create options available. This may be due to " +
-                                "lack of credential providers: ${e.message}"
-                    )
-                } else {
-                    Log.e(tag, "Failed to register password: ${e.message}")
-                }
-                false
-            } catch (e: Exception) {
-                Log.e(tag, "Unexpected error in registerPassword: ${e.message}")
-                e.printStackTrace()
+            } catch (_: CreateCredentialException) {
                 false
             }
         }
@@ -72,10 +59,6 @@ class AppCredentialsManager(private val context: Context) {
             }
         } catch (e: GetCredentialException) {
             Log.d(tag, "No credentials available: ${e.message}")
-            null
-        } catch (e: Exception) {
-            Log.e(tag, "Unexpected error in getCredential: ${e.message}")
-            e.printStackTrace()
             null
         }
     }

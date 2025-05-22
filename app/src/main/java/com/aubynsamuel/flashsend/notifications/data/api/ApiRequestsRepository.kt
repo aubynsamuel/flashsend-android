@@ -5,8 +5,9 @@ import com.aubynsamuel.flashsend.notifications.data.model.HealthResponse
 import com.aubynsamuel.flashsend.notifications.data.model.MarkAsReadRequest
 import com.aubynsamuel.flashsend.notifications.data.model.ReplyRequest
 import com.aubynsamuel.flashsend.notifications.data.model.SendNotificationRequest
+import javax.inject.Inject
 
-class ApiRequestsRepository {
+class ApiRequestsRepository @Inject constructor() {
     private val api = RetrofitClient.apiService
 
     // Send a push notification
@@ -17,7 +18,7 @@ class ApiRequestsRepository {
         roomId: String,
         recipientsUserId: String,
         sendersUserId: String,
-        profileUrl: String
+        profileUrl: String,
     ): ApiResponse {
         val request = SendNotificationRequest(
             recipientsToken, title, body, roomId, recipientsUserId, sendersUserId, profileUrl
@@ -30,7 +31,7 @@ class ApiRequestsRepository {
         sendersUserId: String,
         recipientsUserId: String,
         roomId: String,
-        replyText: String
+        replyText: String,
     ): ApiResponse {
         val request = ReplyRequest(sendersUserId, recipientsUserId, roomId, replyText)
         return api.sendReply(request)
@@ -39,7 +40,7 @@ class ApiRequestsRepository {
     // Mark messages as read
     suspend fun markMessagesAsRead(
         sendersUserId: String,
-        roomId: String
+        roomId: String,
     ): ApiResponse {
         val request = MarkAsReadRequest(sendersUserId, roomId)
         return api.markMessagesAsRead(request)

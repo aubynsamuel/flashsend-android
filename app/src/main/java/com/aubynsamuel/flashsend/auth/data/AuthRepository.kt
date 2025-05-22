@@ -10,7 +10,6 @@ class AuthRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firebase: FirebaseFirestore,
 ) {
-
     suspend fun createAuthUser(email: String, password: String): Result<String> {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()

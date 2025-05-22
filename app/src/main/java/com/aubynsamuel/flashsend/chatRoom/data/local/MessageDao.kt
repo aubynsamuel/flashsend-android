@@ -1,9 +1,10 @@
-package com.aubynsamuel.flashsend.chatRoom.data
+package com.aubynsamuel.flashsend.chatRoom.data.local
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.aubynsamuel.flashsend.chatRoom.data.model.MessageEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

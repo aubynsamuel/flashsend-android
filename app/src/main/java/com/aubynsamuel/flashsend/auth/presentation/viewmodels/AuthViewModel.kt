@@ -17,7 +17,6 @@ import com.aubynsamuel.flashsend.auth.domain.SignUpUseCase
 import com.aubynsamuel.flashsend.auth.domain.UpdateUserDocumentUseCase
 import com.aubynsamuel.flashsend.core.state.CurrentUser
 import com.aubynsamuel.flashsend.home.data.RoomsCache
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +37,6 @@ class AuthViewModel @Inject constructor(
     context: Context,
 ) : ViewModel() {
     private val tag = "AuthViewModel"
-    private val firebase = FirebaseFirestore.getInstance()
     private val appContext = context.applicationContext
     private val cacheHelper = RoomsCache(context = context)
     private val _authState = MutableStateFlow(isUserLoggedInUseCase())
@@ -51,13 +49,7 @@ class AuthViewModel @Inject constructor(
 
     suspend fun saveCredentials(email: String, password: String) {
         try {
-            val credentialSaved = appCredentialsManager.registerPassword(email, password)
-            if (!credentialSaved) {
-                Log.d(
-                    tag,
-                    "Credentials were not saved - this may be normal if user declined"
-                )
-            }
+            appCredentialsManager.registerPassword(email, password)
         } catch (e: Exception) {
             Log.e(tag, "Error saving credentials: ${e.message}")
         }

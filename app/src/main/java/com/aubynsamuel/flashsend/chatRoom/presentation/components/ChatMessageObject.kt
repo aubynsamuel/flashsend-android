@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
+import com.aubynsamuel.flashsend.chatRoom.domain.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.AudioMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
@@ -50,7 +50,7 @@ fun ChatMessageObject(
     roomId: String = "",
     fontSize: Int,
     chatViewModel: ChatViewModel,
-    currentUserId: String
+    currentUserId: String,
 ) {
     var showPopup by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -88,6 +88,7 @@ fun ChatMessageObject(
                 onMessageEdited = { updatedMessage ->
                     showEditDialog = false
                 },
+                chatViewModel = chatViewModel
             )
         }
 //       Content

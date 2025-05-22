@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.chatRoom.domain
+package com.aubynsamuel.flashsend.chatRoom.domain.utils
 
 import android.app.Activity
 import android.content.Context

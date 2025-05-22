@@ -70,6 +70,7 @@ fun SetUserDetailsScreen(
     ) { uri: Uri? ->
         profileUri = uri
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import com.aubynsamuel.flashsend.chatRoom.domain.updateMessageInFirebase
+import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.model.ChatMessage
 
 @Composable
@@ -22,7 +22,8 @@ fun EditMessageDialog(
     message: ChatMessage,
     initialText: String,
     onDismiss: () -> Unit,
-    onMessageEdited: (ChatMessage) -> Unit
+    onMessageEdited: (ChatMessage) -> Unit,
+    chatViewModel: ChatViewModel,
 ) {
     var editText by remember { mutableStateOf(initialText) }
     val context = LocalContext.current
@@ -44,7 +45,7 @@ fun EditMessageDialog(
             TextButton(
                 onClick = {
                     if (editText.isNotBlank()) {
-                        updateMessageInFirebase(
+                        chatViewModel.UpdateMessage(
                             roomId = roomId,
                             messageId = message.id,
                             newContent = editText,
@@ -66,7 +67,6 @@ fun EditMessageDialog(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             },
-                            context = context
                         )
                     }
                 }

@@ -1,13 +1,9 @@
-package com.aubynsamuel.flashsend.core.domain
+package com.aubynsamuel.flashsend.chatRoom.data.local
 
-import com.aubynsamuel.flashsend.chatRoom.data.MessageEntity
+import com.aubynsamuel.flashsend.chatRoom.data.model.MessageEntity
 import com.aubynsamuel.flashsend.core.model.ChatMessage
 
 fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
-//    Log.d(
-//        "ChatViewModel",
-//        "Converting ChatMessage (id=${this.id}) to MessageEntity with roomId=$roomId"
-//    )
     return MessageEntity(
         id = id,
         content = content,
@@ -28,7 +24,6 @@ fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
 }
 
 fun MessageEntity.toChatMessage(): ChatMessage {
-//    Log.d("ChatViewModel", "Converting MessageEntity (id=${this.id}) to ChatMessage")
     return ChatMessage(
         id = id,
         content = content,

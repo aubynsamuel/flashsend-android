@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.chatRoom.data.typeconverters
+package com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters
 
 import androidx.room.TypeConverter
 import java.util.Date

@@ -12,9 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import javax.inject.Inject
 
-class SettingsRepository(private val dataStore: DataStore<Preferences>) {
-
+class SettingsRepository @Inject constructor(
+    private val dataStore: DataStore<Preferences>,
+) {
     companion object {
         private val THEME_MODE = intPreferencesKey("theme_mode")
         private val FONT_SIZE = intPreferencesKey("font_size")

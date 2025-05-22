@@ -44,7 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chatRoom.domain.vibrateDevice
+import com.aubynsamuel.flashsend.chatRoom.domain.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.AudioRecordingOverlay
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.DropMenu
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.EmptyChatPlaceholder
@@ -54,10 +54,10 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.components.MessagesList
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.ScrollToBottom
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatState
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
-import com.aubynsamuel.flashsend.core.domain.ConnectivityStatus
-import com.aubynsamuel.flashsend.core.domain.ConnectivityViewModel
+import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.createRoomId
 import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.presentation.ConnectivityViewModel
 import com.aubynsamuel.flashsend.core.state.CurrentUser
 import com.aubynsamuel.flashsend.navigation.Screen
 import com.aubynsamuel.flashsend.notifications.data.services.ConversationHistoryManager

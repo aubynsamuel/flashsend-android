@@ -2,7 +2,7 @@ package com.aubynsamuel.flashsend.auth.domain
 
 import android.content.Context
 import com.aubynsamuel.flashsend.auth.data.AuthUserRepository
-import com.aubynsamuel.flashsend.core.domain.MediaCacheManager
+import com.aubynsamuel.flashsend.core.data.MediaCacheManager
 import com.aubynsamuel.flashsend.core.model.NewUser
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

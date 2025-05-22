@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.core.domain
+package com.aubynsamuel.flashsend.core.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore

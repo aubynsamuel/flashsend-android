@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.chatRoom.data
+package com.aubynsamuel.flashsend.chatRoom.data.local
 
 import android.content.Context
 import android.util.Log
@@ -7,9 +7,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.DateConverter
-import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.LocationConverter
-import com.aubynsamuel.flashsend.chatRoom.data.typeconverters.ReactionConverter
+import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.DateConverter
+import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.LocationConverter
+import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.ReactionConverter
+import com.aubynsamuel.flashsend.chatRoom.data.model.MessageEntity
 
 internal const val ChatDataBaseLogs = "ChatDatabase"
 

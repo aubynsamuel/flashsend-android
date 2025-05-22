@@ -56,9 +56,9 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.components.DropMenu
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.EmptyChatPlaceholder
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.PopUpMenu
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
-import com.aubynsamuel.flashsend.core.domain.ConnectivityStatus
-import com.aubynsamuel.flashsend.core.domain.ConnectivityViewModel
+import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.logger
+import com.aubynsamuel.flashsend.core.presentation.ConnectivityViewModel
 import com.aubynsamuel.flashsend.home.presentation.components.ChatListItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
 import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
@@ -106,14 +106,11 @@ fun HomeScreen(
     val permissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
         onResult = {})
-    val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    val hasNotificationPermission =
         ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED
-    } else {
-        true
-    }
 
     LaunchedEffect(connectivityStatus) {
         if (connectivityStatus is ConnectivityStatus.Available) {
@@ -126,9 +123,7 @@ fun HomeScreen(
     }
     LaunchedEffect(Unit) {
         if (!hasNotificationPermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+            permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
         authViewModel.loadUserData()
         try {
