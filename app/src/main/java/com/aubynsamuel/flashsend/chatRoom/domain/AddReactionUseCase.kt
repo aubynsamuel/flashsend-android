@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.chatRoom.domain
 
-import com.aubynsamuel.flashsend.chatRoom.data.remote.SendMessageRepository
+import com.aubynsamuel.flashsend.chatRoom.data.repository.SendMessageRepository
 import javax.inject.Inject
 
 class AddReactionUseCase @Inject constructor(

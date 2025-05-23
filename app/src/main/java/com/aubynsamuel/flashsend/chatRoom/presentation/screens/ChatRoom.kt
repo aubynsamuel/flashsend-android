@@ -44,7 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chatRoom.domain.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.AudioRecordingOverlay
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.DropMenu
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.EmptyChatPlaceholder
@@ -52,6 +51,7 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.components.HeaderBar
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.MessageInput
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.MessagesList
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.ScrollToBottom
+import com.aubynsamuel.flashsend.chatRoom.presentation.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatState
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus

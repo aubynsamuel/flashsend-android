@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom.domain
 
 import android.net.Uri
-import com.aubynsamuel.flashsend.chatRoom.data.remote.FirebaseStorageRepository
+import com.aubynsamuel.flashsend.chatRoom.data.repository.FirebaseStorageRepository
 import javax.inject.Inject
 
 

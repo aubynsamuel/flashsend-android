@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.chatRoom.domain
 
-import com.aubynsamuel.flashsend.chatRoom.data.remote.MessageRepository
+import com.aubynsamuel.flashsend.chatRoom.data.repository.MessageRepository
 import javax.inject.Inject
 
 class PrefetchMessagesUseCase @Inject constructor(

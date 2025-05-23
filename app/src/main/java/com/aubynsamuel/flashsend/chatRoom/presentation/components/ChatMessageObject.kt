@@ -31,11 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aubynsamuel.flashsend.chatRoom.domain.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.AudioMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.TextMessage
+import com.aubynsamuel.flashsend.chatRoom.presentation.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.mock.messageExample
 import com.aubynsamuel.flashsend.core.domain.copyTextToClipboard

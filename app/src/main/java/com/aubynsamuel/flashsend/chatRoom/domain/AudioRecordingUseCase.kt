@@ -4,8 +4,8 @@ import android.content.Context
 import android.media.MediaRecorder
 import android.os.Environment
 import android.util.Log
-import com.aubynsamuel.flashsend.chatRoom.data.remote.FirebaseStorageRepository
-import com.aubynsamuel.flashsend.chatRoom.data.remote.SendMessageRepository
+import com.aubynsamuel.flashsend.chatRoom.data.repository.FirebaseStorageRepository
+import com.aubynsamuel.flashsend.chatRoom.data.repository.SendMessageRepository
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.formatAudioTime
 import java.io.File
 import javax.inject.Inject

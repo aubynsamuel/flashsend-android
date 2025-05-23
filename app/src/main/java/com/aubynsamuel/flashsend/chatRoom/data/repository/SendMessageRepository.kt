@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.chatRoom.data.remote
+package com.aubynsamuel.flashsend.chatRoom.data.repository
 
 import android.util.Log
 import com.aubynsamuel.flashsend.core.domain.logger

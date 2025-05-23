@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.chatRoom.data.remote
+package com.aubynsamuel.flashsend.chatRoom.data.repository
 
 import android.net.Uri
 import android.util.Log
