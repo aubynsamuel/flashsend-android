@@ -183,7 +183,7 @@ fun HomeScreen(
                     fontSize = 24.sp,
                     textAlign = TextAlign.Center
                 )
-                if (netActivity.isNotEmpty()) {
+                if (netActivity.isNotBlank()) {
                     Text(
                         text = if (homeUiState.isLoading) "Loading..." else netActivity,
                         fontSize = 14.sp,
@@ -261,22 +261,7 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (homeUiState.rooms.isEmpty() && !homeUiState.isLoading) {
-                EmptyChatPlaceholder(
-                    lottieAnimation = R.raw.online_chat,
-                    message = "Press + to search users",
-                    speed = 0.6f,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            } else if (homeUiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 2.dp
-                )
-            } else {
+            if (homeUiState.rooms.isNotEmpty()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -289,6 +274,21 @@ fun HomeScreen(
                         )
                     }
                 }
+            } else if (homeUiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                EmptyChatPlaceholder(
+                    lottieAnimation = R.raw.online_chat,
+                    message = "Press + to search users",
+                    speed = 0.6f,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
     }
