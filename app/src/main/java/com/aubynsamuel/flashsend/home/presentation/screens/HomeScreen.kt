@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -86,8 +87,7 @@ fun HomeScreen(
     var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
-    val rooms by homeViewModel.rooms.collectAsState()
-    val isLoading by homeViewModel.isLoading.collectAsState()
+    val homeUiState by homeViewModel.uiState.collectAsState()
 
     val authState by authViewModel.authState.collectAsState()
 
@@ -185,7 +185,7 @@ fun HomeScreen(
                 )
                 if (netActivity.isNotEmpty()) {
                     Text(
-                        text = if (isLoading) "Loading..." else netActivity,
+                        text = if (homeUiState.isLoading) "Loading..." else netActivity,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(start = 10.dp, top = 3.dp),
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -261,19 +261,27 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (rooms.isEmpty() && !isLoading) {
+            if (homeUiState.rooms.isEmpty() && !homeUiState.isLoading) {
                 EmptyChatPlaceholder(
                     lottieAnimation = R.raw.online_chat,
                     message = "Press + to search users",
                     speed = 0.6f,
                     color = MaterialTheme.colorScheme.onBackground
                 )
+            } else if (homeUiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 2.dp
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize(),
                 ) {
-                    items(rooms) { room ->
+                    items(homeUiState.rooms) { room ->
                         ChatListItem(
                             room, navController,
                             chatViewModel = chatViewModel,
