@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
 class RoomsCache(context: Context) {
-    private val tag = "roomCache"
+    private val tag = "RoomCache"
     private val sharedPreferences = context.getSharedPreferences("app_cache", Context.MODE_PRIVATE)
     private val gson = GsonBuilder()
         .registerTypeAdapter(Timestamp::class.java, TimestampTypeAdapter())

@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.home.domain
+package com.aubynsamuel.flashsend.home.domain.usecase
 
 import com.aubynsamuel.flashsend.core.model.RoomData
 import com.aubynsamuel.flashsend.home.data.RoomRepository
