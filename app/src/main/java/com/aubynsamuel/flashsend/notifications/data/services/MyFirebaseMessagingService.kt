@@ -2,7 +2,7 @@ package com.aubynsamuel.flashsend.notifications.data.services
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.aubynsamuel.flashsend.notifications.domain.showNotification
+import com.aubynsamuel.flashsend.notifications.presentation.showNotification
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 

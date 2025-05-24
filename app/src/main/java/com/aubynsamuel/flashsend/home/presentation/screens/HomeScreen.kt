@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
@@ -241,11 +240,11 @@ fun HomeScreen(
                             },
                             icon = Icons.Default.Settings
                         ),
-                        DropMenu(
-                            text = "notifications",
-                            onClick = { navController.navigate("notifications") },
-                            icon = Icons.Default.QrCodeScanner
-                        ),
+//                        DropMenu(
+//                            text = "notifications",
+//                            onClick = { navController.navigate("notifications") },
+//                            icon = Icons.Default.QrCodeScanner
+//                        ),
                         DropMenu(
                             text = "Logout",
                             onClick = { authViewModel.logout() },

@@ -16,7 +16,7 @@ import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.domain.showToast
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
-import com.aubynsamuel.flashsend.notifications.domain.groupKey
+import com.aubynsamuel.flashsend.notifications.presentation.groupKey
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

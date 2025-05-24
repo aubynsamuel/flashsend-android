@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.notifications.domain
+package com.aubynsamuel.flashsend.notifications.presentation
 
 import android.Manifest
 import android.app.PendingIntent

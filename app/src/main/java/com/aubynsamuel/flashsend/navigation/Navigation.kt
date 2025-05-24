@@ -25,14 +25,12 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.screens.CameraXScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ChatScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ImagePreviewScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.OtherUserProfileScreen
-import com.aubynsamuel.flashsend.chatRoom.presentation.screens.QRScannerScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.domain.showToast
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
-import com.aubynsamuel.flashsend.notifications.presentation.NotificationTestScreen
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.google.gson.Gson
 
@@ -102,16 +100,16 @@ fun ChatAppNavigation() {
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
             SearchUsersScreen(navController)
         }
-        composable(
-            "notifications",
-            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
-            NotificationTestScreen(context = context)
-        }
-        composable(
-            "QRScannerScreen",
-            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
-            QRScannerScreen()
-        }
+//        composable(
+//            "notifications",
+//            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
+//            NotificationTestScreen(context = context)
+//        }
+//        composable(
+//            "QRScannerScreen",
+//            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
+//            QRScannerScreen()
+//        }
         composable(
             "setUserDetails",
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
