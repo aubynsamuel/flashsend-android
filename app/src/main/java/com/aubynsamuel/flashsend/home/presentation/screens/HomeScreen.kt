@@ -63,7 +63,6 @@ import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
 import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.messaging.FirebaseMessaging
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,16 +78,9 @@ fun HomeScreen(
     val user = FirebaseAuth.getInstance().currentUser
     var retrievedToken by remember { mutableStateOf("") }
     val tag = "homeLogs"
+
     fun getFCMToken() {
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.e(tag, "Fetching FCM token failed", task.exception)
-                    return@addOnCompleteListener
-                }
-                retrievedToken = task.result
-                Log.d(tag, "FCM Token: $retrievedToken")
-            }
+        homeViewModel.getFCMToken { value -> retrievedToken = value }
     }
 
     var connectivityViewModel: ConnectivityViewModel = hiltViewModel()

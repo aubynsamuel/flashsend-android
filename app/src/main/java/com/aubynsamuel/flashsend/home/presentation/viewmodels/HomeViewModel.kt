@@ -8,7 +8,8 @@ import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.model.RoomData
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.home.data.RoomsCache
-import com.aubynsamuel.flashsend.home.domain.GetUnreadMessagesUseCase
+import com.aubynsamuel.flashsend.home.domain.usecase.GetFCMTokenUseCase
+import com.aubynsamuel.flashsend.home.domain.usecase.GetUnreadMessagesUseCase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUnreadMessagesUseCase: GetUnreadMessagesUseCase,
+    private val getFCMTokenUseCase: GetFCMTokenUseCase,
     context: Context,
 ) : ViewModel() {
     private val appContext = context.applicationContext
@@ -63,6 +65,10 @@ class HomeViewModel @Inject constructor(
         callBack: (value: Int) -> Unit,
     ) {
         getUnreadMessagesUseCase(roomId, otherUserId, callBack)
+    }
+
+    fun getFCMToken(callBack: (value: String) -> Unit) {
+        getFCMTokenUseCase(callBack)
     }
 
     private fun listenToRooms() {

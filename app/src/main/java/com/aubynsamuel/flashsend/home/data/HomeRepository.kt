@@ -1,9 +1,11 @@
 package com.aubynsamuel.flashsend.home.data
 
+import android.util.Log
 import com.aubynsamuel.flashsend.core.domain.logger
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
@@ -28,5 +30,17 @@ class HomeRepository @Inject constructor(
                 }
             }
         return listener
+    }
+
+    fun getFCMToken(callBack: (token: String) -> Unit) {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.e(tag, "Fetching FCM token failed", task.exception)
+                    return@addOnCompleteListener
+                }
+                callBack(task.result)
+                Log.d(tag, "FCM Token: ${task.result}")
+            }
     }
 }

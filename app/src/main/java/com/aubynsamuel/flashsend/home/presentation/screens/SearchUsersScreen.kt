@@ -22,10 +22,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -35,68 +34,21 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.home.presentation.components.SearchedUserItem
+import com.aubynsamuel.flashsend.home.presentation.viewmodels.SearchUsersViewModel
 import com.aubynsamuel.flashsend.navigation.Screen
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import java.net.URLEncoder
 
 @Composable
 fun SearchUsersScreen(
     navController: NavController,
+    viewModel: SearchUsersViewModel = hiltViewModel(),
 ) {
-    val auth = FirebaseAuth.getInstance()
-    val tag = "SearchUsersScreen"
-    val currentUsername by remember { mutableStateOf(auth.currentUser?.uid) }
-
-    logger(tag, currentUsername.toString())
-
-    var searchText by remember { mutableStateOf(("")) }
-    var filteredUsers by remember { mutableStateOf<List<User>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("Search users") }
-
+    val uiState by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    val handleSearch = { text: String ->
-        isLoading = true
-        searchText = text
-
-        if (text.trim().isEmpty()) {
-            isLoading = false
-            filteredUsers = emptyList()
-            errorMessage = "Search Users"
-        }
-
-        val usersRef = Firebase.firestore.collection("users")
-        usersRef.whereNotEqualTo("userId", currentUsername)
-            .whereGreaterThanOrEqualTo("username", text)
-            .whereLessThanOrEqualTo("username", text + "\uf8ff").get()
-            .addOnSuccessListener { querySnapshot ->
-                val userData = querySnapshot.documents.map { doc ->
-                    User(
-                        userId = doc.id,
-                        username = doc.getString("username") ?: "",
-                        profileUrl = doc.getString("profileUrl") ?: "",
-                        deviceToken = doc.getString("deviceToken") ?: "",
-                    )
-                }
-                filteredUsers = userData
-                isLoading = false
-                if (userData.isEmpty()) {
-                    errorMessage = "No users found"
-                }
-            }.addOnFailureListener { error ->
-                isLoading = false
-                errorMessage = "An error occurred\nPlease check your internet connection"
-                println("Error searching users: $error")
-            }
-    }
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -122,11 +74,12 @@ fun SearchUsersScreen(
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
-            BasicTextField(value = searchText,
+            BasicTextField(
+                value = uiState.searchText,
                 singleLine = true,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onBackground),
-                onValueChange = { handleSearch(it) },
+                onValueChange = viewModel::onSearchTextChange,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences
                 ),
@@ -144,7 +97,7 @@ fun SearchUsersScreen(
                             .height(50.dp)
                             .padding(horizontal = 10.dp)
                     ) {
-                        if (searchText.isEmpty()) {
+                        if (uiState.searchText.isEmpty()) {
                             Text(
                                 text = "Search...",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -156,7 +109,7 @@ fun SearchUsersScreen(
         }
 
         // User List or Loading Indicator
-        if (isLoading) {
+        if (uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -169,8 +122,8 @@ fun SearchUsersScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (filteredUsers.isNotEmpty()) {
-                    items(filteredUsers) { user ->
+                if (uiState.filteredUsers.isNotEmpty()) {
+                    items(uiState.filteredUsers) { user ->
                         SearchedUserItem(user = user, onClick = {
                             val encodedUsername = URLEncoder.encode(user.username, "UTF-8")
                             val encodedProfileUrl = URLEncoder.encode(user.profileUrl, "UTF-8")
@@ -190,7 +143,8 @@ fun SearchUsersScreen(
                             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = errorMessage, color = MaterialTheme.colorScheme.onBackground
+                                text = uiState.errorMessage,
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
