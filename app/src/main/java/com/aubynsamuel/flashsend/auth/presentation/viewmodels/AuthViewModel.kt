@@ -2,11 +2,9 @@ package com.aubynsamuel.flashsend.auth.presentation.viewmodels
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aubynsamuel.flashsend.auth.data.AppCredentialsManager
 import com.aubynsamuel.flashsend.auth.domain.GetUserDataUseCase
 import com.aubynsamuel.flashsend.auth.domain.GetUserIdUseCase
 import com.aubynsamuel.flashsend.auth.domain.IsUserLoggedInUseCase
@@ -37,23 +35,13 @@ class AuthViewModel @Inject constructor(
     context: Context,
 ) : ViewModel() {
     private val tag = "AuthViewModel"
-    private val appContext = context.applicationContext
     private val cacheHelper = RoomsCache(context = context)
     private val _authState = MutableStateFlow(isUserLoggedInUseCase())
     private val _isLoggingIn = MutableStateFlow(false)
     private val _message = MutableStateFlow<String?>(null)
-    val appCredentialsManager = AppCredentialsManager(appContext)
     val authState: StateFlow<Boolean> = _authState
     val isLoggingIn: StateFlow<Boolean> = _isLoggingIn
     val message: StateFlow<String?> = _message
-
-    suspend fun saveCredentials(email: String, password: String) {
-        try {
-            appCredentialsManager.registerPassword(email, password)
-        } catch (e: Exception) {
-            Log.e(tag, "Error saving credentials: ${e.message}")
-        }
-    }
 
     fun signUp(email: String, password: String) {
         _isLoggingIn.value = true
@@ -63,7 +51,6 @@ class AuthViewModel @Inject constructor(
                 _authState.value = true
                 _message.value = it
                 _isLoggingIn.value = false
-                saveCredentials(email, password)
             }.onFailure {
                 _isLoggingIn.value = false
                 _message.value = it.message
@@ -113,7 +100,6 @@ class AuthViewModel @Inject constructor(
                 _authState.value = true
                 _message.value = it
                 _isLoggingIn.value = false
-                saveCredentials(email, password)
             }.onFailure {
                 _message.value = it.message
                 _isLoggingIn.value = false

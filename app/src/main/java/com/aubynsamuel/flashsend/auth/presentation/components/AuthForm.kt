@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +33,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.delay
 
 @OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -60,20 +61,6 @@ fun AuthForm(
     val isLoggingIn by authViewModel.isLoggingIn.collectAsState()
     val context = LocalContext.current
     val fieldShape = RoundedCornerShape(20.dp)
-
-    LaunchedEffect(Unit) {
-        delay(3000)
-        try {
-            val credentials = authViewModel.appCredentialsManager.getCredential()
-            credentials?.let { (savedEmail, savedPassword) ->
-                email = savedEmail
-                password = savedPassword
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
 
     Column(
         modifier = Modifier.fillMaxWidth(0.85f), horizontalAlignment = Alignment.CenterHorizontally
@@ -94,6 +81,7 @@ fun AuthForm(
             shape = fieldShape,
             modifier = Modifier
                 .fillMaxWidth()
+                .semantics { contentType = ContentType.EmailAddress }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -123,6 +111,9 @@ fun AuthForm(
             shape = fieldShape,
             modifier = Modifier
                 .fillMaxWidth()
+                .semantics {
+                    contentType = if (isLogin) ContentType.Password else ContentType.NewPassword
+                }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -132,7 +123,9 @@ fun AuthForm(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
                 label = { Text("Confirm Password") },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation =
+                    if (passwordVisible) VisualTransformation.None
+                    else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done,
@@ -142,7 +135,8 @@ fun AuthForm(
                 shape = fieldShape,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = 8.dp)
+                    .semantics { contentType = ContentType.NewPassword },
                 leadingIcon = {
                     Icon(Icons.Default.Lock, contentDescription = "Confirm Password")
                 },
