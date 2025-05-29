@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aubynsamuel.flashsend.core.model.ThemeMode
 
@@ -53,12 +52,13 @@ fun DarkModeSelector(
             Column {
                 Text(
                     text = "Theme",
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     options[currentMode.ordinal],
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -69,13 +69,20 @@ fun DarkModeSelector(
                 text = {
                     Column {
                         options.forEachIndexed { index, selectionOption ->
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clickable {
+                                        selectedMode = ThemeMode.entries[index]
+                                    }
+                            ) {
                                 RadioButton(
                                     selected = index == ThemeMode.entries[selectedMode.ordinal].ordinal,
                                     onClick = { selectedMode = ThemeMode.entries[index] })
-                                Text(selectionOption, modifier = Modifier.clickable {
-                                    selectedMode = ThemeMode.entries[index]
-                                })
+                                Text(
+                                    selectionOption, modifier = Modifier
+                                        .fillMaxWidth()
+                                )
                             }
                         }
                     }

@@ -31,14 +31,15 @@ fun FontSizeSelector(
             Column {
                 Text(
                     text = "Font Size: ",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = if (currentSize == 16) "Normal" else
                         "${currentSize}sp",
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
