@@ -1,6 +1,8 @@
 package com.aubynsamuel.flashsend.chatRoom.presentation.components
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -8,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.aubynsamuel.flashsend.chatRoom.data.local.ChatDatabase
+import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.model.ChatMessage
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -21,7 +24,8 @@ fun DeleteMessageDialog(
     onDismiss: () -> Unit,
     onMessageDeleted: () -> Unit,
     showDialog: Boolean,
-    onDeletionFailure: () -> Unit
+    onDeletionFailure: () -> Unit,
+    connectivityStatus: ConnectivityStatus,
 ) {
     val context = LocalContext.current
 
@@ -33,10 +37,16 @@ fun DeleteMessageDialog(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        handleDelete(
-                            message, roomId, onMessageDeleted,
-                            context, onDeletionFailure
-                        )
+                        if (connectivityStatus is ConnectivityStatus.Available) {
+                            handleDelete(
+                                message, roomId, onMessageDeleted,
+                                context, onDeletionFailure
+                            )
+                        } else {
+                            Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        onDismiss()
                     }
                 ) {
                     Text("Yes", color = Color.Red)
@@ -61,7 +71,7 @@ private fun handleDelete(
     roomId: String,
     onMessageDeleted: () -> Unit,
     context: Context,
-    onDeletionFailure: () -> Unit
+    onDeletionFailure: () -> Unit,
 ) {
     try {
         val db = FirebaseFirestore.getInstance()
@@ -75,9 +85,9 @@ private fun handleDelete(
                 GlobalScope.launch { messageDao.deleteMessage(message.id) }
             }
             .addOnFailureListener { error ->
-                onDeletionFailure
+                onDeletionFailure()
             }
     } catch (error: Exception) {
-        println("Failed to delete message: ${error.message}")
+        Log.d("DeleteMessageTag", "Failed to delete message: ${error.message}")
     }
 }

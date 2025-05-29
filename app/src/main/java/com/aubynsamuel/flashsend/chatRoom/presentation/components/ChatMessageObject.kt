@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.AudioMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
@@ -41,6 +42,7 @@ import com.aubynsamuel.flashsend.core.data.mock.messageExample
 import com.aubynsamuel.flashsend.core.domain.copyTextToClipboard
 import com.aubynsamuel.flashsend.core.domain.formatMessageTime
 import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.presentation.ConnectivityViewModel
 
 @Composable
 fun ChatMessageObject(
@@ -52,10 +54,13 @@ fun ChatMessageObject(
     chatViewModel: ChatViewModel,
     currentUserId: String,
 ) {
+    var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     var showPopup by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
+
     Row(
         modifier = modifier.padding(
             end = if (!isFromMe && message.type == "image") 30.dp else 0.dp,
@@ -64,6 +69,7 @@ fun ChatMessageObject(
     ) {
 //        Action pop ups
         DeleteMessageDialog(
+            connectivityStatus = connectivityStatus,
             message = message,
             roomId = roomId,
             onDismiss = {
@@ -81,6 +87,7 @@ fun ChatMessageObject(
         )
         if (showEditDialog) {
             EditMessageDialog(
+                connectivityStatus = connectivityStatus,
                 roomId = roomId,
                 message = message,
                 initialText = message.content,
