@@ -151,7 +151,7 @@ fun MessageInput(
                     modifier = Modifier
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(25.dp)
                         )
                         .fillMaxWidth()
                 ) {
@@ -160,7 +160,7 @@ fun MessageInput(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 10.dp)
+                            .padding(vertical = 12.dp, horizontal = 15.dp)
                     ) {
                         Row(modifier = Modifier.weight(1f)) {
                             Box {
@@ -170,7 +170,7 @@ fun MessageInput(
                         }
                         Row(
                             modifier = Modifier,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AddLocationAlt,
