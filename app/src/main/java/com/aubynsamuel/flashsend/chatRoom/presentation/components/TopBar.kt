@@ -48,98 +48,102 @@ fun HeaderBar(
     userData: User,
     navController: NavController,
     chatOptionsList: List<DropMenu>,
-    onImageClick: () -> Unit
+    onImageClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Column {
-        Row(
-            modifier = Modifier
-                .height(80.dp)
-                .fillMaxWidth(1f)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(top = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+    Row(
+        modifier = Modifier
+            .height(80.dp)
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(top = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
 //            Back button, profile pic and name/network status
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = "back button",
-                    modifier = Modifier
-                        .padding(start = 5.dp)
-                        .size(25.dp)
-                        .clickable(onClick = goBack),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Spacer(modifier = Modifier.width(5.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Default.ArrowBack,
+                contentDescription = "back button",
+                modifier = Modifier
+                    .padding(start = 5.dp)
+                    .size(25.dp)
+                    .clickable(onClick = goBack),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Spacer(modifier = Modifier.width(5.dp))
 //                profile pic and name/network status
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable(onClick = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable(onClick = {
                         val userJson = Uri.encode(Gson().toJson(userData))
                         navController.navigate("otherProfileScreen/$userJson")
                     })
-                ) {
-                    AsyncImage(
-                        model = pic,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(45.dp)
-                            .align(Alignment.CenterVertically),
-                        contentScale = ContentScale.Crop,
-                        error = rememberAsyncImagePainter(R.drawable.person)
-                    )
+                    .weight(1f)
+            ) {
+                AsyncImage(
+                    model = pic,
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(45.dp)
+                        .align(Alignment.CenterVertically),
+                    contentScale = ContentScale.Crop,
+                    error = rememberAsyncImagePainter(R.drawable.person)
+                )
 
-                    Column {
+                Column {
+                    Text(
+                        text = name,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(start = 10.dp),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    if (netActivity.isNotEmpty()) {
                         Text(
-                            text = name,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(start = 10.dp),
+                            text = netActivity,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 11.dp),
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
-                        if (netActivity.isNotEmpty()) {
-                            Text(
-                                text = netActivity,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 11.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
                     }
                 }
+            }
 
-            }
+        }
+
 //          Call and more vert icon buttons
-            Row(modifier = Modifier.padding(end = 12.dp)) {
-                Icon(
-                    Icons.Outlined.CameraAlt,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.clickable(onClick = { onImageClick() })
-                )
-                Spacer(modifier = Modifier.width(15.dp))
-                Icon(
-                    Icons.Outlined.Call,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.clickable(onClick = {})
-                )
-                Spacer(modifier = Modifier.width(15.dp))
-                Icon(
-                    Icons.Outlined.MoreVert,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.clickable(onClick = { expanded = !expanded })
-                )
-                PopUpMenu(
-                    expanded = expanded, { expanded = !expanded },
-                    modifier = Modifier,
-                    dropItems = chatOptionsList,
-                    reactions = {}
-                )
-            }
+        Row(modifier = Modifier.padding(end = 12.dp)) {
+            Icon(
+                Icons.Outlined.CameraAlt,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.clickable(onClick = { onImageClick() })
+            )
+            Spacer(modifier = Modifier.width(15.dp))
+            Icon(
+                Icons.Outlined.Call,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.clickable(onClick = {})
+            )
+            Spacer(modifier = Modifier.width(15.dp))
+            Icon(
+                Icons.Outlined.MoreVert,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.clickable(onClick = { expanded = !expanded })
+            )
+            PopUpMenu(
+                expanded = expanded, { expanded = !expanded },
+                modifier = Modifier,
+                dropItems = chatOptionsList,
+                reactions = {}
+            )
         }
     }
 }

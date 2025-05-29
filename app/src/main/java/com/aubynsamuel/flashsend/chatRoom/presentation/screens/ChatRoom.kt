@@ -221,17 +221,7 @@ fun ChatScreen(
                             }
                         },
                         icon = Icons.Default.Person
-                    ),
-//                    DropMenu(
-//                        text = "Settings",
-//                        onClick = {
-//                            navController.navigate("settings") {
-//                                launchSingleTop = true
-//                                restoreState = true
-//                            }
-//                        },
-//                        icon = Icons.Default.Settings
-//                    ),
+                    )
                 ),
                 onImageClick = {
                     if (ContextCompat.checkSelfPermission(
