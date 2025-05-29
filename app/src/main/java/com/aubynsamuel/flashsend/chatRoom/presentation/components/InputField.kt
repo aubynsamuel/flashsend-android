@@ -12,12 +12,13 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -31,8 +32,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,9 +40,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -62,7 +61,7 @@ fun MessageInput(
     onRecordAudio: () -> Unit,
     chatViewModel: ChatViewModel,
     roomId: String,
-    userData: NewUser?, recipientToken: String
+    userData: NewUser?, recipientToken: String,
 ) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -133,67 +132,84 @@ fun MessageInput(
             .padding(top = 3.dp)
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        TextField(value = messageText,
+        BasicTextField(
+            value = messageText,
             onValueChange = onMessageChange,
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp),
-            textStyle = LocalTextStyle.current,
-            placeholder = { Text("Type a message...") },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(24.dp),
-            singleLine = false,
             maxLines = 5,
+            singleLine = false,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Default,
             ),
-            trailingIcon = {
-                Row {
-                    Icon(
-                        imageVector = Icons.Default.AddLocationAlt,
-                        contentDescription = "More options",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.weight(1f),
+            textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onPrimaryContainer),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .fillMaxWidth()
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .graphicsLayer {
-                                translationX = translate
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp, horizontal = 10.dp)
+                    ) {
+                        Row(modifier = Modifier.weight(1f)) {
+                            Box {
+                                innerTextField()
+                                if (messageText.isBlank()) Text("Type a message")
                             }
-                            .clickable(onClick = { showDialog = true })
-                    )
-                    Icon(
-                        imageVector = Icons.Default.AddPhotoAlternate,
-                        contentDescription = "Add Photo",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier
-                            .graphicsLayer {
-                                translationX = translateX
-                                alpha = homeIconAlpha
-                            }
-                            .padding(horizontal = 10.dp)
-                            .clickable(onClick = { onImageClick() })
-                    )
+                        }
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddLocationAlt,
+                                contentDescription = "More options",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        translationX = translate
+                                    }
+                                    .clickable(onClick = { showDialog = true })
+                            )
+                            Icon(
+                                imageVector = Icons.Default.AddPhotoAlternate,
+                                contentDescription = "Add Photo",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        translationX = translateX
+                                        alpha = homeIconAlpha
+                                    }
+                                    .clickable(onClick = { onImageClick() })
+                            )
+                        }
+                    }
                 }
-            })
+            }
+        )
 
         IconButton(
             onClick = if (messageText.isNotBlank()) onSend else onRecordAudio,
             modifier = Modifier
-                .size(55.dp)
                 .background(
                     color = if (!isRecording) MaterialTheme.colorScheme.primaryContainer else Color.Red,
                     shape = CircleShape
                 )
         ) {
             AnimatedVisibility(visible = messageText.isBlank()) {
-                Icon(imageVector = Icons.Default.Mic,
+                Icon(
+                    imageVector = Icons.Default.Mic,
                     contentDescription = "Mic",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.graphicsLayer {
@@ -203,7 +219,8 @@ fun MessageInput(
             }
 
             AnimatedVisibility(visible = messageText.isNotBlank()) {
-                Icon(imageVector = Icons.AutoMirrored.Default.Send,
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.Send,
                     contentDescription = "Send",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.graphicsLayer {
