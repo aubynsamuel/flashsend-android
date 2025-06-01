@@ -21,15 +21,15 @@ A modern Android chat application built with Jetpack Compose that enables real-t
 
 Here are some screenshots of the app:
 
-<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 45px;">
-    <img src="screenShots/authentication.jpg" width="200" alt="Authentication Screen">
-    <img src="screenShots/chats_screen.jpg" width="200" alt="Chats Screen">
-    <img src="screenShots/chatRoom.jpg" width="200" alt="Chat Room">
-    <img src="screenShots/message_actions_and_reactions.jpg" width="200" alt="Message Actions & Reactions">
-    <img src="screenShots/dark_mode.jpg" width="200" alt="Dark Mode">
-    <img src="screenShots/notifications.jpg" width="200" alt="Notifications">
-    <img src="screenShots/profile_screen.jpg" width="200" alt="Profile Screen">
-    <img src="screenShots/settings_screen.jpg" width="200" alt="Settings Screen">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
+    <img src="screenShots/authentication-portrait.webp" width="300" alt="Authentication Screen">
+    <img src="screenShots/home_screen-portrait.webp" width="300" alt="Chats Screen">
+    <img src="screenShots/messages_screen-portrait.webp" width="300" alt="Chat Room">
+    <img src="screenShots/message_actions-portrait.webp" width="300" alt="Message Actions & Reactions">
+    <img src="screenShots/profile_screen-portrait.webp" width="300" alt="Profile Screen">
+    <img src="screenShots/settings-portrait.webp" width="300" alt="Settings Screen">
+    <img src="screenShots/home_screen_dark-portrait.webp" width="300" alt="Dark Mode">
+    <img src="screenShots/notifications-portrait.webp" width="300" alt="Notifications">
 </div>
 
 ## Tech Stack
