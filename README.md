@@ -8,6 +8,19 @@
 
 A modern Android chat application that enables real-time messaging with a clean, intuitive interface.
 
+## Screenshots
+
+<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
+    <img src="screenShots/authentication-portrait.webp" width="300" alt="Authentication Screen">
+    <img src="screenShots/home_screen-portrait.webp" width="300" alt="Chats Screen">
+    <img src="screenShots/messages_screen-portrait.webp" width="300" alt="Chat Room">
+    <img src="screenShots/message_actions-portrait.webp" width="300" alt="Message Actions & Reactions">
+    <img src="screenShots/profile_screen-portrait.webp" width="300" alt="Profile Screen">
+    <img src="screenShots/settings-portrait.webp" width="300" alt="Settings Screen">
+    <img src="screenShots/home_screen_dark-portrait.webp" width="300" alt="Dark Mode">
+    <img src="screenShots/notifications-portrait.webp" width="300" alt="Notifications">
+</div>
+
 ## Features
 
 - **Real-time messaging**: Instantly send and receive text messages
@@ -22,21 +35,6 @@ A modern Android chat application that enables real-time messaging with a clean,
 - **Firebase integration**: Authentication, real-time database, cloud messaging
 - **Camera integration**: Take photos directly within the app
 - **Offline support**: Basic functionality when offline with automatic reconnection
-
-## Screenshots
-
-Here are some screenshots of the app:
-
-<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
-    <img src="screenShots/authentication-portrait.webp" width="300" alt="Authentication Screen">
-    <img src="screenShots/home_screen-portrait.webp" width="300" alt="Chats Screen">
-    <img src="screenShots/messages_screen-portrait.webp" width="300" alt="Chat Room">
-    <img src="screenShots/message_actions-portrait.webp" width="300" alt="Message Actions & Reactions">
-    <img src="screenShots/profile_screen-portrait.webp" width="300" alt="Profile Screen">
-    <img src="screenShots/settings-portrait.webp" width="300" alt="Settings Screen">
-    <img src="screenShots/home_screen_dark-portrait.webp" width="300" alt="Dark Mode">
-    <img src="screenShots/notifications-portrait.webp" width="300" alt="Notifications">
-</div>
 
 ## Installation
 
