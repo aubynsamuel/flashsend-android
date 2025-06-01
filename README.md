@@ -3,10 +3,10 @@
     width="128">
 
 # Flash Send
+A modern Android chat application that enables real-time messaging with a clean, intuitive interface.
 
 </div>
 
-A modern Android chat application that enables real-time messaging with a clean, intuitive interface.
 
 ## Screenshots
 
