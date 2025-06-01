@@ -21,7 +21,7 @@ A modern Android chat application built with Jetpack Compose that enables real-t
 
 Here are some screenshots of the app:
 
-<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
+<div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
     <img src="screenShots/authentication-portrait.webp" width="300" alt="Authentication Screen">
     <img src="screenShots/home_screen-portrait.webp" width="300" alt="Chats Screen">
     <img src="screenShots/messages_screen-portrait.webp" width="300" alt="Chat Room">
