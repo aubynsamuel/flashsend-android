@@ -1,6 +1,12 @@
+<div align="center">
+   <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" alt="Flash Send Logo"
+    width="128">
+
 # Flash Send
 
-A modern Android chat application built with Jetpack Compose that enables real-time messaging with a clean, intuitive interface.
+</div>
+
+A modern Android chat application that enables real-time messaging with a clean, intuitive interface.
 
 ## Features
 
@@ -17,7 +23,7 @@ A modern Android chat application built with Jetpack Compose that enables real-t
 - **Camera integration**: Take photos directly within the app
 - **Offline support**: Basic functionality when offline with automatic reconnection
 
-## Screenshots 📱
+## Screenshots
 
 Here are some screenshots of the app:
 
@@ -32,52 +38,12 @@ Here are some screenshots of the app:
     <img src="screenShots/notifications-portrait.webp" width="300" alt="Notifications">
 </div>
 
-## Tech Stack
-
-### Frontend
-
-- **Jetpack Compose**: Modern UI toolkit for building native Android UI
-- **Material 3**: Latest Material Design components and theming
-- **Kotlin Coroutines & Flow**: For asynchronous programming and reactive streams
-
-### Backend & Services
-
-- **Firebase Authentication**: User authentication and management
-- **Firebase Realtime Database**: Data storage and synchronization
-- **Firebase Cloud Messaging (FCM)**: Push notifications
-- **Firebase Storage**: Media file storage
-
 ## Installation
 
 1. Clone this repository
 2. Create a Firebase project and add your `google-services.json` file to the app directory
 3. Configure Firebase with Authentication, Realtime Database, Storage, and Cloud Messaging
-4. Add your Google Maps API key in the manifest (for location sharing feature)
-5. Build and run the application
-
-## Project Structure
-
-```
-com.aubynsamuel.flashsend/
-├── auth/                  # Authentication related components
-├── chatRoom/              # Chat functionality and UI
-│   └── messageTypes/      # Different message type renderers
-├── functions/             # Utility and helper functions
-├── home/                  # Home screen and related components
-├── navigation/            # Navigation components and routing
-├── notifications/         # Push notification handling
-├── settings/              # User preferences and settings
-└── ui/                    # Theme and UI components
-```
-
-## Setup Requirements
-
-- Android Studio Iguana or later
-- Minimum SDK: 21 (Android 5.0)
-- Target SDK: 34 (Android 14)
-- Kotlin 1.9.0 or later
-- Google Play Services for location features
-- Firebase project with necessary services enabled
+4. Build and run the application
 
 ## Contributing
 
