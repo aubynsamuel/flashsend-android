@@ -38,6 +38,6 @@ fun MessageEntity.toChatMessage(): ChatMessage {
         delivered = delivered,
         location = location,
         duration = duration,
-        reactions = reactions
+        reactions = reactions.toMutableMap()
     )
 }

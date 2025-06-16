@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.baselineprofile)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-    id("kotlin-kapt")
     id("com.google.gms.google-services")
 }
 
@@ -64,10 +63,8 @@ dependencies {
 
     // Room Database
     implementation(libs.androidx.room.runtime)
+    ksp(libs.room.compiler)
     implementation(libs.androidx.room.ktx)
-    annotationProcessor(libs.room.compiler)
-    //noinspection KaptUsageInsteadOfKsp
-    kapt(libs.room.compiler)
 
     // Status Bar
     implementation(libs.accompanist.systemuicontroller)

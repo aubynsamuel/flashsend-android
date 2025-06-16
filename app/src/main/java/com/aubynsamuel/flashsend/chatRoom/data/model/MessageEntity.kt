@@ -28,5 +28,5 @@ data class MessageEntity(
     val duration: Long?,
     val roomId: String,
     @TypeConverters(ReactionConverter::class)
-    val reactions: MutableMap<String, String> = mutableMapOf(),
+    val reactions: Map<String, String> = emptyMap(),
 )
