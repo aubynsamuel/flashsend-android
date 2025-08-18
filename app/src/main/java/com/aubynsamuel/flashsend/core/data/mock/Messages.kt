@@ -101,9 +101,9 @@ fun generateMockMessages(parsedId: String): List<ChatMessage> {
         "Last Message"
     )
 
-    var currentTime = Date()
+    val currentTime = Date()
     var isFromMe = true
-    var senderId = ""
+    var senderId: String
     var id = 0
 
     conversation.forEach { text ->

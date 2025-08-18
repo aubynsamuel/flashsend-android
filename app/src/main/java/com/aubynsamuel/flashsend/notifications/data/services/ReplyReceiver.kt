@@ -88,7 +88,7 @@ class ReplyReceiver : BroadcastReceiver() {
             .forEach { it -> messagingStyle.addMessage(it) }
 
         val replyIntent = Intent(context, ReplyReceiver::class.java).apply {
-            data = notificationId.toString().toUri()
+            data = notificationId.toUri()
             putExtra("sendersUserId", sendersUserId)
             putExtra("recipientsUserId", recipientsUserId)
             putExtra("roomId", roomId)

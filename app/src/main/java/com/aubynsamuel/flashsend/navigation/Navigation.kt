@@ -1,8 +1,6 @@
 package com.aubynsamuel.flashsend.navigation
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -34,7 +32,6 @@ import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.google.gson.Gson
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun ChatAppNavigation() {
     val context: Context = LocalContext.current
@@ -104,11 +101,6 @@ fun ChatAppNavigation() {
 //            "notifications",
 //            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
 //            NotificationTestScreen(context = context)
-//        }
-//        composable(
-//            "QRScannerScreen",
-//            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
-//            QRScannerScreen()
 //        }
         composable(
             "setUserDetails",

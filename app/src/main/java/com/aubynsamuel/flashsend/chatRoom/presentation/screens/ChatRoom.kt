@@ -3,12 +3,10 @@ package com.aubynsamuel.flashsend.chatRoom.presentation.screens
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -69,7 +67,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun ChatScreen(
     navController: NavController,
@@ -87,7 +84,7 @@ fun ChatScreen(
     val chatViewModel: ChatViewModel = hiltViewModel()
     val userData by CurrentUser.userData.collectAsStateWithLifecycle()
 
-    var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
+    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
 
 //    state variables
     val currentUserId = auth.currentUser?.uid ?: return
@@ -339,7 +336,7 @@ fun ChatScreen(
                                 audioPermissionLauncher.launch(audioPermission)
                             }
                         },
-                        chatViewModel = chatViewModel,
+                        sendLocationMessage = chatViewModel::sendLocationMessage,
                         userData = userData,
                         roomId = roomId,
                         recipientToken = deviceToken

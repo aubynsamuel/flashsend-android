@@ -54,7 +54,7 @@ fun ChatMessageObject(
     chatViewModel: ChatViewModel,
     currentUserId: String,
 ) {
-    var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
+    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     var showPopup by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
@@ -109,7 +109,7 @@ fun ChatMessageObject(
             else MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(16.dp)
         ) {
             Box(modifier = Modifier.absoluteOffset(x = 30.dp, y = 30.dp)) {
-                val myMessageOptionsList = listOf<DropMenu>(
+                val myMessageOptionsList = listOf(
                     DropMenu(
                         text = "Copy",
                         onClick = { copyTextToClipboard(context, message.content) },
@@ -126,7 +126,7 @@ fun ChatMessageObject(
                         icon = Icons.Default.Delete
                     ),
                 )
-                val othersMessageOptionsList = listOf<DropMenu>(
+                val othersMessageOptionsList = listOf(
                     DropMenu(
                         text = "Copy",
                         onClick = { copyTextToClipboard(context, message.content) },
@@ -145,13 +145,21 @@ fun ChatMessageObject(
                                 messageId = message.id,
                                 userId = if (isFromMe) currentUserId else message.senderId,
                                 emoji = selectedEmoji,
-                                messageContent = if (message.type == "image") {
-                                    "an image 📷"
-                                } else if (message.type == "audio") {
-                                    "an audio  ${message.content}"
-                                } else if (message.type == "location") {
-                                    "a location"
-                                } else "\"${message.content}\""
+                                messageContent = when (message.type) {
+                                    "image" -> {
+                                        "an image 📷"
+                                    }
+
+                                    "audio" -> {
+                                        "an audio  ${message.content}"
+                                    }
+
+                                    "location" -> {
+                                        "a location"
+                                    }
+
+                                    else -> "\"${message.content}\""
+                                }
                             )
                             showPopup = false
                         })

@@ -16,7 +16,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val roomId = remoteMessage.data["roomId"] ?: ""
             val recipientsUserId = remoteMessage.data["sendersUserId"] ?: ""
             val sendersUserId = remoteMessage.data["recipientsUserId"] ?: ""
-            val profileUrl = remoteMessage.data["profileUrl"] ?: ""
+//            val profileUrl = remoteMessage.data["profileUrl"] ?: ""
 
             Log.d(tag, "Data received: title=$title, roomId=$roomId")
 

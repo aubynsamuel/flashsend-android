@@ -63,7 +63,7 @@ fun ProfileScreen(
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
             title = { Text("My Profile", fontWeight = FontWeight.Medium) },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            colors = TopAppBarDefaults.topAppBarColors().copy(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 titleContentColor = MaterialTheme.colorScheme.primary
             ),

@@ -27,7 +27,7 @@ fun showToast(context: Context, message: String, long: Boolean = false) {
 }
 
 fun createRoomId(userId: String, currentUserId: String): String {
-    val ids = listOf<String>(userId, currentUserId)
+    val ids = listOf(userId, currentUserId)
     return ids.sorted().joinToString("_")
 }
 

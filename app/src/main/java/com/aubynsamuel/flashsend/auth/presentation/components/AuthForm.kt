@@ -1,8 +1,6 @@
 package com.aubynsamuel.flashsend.auth.presentation.components
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -49,7 +47,6 @@ import com.aubynsamuel.flashsend.core.domain.showToast
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @OptIn(DelicateCoroutinesApi::class)
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun AuthForm(
     isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel,

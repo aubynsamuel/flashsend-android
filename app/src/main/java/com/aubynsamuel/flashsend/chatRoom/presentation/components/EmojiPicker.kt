@@ -10,14 +10,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +36,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -96,15 +94,16 @@ fun ReactionPicker(onReactionSelected: (String) -> Unit) {
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun EmojiPickerDialog(
     emojiCategories: Map<String, List<String>>,
     onEmojiSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val categories = emojiCategories.keys.toList()
-    val pagerState = rememberPagerState(initialPage = 0)
+    val pagerState = rememberPagerState(
+        pageCount = { categories.size }
+    )
     val coroutineScope = rememberCoroutineScope()
 
     AlertDialog(
@@ -113,7 +112,7 @@ fun EmojiPickerDialog(
         title = { Text(text = "Select Emoji", fontSize = 18.sp) },
         text = {
             Column {
-                ScrollableTabRow(
+                PrimaryScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
                     edgePadding = 8.dp
                 ) {
@@ -136,11 +135,7 @@ fun EmojiPickerDialog(
                     }
                 }
 
-                HorizontalPager(
-                    count = categories.size,
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth()
-                ) { page ->
+                HorizontalPager(pagerState) { page ->
                     val categoryName = categories[page]
                     val emojis = emojiCategories[categoryName] ?: emptyList()
 

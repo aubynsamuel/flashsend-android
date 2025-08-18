@@ -25,7 +25,6 @@ class HomeViewModel @Inject constructor(
     private val listenToRoomsUseCase: ListenToRoomsUseCase,
     context: Context,
 ) : ViewModel() {
-    private val appContext = context.applicationContext
     private val _uiState = MutableStateFlow(HomeUiState())
     private val tag = "HomeViewModel"
     private val cacheHelper = RoomsCache(context = context)
