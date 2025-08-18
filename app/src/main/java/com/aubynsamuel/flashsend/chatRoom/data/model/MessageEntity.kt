@@ -15,7 +15,7 @@ data class MessageEntity(
     val content: String,
     val image: String?,
     val audio: String?,
-    @TypeConverters(DateConverter::class)
+    @param:TypeConverters(DateConverter::class)
     val createdAt: Date,
     val senderId: String,
     val senderName: String,
@@ -23,10 +23,10 @@ data class MessageEntity(
     val read: Boolean,
     val type: String,
     val delivered: Boolean,
-    @TypeConverters(LocationConverter::class)
+    @param:TypeConverters(LocationConverter::class)
     val location: Location?,
     val duration: Long?,
     val roomId: String,
-    @TypeConverters(ReactionConverter::class)
+    @param:TypeConverters(ReactionConverter::class)
     val reactions: Map<String, String> = emptyMap(),
 )

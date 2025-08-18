@@ -1,7 +1,5 @@
 package com.aubynsamuel.flashsend.auth.presentation.screens
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +38,6 @@ import com.aubynsamuel.flashsend.auth.presentation.components.AuthForm
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun AuthScreen(
     navController: NavController, authViewModel: AuthViewModel

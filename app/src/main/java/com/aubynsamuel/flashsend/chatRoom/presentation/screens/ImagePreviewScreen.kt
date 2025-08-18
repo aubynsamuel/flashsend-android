@@ -67,7 +67,7 @@ fun ImagePreviewScreen(
     var caption by remember { mutableStateOf("") }
     val context = LocalContext.current
     var selectedPicture by remember { mutableStateOf<Uri?>(imageUri) }
-    var croppedPicture by remember { mutableStateOf<Uri?>(selectedPicture) }
+    var croppedPicture by remember { mutableStateOf(selectedPicture) }
 
     var loading by remember { mutableStateOf(false) }
 

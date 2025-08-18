@@ -78,7 +78,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _chatState.value = ChatState.Loading
-                var retrievedMessages: List<ChatMessage> = getMessagesUseCase(roomId)
+                val retrievedMessages: List<ChatMessage> = getMessagesUseCase(roomId)
                 Log.d(tag, "Received ${retrievedMessages.size} messages from localdb")
                 _messages.value = retrievedMessages
                 _chatState.value = ChatState.Success(retrievedMessages)

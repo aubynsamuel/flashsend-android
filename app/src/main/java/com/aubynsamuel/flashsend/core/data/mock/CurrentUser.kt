@@ -7,13 +7,13 @@ val CurrentUser = User(
     userId = "12345",
     username = "Samuel",
     profileUrl = "",
-    deviceToken = "12233434"
+    deviceToken = "PSd0239323"
 )
 
 val NewLoggedInUser = NewUser(
     userId = "12345",
-    username = "Samuel",
+    username = "Eric",
     profileUrl = "",
-    deviceToken = "12233434",
-    email = "aubynsamuel05@gmail.com"
+    deviceToken = "23434003434",
+    email = "eric_129203@gmail.com"
 )

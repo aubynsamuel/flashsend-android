@@ -1,8 +1,6 @@
 package com.aubynsamuel.flashsend.auth.presentation.viewmodels
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aubynsamuel.flashsend.auth.domain.GetUserDataUseCase
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
@@ -34,7 +31,7 @@ class AuthViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
     context: Context,
 ) : ViewModel() {
-    private val tag = "AuthViewModel"
+    //    private val tag = "AuthViewModel"
     private val cacheHelper = RoomsCache(context = context)
     private val _authState = MutableStateFlow(isUserLoggedInUseCase())
     private val _isLoggingIn = MutableStateFlow(false)

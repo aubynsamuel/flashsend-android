@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -44,7 +44,7 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
     val tag = "AudioMessage"
     val context = LocalContext.current
     // Original URL as fallback
-    var mediaUri by remember { mutableStateOf(Uri.parse(message.audio)) }
+    var mediaUri by remember { mutableStateOf(message.audio?.toUri() ?: "".toUri()) }
 
     LaunchedEffect(message.audio) {
         val cachedUri = MediaCacheManager.getMediaUri(context, message.audio.toString())
@@ -62,7 +62,7 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
 
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableLongStateOf(0L) }
-    var duration by remember { mutableLongStateOf(message.duration?.toLong() ?: 0L) }
+    var duration by remember { mutableLongStateOf(message.duration ?: 0L) }
 
     LaunchedEffect(exoPlayer) {
         duration = exoPlayer.duration.takeIf { it > 0 } ?: (message.duration ?: 0L)

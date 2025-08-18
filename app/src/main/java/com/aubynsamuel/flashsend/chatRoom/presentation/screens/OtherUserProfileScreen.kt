@@ -63,7 +63,7 @@ fun OtherUserProfileScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("") },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors().copy(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
@@ -99,7 +99,6 @@ fun OtherUserProfileScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Profile Picture
                     AsyncImage(
                         model = userData.profileUrl,
                         contentDescription = "Profile picture",
@@ -114,7 +113,7 @@ fun OtherUserProfileScreen(
 
                     if (isExpanded) {
                         FullScreenImageViewer(
-                            imageUri = userData.profileUrl.toString(),
+                            imageUri = userData.profileUrl,
                             onDismiss = { isExpanded = false })
                     }
 

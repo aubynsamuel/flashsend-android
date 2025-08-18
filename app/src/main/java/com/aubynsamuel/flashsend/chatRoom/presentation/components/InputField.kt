@@ -45,9 +45,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.getCurrentLocation
 import com.aubynsamuel.flashsend.core.model.NewUser
 
@@ -59,7 +59,15 @@ fun MessageInput(
     onImageClick: () -> Unit,
     isRecording: Boolean,
     onRecordAudio: () -> Unit,
-    chatViewModel: ChatViewModel,
+    sendLocationMessage: (
+        latitude: Double,
+        longitude: Double,
+        senderName: String,
+        roomId: String,
+        currentUserId: String,
+        profileUrl: String,
+        recipientsToken: String,
+    ) -> Unit,
     roomId: String,
     userData: NewUser?, recipientToken: String,
 ) {
@@ -71,12 +79,11 @@ fun MessageInput(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Permission granted, get the location
             getCurrentLocation(
                 context = context,
                 onLocationResult = { lat: Double?, lon: Double? ->
                     if (lat != null && lon != null) {
-                        chatViewModel.sendLocationMessage(
+                        sendLocationMessage(
                             lat,
                             lon,
                             userData?.username ?: "",
@@ -215,7 +222,8 @@ fun MessageInput(
                     modifier = Modifier.graphicsLayer {
                         scaleX = sendIconScale
                         scaleY = sendIconScale
-                    })
+                    }
+                )
             }
 
             AnimatedVisibility(visible = messageText.isNotBlank()) {
@@ -226,7 +234,8 @@ fun MessageInput(
                     modifier = Modifier.graphicsLayer {
                         scaleX = placeIconScale
                         scaleY = placeIconScale
-                    })
+                    }
+                )
             }
         }
     }
@@ -245,10 +254,9 @@ fun MessageInput(
                             locationPermission
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        // Permission is granted, get location immediately
                         getCurrentLocation(context) { lat, lon ->
                             if (lat != null && lon != null) {
-                                chatViewModel.sendLocationMessage(
+                                sendLocationMessage(
                                     lat,
                                     lon,
                                     userData?.username ?: "",
@@ -266,7 +274,6 @@ fun MessageInput(
                             }
                         }
                     } else {
-                        // Permission not granted, request it.
                         permissionRequest.launch(locationPermission)
                     }
                 }) {
@@ -283,13 +290,27 @@ fun MessageInput(
 }
 
 
-//@Preview
-//@Composable
-//fun PrevInputToolBar() {
-//    MessageInput(messageText = "", onMessageChange = {}, onSend = {},
-//        onImageClick = {},
-//        isRecording = false,
-//        onRecordAudio = {},
-//        onLocationRetrieved = {}
-//    )
-//}
+@Preview
+@Composable
+fun PrevInputToolBar() {
+    MessageInput(
+        messageText = "", onMessageChange = {}, onSend = {},
+        onImageClick = {},
+        isRecording = false,
+        onRecordAudio = {},
+        sendLocationMessage = {
+                latitude: Double,
+                longitude: Double,
+                senderName: String,
+                roomId: String,
+                currentUserId: String,
+                profileUrl: String,
+                recipientsToken: String,
+            ->
+            {}
+        },
+        roomId = "",
+        userData = NewUser(),
+        recipientToken = ""
+    )
+}

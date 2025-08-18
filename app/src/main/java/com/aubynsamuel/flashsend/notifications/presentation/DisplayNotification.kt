@@ -29,7 +29,7 @@ fun showNotification(
     // Create an intent for opening the app
     val contentIntent = Intent(context, MainActivity::class.java).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        data = id.toString().toUri()
+        data = id.toUri()
     }
     val contentPendingIntent = PendingIntent.getActivity(
         context,
@@ -40,7 +40,7 @@ fun showNotification(
 
     // Create the reply action
     val replyIntent = Intent(context, ReplyReceiver::class.java).apply {
-        data = id.toString().toUri()
+        data = id.toUri()
         putExtra("sendersUserId", sendersUserId)
         putExtra("recipientsUserId", recipientsUserId)
         putExtra("roomId", id)
@@ -64,7 +64,7 @@ fun showNotification(
     // Create a "Mark as Read" action
     val markAsReadIntent = Intent(context, ActionReceiver::class.java).apply {
         action = "MARK_AS_READ"
-        data = id.toString().toUri()
+        data = id.toUri()
         putExtra("sendersUserId", sendersUserId)
         putExtra("recipientsUserId", recipientsUserId)
         putExtra("roomId", id)
@@ -80,12 +80,12 @@ fun showNotification(
     val newMessage = NotificationCompat.MessagingStyle.Message(
         message, System.currentTimeMillis(), generateSender(name = sender)
     )
-    ConversationHistoryManager.addMessage(id.toString(), newMessage)
+    ConversationHistoryManager.addMessage(id, newMessage)
     // Rebuild the MessagingStyle notification with the full conversation history.
     val messagingStyle = NotificationCompat.MessagingStyle(person)
 
     // Append each message in the history
-    ConversationHistoryManager.getHistory(id.toString()).forEach { message ->
+    ConversationHistoryManager.getHistory(id).forEach { message ->
         messagingStyle.addMessage(message)
     }
 

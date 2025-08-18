@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Person
@@ -39,13 +41,9 @@ import com.aubynsamuel.flashsend.home.presentation.screens.HomeScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.ProfileScreen
 import com.aubynsamuel.flashsend.settings.presentation.screens.SettingsScreen
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MainBottomNavScreen(
     navController: NavController,
@@ -53,7 +51,7 @@ fun MainBottomNavScreen(
     chatViewModel: ChatViewModel,
     settingsViewModel: SettingsViewModel,
     context: Context,
-    initialPage: Int = 0
+    initialPage: Int = 0,
 ) {
     val bottomNavItems = listOf(
         BottomNavItem("home", Icons.AutoMirrored.Default.Chat, "Chats"),
@@ -61,7 +59,10 @@ fun MainBottomNavScreen(
         BottomNavItem("settings", Icons.Default.Settings, "Settings")
     )
 
-    val pagerState = rememberPagerState(initialPage = initialPage)
+    val pagerState = rememberPagerState(
+        pageCount = { bottomNavItems.size },
+        initialPage = initialPage
+    )
     val coroutineScope = rememberCoroutineScope()
     var backButtonPressed by remember { mutableStateOf(false) }
 
@@ -86,7 +87,6 @@ fun MainBottomNavScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
-            count = bottomNavItems.size,
             state = pagerState,
             modifier = Modifier
                 .weight(1f)

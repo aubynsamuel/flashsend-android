@@ -44,7 +44,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -78,7 +78,7 @@ fun CameraXScreen(
     roomId: String,
     profileUrl: String?,
     deviceToken: String,
-    onError: (Throwable) -> Unit = {}
+    onError: (Throwable) -> Unit = {},
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -178,21 +178,22 @@ fun CameraXScreen(
                     .aspectRatio(aspectRatioValue)
             )
             // Tap-to-focus overlay
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTapGestures { tapOffset ->
-                        camera?.cameraControl?.startFocusAndMetering(
-                            FocusMeteringAction.Builder(
-                                previewView.meteringPointFactory.createPoint(
-                                    tapOffset.x,
-                                    tapOffset.y
-                                ),
-                                FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE
-                            ).build()
-                        )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTapGestures { tapOffset ->
+                            camera?.cameraControl?.startFocusAndMetering(
+                                FocusMeteringAction.Builder(
+                                    previewView.meteringPointFactory.createPoint(
+                                        tapOffset.x,
+                                        tapOffset.y
+                                    ),
+                                    FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE
+                                ).build()
+                            )
+                        }
                     }
-                }
             )
         }
 
@@ -248,7 +249,7 @@ fun CameraXScreen(
             },
             modifier = Modifier
                 .fillMaxWidth(),
-            colors = TopAppBarColors(
+            colors = TopAppBarDefaults.topAppBarColors().copy(
                 containerColor = Color.Transparent,
                 navigationIconContentColor = Color.White,
                 actionIconContentColor = Color.White,
@@ -373,7 +374,7 @@ private fun captureImage(
     context: Context,
     imageCapture: ImageCapture?,
     onImageCaptured: (Uri) -> Unit,
-    onError: (ImageCaptureException) -> Unit
+    onError: (ImageCaptureException) -> Unit,
 ) {
     val photoFile = createFile(context)
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()

@@ -7,7 +7,6 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +64,6 @@ import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
 
-@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -84,7 +82,7 @@ fun HomeScreen(
         homeViewModel.getFCMToken { value -> retrievedToken = value }
     }
 
-    var connectivityViewModel: ConnectivityViewModel = hiltViewModel()
+    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     val homeUiState by homeViewModel.uiState.collectAsState()
@@ -98,10 +96,14 @@ fun HomeScreen(
         ActivityResultContracts.RequestPermission(),
         onResult = {})
     val hasNotificationPermission =
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
 
     LaunchedEffect(connectivityStatus) {
         if (connectivityStatus is ConnectivityStatus.Available) {
@@ -113,8 +115,10 @@ fun HomeScreen(
         }
     }
     LaunchedEffect(Unit) {
-        if (!hasNotificationPermission) {
-            permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!hasNotificationPermission) {
+                permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
         authViewModel.loadUserData()
         try {
@@ -127,7 +131,7 @@ fun HomeScreen(
         try {
             if (user != null) {
                 NotificationTokenManager.initializeAndUpdateToken(
-                    context, user.uid, retrievedToken.toString()
+                    context, user.uid, retrievedToken
                 )
             } else {
                 Log.w(tag, "User not signed in; cannot update token.")
@@ -146,7 +150,7 @@ fun HomeScreen(
         try {
             if (user != null) {
                 NotificationTokenManager.initializeAndUpdateToken(
-                    context, user.uid, retrievedToken.toString()
+                    context, user.uid, retrievedToken
                 )
             } else {
                 Log.w(tag, "User not signed in; cannot update token.")

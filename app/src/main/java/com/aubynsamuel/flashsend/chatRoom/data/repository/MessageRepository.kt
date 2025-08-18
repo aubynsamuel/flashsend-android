@@ -1,9 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom.data.repository
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.aubynsamuel.flashsend.chatRoom.data.local.ChatDatabase
 import com.aubynsamuel.flashsend.chatRoom.data.local.MessageDao
 import com.aubynsamuel.flashsend.chatRoom.data.local.toChatMessage
@@ -218,7 +216,6 @@ class MessageRepository @Inject constructor(
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun prefetchNewMessagesForRoom(roomId: String) {
         val cachedMessages = messageDao.getMessagesForRoom(roomId).first()
         Log.d(tag, "Got ${cachedMessages.size} from Messages prefetch, roomId:$roomId")
