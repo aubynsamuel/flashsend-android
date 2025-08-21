@@ -58,9 +58,6 @@ dependencies {
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.barcode.scanning)
 
-    // Horizontal pager
-    implementation(libs.accompanist.pager)
-
     // Credentials Manager
     implementation(libs.androidx.credentials)
 
