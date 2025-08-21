@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.navigation.ChatAppNavigation
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
@@ -24,7 +23,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val tag = "MainActivityLogs"
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,12 +30,8 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         createNotificationChannel()
         enableEdgeToEdge()
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                logger(tag, token)
-            }
-        }
+        FirebaseMessaging.getInstance().token
+
         setContent {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val settingsState by settingsViewModel.settingsState.collectAsStateWithLifecycle()
