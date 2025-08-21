@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -148,14 +147,10 @@ fun MainBottomNavScreen(
                             pagerState.scrollToPage(index)
                         }
                     },
-                    colors = NavigationBarItemColors(
+                    colors = NavigationBarItemDefaults.colors().copy(
                         selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         selectedIndicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                        unselectedIconColor = NavigationBarItemDefaults.colors().unselectedIconColor,
-                        unselectedTextColor = NavigationBarItemDefaults.colors().unselectedTextColor,
-                        disabledIconColor = NavigationBarItemDefaults.colors().disabledIconColor,
-                        disabledTextColor = NavigationBarItemDefaults.colors().disabledTextColor
                     )
                 )
             }
