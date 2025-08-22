@@ -10,6 +10,9 @@ import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.animateContentSize
@@ -104,23 +107,39 @@ fun CameraXScreen(
     LaunchedEffect(lensFacing, selectedAspect, flashMode) {
         val cameraProvider = ProcessCameraProvider.getInstance(context).get()
 
-        val previewBuilder = Preview.Builder()
-        val captureBuilder = ImageCapture.Builder()
-            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            .setFlashMode(flashMode)
-
+        val resolutionSelectorBuilder = ResolutionSelector.Builder()
         if (selectedAspect == "1:1") {
-            val squareSize = Size(1080, 1080)
-            previewBuilder.setTargetResolution(squareSize)
-            captureBuilder.setTargetResolution(squareSize)
+            resolutionSelectorBuilder
+                .setResolutionStrategy(
+                    ResolutionStrategy(
+                        Size(1080, 1080),
+                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                    )
+                )
+                .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
         } else {
-            val targetAspectRatio = if (selectedAspect == "16:9")
+            val aspectRatio = if (selectedAspect == "16:9")
                 AspectRatio.RATIO_16_9
             else
                 AspectRatio.RATIO_4_3
-            previewBuilder.setTargetAspectRatio(targetAspectRatio)
-            captureBuilder.setTargetAspectRatio(targetAspectRatio)
+
+            resolutionSelectorBuilder.setAspectRatioStrategy(
+                when (aspectRatio) {
+                    AspectRatio.RATIO_16_9 -> AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
+                    else -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
+                }
+            )
         }
+        val resolutionSelector = resolutionSelectorBuilder.build()
+
+        val previewBuilder = Preview.Builder()
+            .setResolutionSelector(resolutionSelector)
+
+        val captureBuilder = ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setFlashMode(flashMode)
+            .setResolutionSelector(resolutionSelector)
+
 
         val preview = previewBuilder.build().also {
             it.surfaceProvider = previewView.surfaceProvider
