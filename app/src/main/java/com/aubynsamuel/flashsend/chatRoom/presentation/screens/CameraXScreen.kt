@@ -68,7 +68,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.core.domain.createFile
-import com.aubynsamuel.flashsend.navigation.Screen
+import com.aubynsamuel.flashsend.navigation.ImagePreviewScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -309,7 +309,7 @@ fun CameraXScreen(
                                         context = context,
                                         imageCapture = imageCapture,
                                         onImageCaptured = { savedUri ->
-                                            val route = Screen.ImagePreview.createRoute(
+                                            val route = ImagePreviewScreen(
                                                 imageUri = savedUri.toString(),
                                                 roomId = roomId,
                                                 takenFromCamera = true,

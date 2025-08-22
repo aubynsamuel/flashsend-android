@@ -57,7 +57,9 @@ import com.aubynsamuel.flashsend.core.domain.createRoomId
 import com.aubynsamuel.flashsend.core.model.User
 import com.aubynsamuel.flashsend.core.presentation.ConnectivityViewModel
 import com.aubynsamuel.flashsend.core.state.CurrentUser
-import com.aubynsamuel.flashsend.navigation.Screen
+import com.aubynsamuel.flashsend.navigation.CameraXScreenDC
+import com.aubynsamuel.flashsend.navigation.ImagePreviewScreen
+import com.aubynsamuel.flashsend.navigation.OtherProfileScreenDC
 import com.aubynsamuel.flashsend.notifications.data.services.ConversationHistoryManager
 import com.aubynsamuel.flashsend.notifications.data.services.person
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
@@ -116,7 +118,7 @@ fun ChatScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            val route = Screen.ImagePreview.createRoute(
+            val route = ImagePreviewScreen(
                 imageUri = it.toString(),
                 roomId = roomId,
                 takenFromCamera = false,
@@ -144,7 +146,7 @@ fun ChatScreen(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            val route = Screen.CameraX.createRoute(
+            val route = CameraXScreenDC(
                 roomId = roomId,
                 profileUrl = userData?.profileUrl ?: "",
                 deviceToken = deviceToken
@@ -211,8 +213,8 @@ fun ChatScreen(
                     DropMenu(
                         text = "View Profile",
                         onClick = {
-                            val userJson = Uri.encode(Gson().toJson(userData))
-                            navController.navigate("otherProfileScreen/$userJson") {
+                            val userJson = Gson().toJson(userData)
+                            navController.navigate(OtherProfileScreenDC(userJson)) {
                                 launchSingleTop = true
                                 restoreState = true
                             }
@@ -226,7 +228,7 @@ fun ChatScreen(
                             Manifest.permission.CAMERA
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        val route = Screen.CameraX.createRoute(
+                        val route = CameraXScreenDC(
                             roomId = roomId,
                             profileUrl = userData.profileUrl,
                             deviceToken = deviceToken

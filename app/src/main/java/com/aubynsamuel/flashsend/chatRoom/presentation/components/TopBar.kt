@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chatRoom.presentation.components
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +36,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.navigation.OtherProfileScreenDC
 import com.google.gson.Gson
 
 @Composable
@@ -80,8 +80,8 @@ fun HeaderBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .clickable(onClick = {
-                        val userJson = Uri.encode(Gson().toJson(userData))
-                        navController.navigate("otherProfileScreen/$userJson")
+                        val userJson = Gson().toJson(userData)
+                        navController.navigate(OtherProfileScreenDC(userJson))
                     })
                     .weight(1f)
             ) {

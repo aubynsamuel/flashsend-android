@@ -40,9 +40,8 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.formatMessageTime
 import com.aubynsamuel.flashsend.core.model.RoomData
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
-import com.aubynsamuel.flashsend.navigation.Screen
+import com.aubynsamuel.flashsend.navigation.ChatRoomScreen
 import com.google.firebase.auth.FirebaseAuth
-import java.net.URLEncoder
 
 @Composable
 fun ChatListItem(
@@ -79,14 +78,12 @@ fun ChatListItem(
             .fillMaxWidth()
             .clickable {
                 val user = room.otherParticipant
-                val encodedUsername = URLEncoder.encode(user.username, "UTF-8")
-                val encodedProfileUrl = URLEncoder.encode(user.profileUrl, "UTF-8")
                 navController.navigate(
-                    Screen.ChatRoom.createRoute(
-                        username = encodedUsername,
+                    ChatRoomScreen(
+                        username = user.username,
                         userId = user.userId,
                         deviceToken = user.deviceToken,
-                        profileUrl = encodedProfileUrl,
+                        profileUrl = user.profileUrl,
                     )
                 )
             },
@@ -105,7 +102,7 @@ fun ChatListItem(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(0.85f),
             ) {
-//                profile pic, username and last message
+                //profile pic, username and last message
                 AsyncImage(
                     model = room.otherParticipant.profileUrl,
                     contentDescription = "Profile Picture",

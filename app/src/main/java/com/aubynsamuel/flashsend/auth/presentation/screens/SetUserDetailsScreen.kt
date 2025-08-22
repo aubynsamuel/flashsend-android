@@ -49,6 +49,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
+import com.aubynsamuel.flashsend.navigation.MainScreen
+import com.aubynsamuel.flashsend.navigation.SetUserDetailsDC
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
@@ -187,8 +189,8 @@ fun SetUserDetailsScreen(
                     authViewModel.updateUserDocument(newData)
 
                     showToast(context, "Profile updated successfully!")
-                    navController.navigate("main?initialPage=0") {
-                        popUpTo("setUserDetails") { inclusive = true }
+                    navController.navigate(MainScreen(0)) {
+                        popUpTo(SetUserDetailsDC) { inclusive = true }
                     }
                 } catch (e: Exception) {
                     showToast(context, "Error: ${e.message}", true)

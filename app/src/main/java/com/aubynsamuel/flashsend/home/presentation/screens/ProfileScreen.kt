@@ -49,6 +49,7 @@ import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.core.state.CurrentUser
 import com.aubynsamuel.flashsend.home.presentation.components.ProfileDetailItem
+import com.aubynsamuel.flashsend.navigation.EditProfileDC
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,7 +152,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             FilledTonalButton(
-                onClick = { navController.navigate("editProfile") },
+                onClick = { navController.navigate(EditProfileDC) },
                 modifier = Modifier.fillMaxWidth(0.8f)
             ) {
                 Icon(Icons.Default.Edit, contentDescription = null)

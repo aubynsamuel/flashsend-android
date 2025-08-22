@@ -10,11 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.aubynsamuel.flashsend.LoadingScreen
 import com.aubynsamuel.flashsend.auth.presentation.screens.AuthScreen
 import com.aubynsamuel.flashsend.auth.presentation.screens.SetUserDetailsScreen
@@ -44,133 +43,104 @@ fun ChatAppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "loadingScreen",
+        startDestination = LoadingScreen,
         modifier = Modifier.background(MaterialTheme.colorScheme.background)
     ) {
-        composable("auth") {
+        composable<AuthScreen> {
             AuthScreen(navController, authViewModelInstance)
         }
-        composable("loadingScreen") {
+
+        composable<LoadingScreen> {
             LoadingScreen(navController, authViewModelInstance)
         }
-        composable(
-            route = "main?initialPage={initialPage}",
-            arguments = listOf(navArgument("initialPage") {
-                type = NavType.IntType
-                defaultValue = 0
-            })
-        ) { backStackEntry ->
-            val initialPage = backStackEntry.arguments?.getInt("initialPage") ?: 0
+
+        composable<MainScreen> {
+            val args = it.toRoute<MainScreen>()
             MainBottomNavScreen(
                 navController = navController,
                 authViewModelInstance = authViewModelInstance,
                 chatViewModel = chatViewModel,
                 settingsViewModel = settingsViewModel,
                 context = context,
-                initialPage = initialPage
+                initialPage = args.initialPage
             )
         }
-        composable(
-            route = Screen.ChatRoom.route,
-            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) },
-            arguments = listOf(
-                navArgument("username") { type = NavType.StringType },
-                navArgument("userId") { type = NavType.StringType },
-                navArgument("deviceToken") { type = NavType.StringType },
-                navArgument("profileUrl") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: ""
-            val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            val deviceToken = backStackEntry.arguments?.getString("deviceToken") ?: ""
-            val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
+
+        composable<ChatRoomScreen>(
+            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }
+        ) {
+            val args = it.toRoute<ChatRoomScreen>()
             ChatScreen(
                 navController = navController,
-                username = username,
-                userId = userId,
-                deviceToken = deviceToken,
-                profileUrl = profileUrl,
+                username = args.username,
+                userId = args.userId,
+                deviceToken = args.deviceToken,
+                profileUrl = args.profileUrl,
                 settingsViewModel = settingsViewModel,
             )
         }
-        composable(
-            "searchUsers",
+
+        composable<SearchUsersScreenDC>(
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
             SearchUsersScreen(navController)
         }
+
 //        composable(
 //            "notifications",
 //            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
 //            NotificationTestScreen(context = context)
 //        }
-        composable(
-            "setUserDetails",
+
+        composable<SetUserDetailsDC>(
             enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
             SetUserDetailsScreen(navController, authViewModel = authViewModelInstance)
         }
-        composable(
-            "editProfile",
+
+        composable<EditProfileDC>(
             enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }) {
             EditProfileScreen(navController, authViewModel = authViewModelInstance)
         }
-        composable(
-            route = "otherProfileScreen/{userJson}",
-            arguments = listOf(navArgument("userJson") { type = NavType.StringType }),
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) })
-        { backStackEntry ->
-            val userJson = backStackEntry.arguments?.getString("userJson")
-            val userData = Gson().fromJson(userJson, User::class.java)
+
+        composable<OtherProfileScreenDC>(
+            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
+        ) {
+            val args = it.toRoute<OtherProfileScreenDC>()
+            val userData = Gson().fromJson(args.user, User::class.java)
             OtherUserProfileScreen(navController = navController, userData = userData)
         }
-        composable(
-            route = Screen.ImagePreview.route,
-            arguments = listOf(
-                navArgument("imageUri") { type = NavType.StringType },
-                navArgument("roomId") { type = NavType.StringType },
-                navArgument("takenFromCamera") { type = NavType.StringType },
-                navArgument("profileUrl") { type = NavType.StringType },
-                navArgument("recipientsToken") { type = NavType.StringType }),
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) })
-        { backStackEntry ->
-            val imageUriStr = backStackEntry.arguments?.getString("imageUri")
-            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-            val takenFromCameraStr =
-                backStackEntry.arguments?.getString("takenFromCamera") ?: "0"
-            val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
-            val recipientsToken = backStackEntry.arguments?.getString("recipientsToken") ?: ""
-            if (imageUriStr.isNullOrEmpty()) {
+
+        composable<ImagePreviewScreen>(
+            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
+        ) {
+            val args = it.toRoute<ImagePreviewScreen>()
+            if (args.imageUri.isEmpty()) {
                 showToast(context, "An error occurred, Invalid image format")
                 return@composable
             }
-            val imageUri = imageUriStr.toUri()
             ImagePreviewScreen(
                 navController = navController,
-                imageUri = imageUri,
                 chatViewModel = chatViewModel,
-                roomId = roomId,
-                takenFromCamera = takenFromCameraStr,
-                profileUrl = profileUrl,
-                recipientsToken = recipientsToken
+                imageUri = args.imageUri.toUri(),
+                roomId = args.roomId,
+                takenFromCamera = args.takenFromCamera.toString(),
+                profileUrl = args.profileUrl,
+                recipientsToken = args.recipientsToken
             )
         }
-        composable(
-            route = Screen.CameraX.route,
-            arguments = listOf(
-                navArgument("roomId") { type = NavType.StringType },
-                navArgument("profileUrl") { type = NavType.StringType },
-                navArgument("deviceToken") { type = NavType.StringType }),
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) })
-        { backStackEntry ->
-            val roomId = backStackEntry.arguments?.getString("roomId") ?: ""
-            val profileUrl = backStackEntry.arguments?.getString("profileUrl") ?: ""
-            val deviceToken = backStackEntry.arguments?.getString("deviceToken") ?: ""
+
+        composable<CameraXScreenDC>(
+            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
+        ) {
+            val args = it.toRoute<CameraXScreenDC>()
             CameraXScreen(
                 navController = navController,
-                roomId = roomId,
-                profileUrl = profileUrl,
-                deviceToken = deviceToken,
+                roomId = args.roomId,
+                profileUrl = args.profileUrl,
+                deviceToken = args.deviceToken,
                 onError = { error ->
                     logger(tag, error.message.toString())
-                })
+                }
+            )
         }
     }
 }

@@ -60,6 +60,9 @@ import com.aubynsamuel.flashsend.core.domain.logger
 import com.aubynsamuel.flashsend.core.presentation.ConnectivityViewModel
 import com.aubynsamuel.flashsend.home.presentation.components.ChatListItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
+import com.aubynsamuel.flashsend.navigation.AuthScreen
+import com.aubynsamuel.flashsend.navigation.MainScreen
+import com.aubynsamuel.flashsend.navigation.SearchUsersScreenDC
 import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -162,8 +165,8 @@ fun HomeScreen(
 
     LaunchedEffect(authState) {
         if (!authState) {
-            navController.navigate("auth") {
-                popUpTo("main?initialPage=0") { inclusive = true }
+            navController.navigate(AuthScreen) {
+                popUpTo(MainScreen(0)) { inclusive = true }
             }
         }
     }
@@ -202,7 +205,7 @@ fun HomeScreen(
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier
-                        .clickable(onClick = { navController.navigate("searchUsers") })
+                        .clickable(onClick = { navController.navigate(SearchUsersScreenDC) })
                         .padding(end = 5.dp)
                 )
                 Icon(
@@ -221,8 +224,8 @@ fun HomeScreen(
                         DropMenu(
                             text = "Profile",
                             onClick = {
-                                navController.navigate("main?initialPage=1") {
-                                    popUpTo("main?initialPage=0") { inclusive = false }
+                                navController.navigate(MainScreen(1)) {
+                                    popUpTo(MainScreen(0)) { inclusive = false }
                                 }
                             },
                             icon = Icons.Default.Person
@@ -230,8 +233,8 @@ fun HomeScreen(
                         DropMenu(
                             text = "Settings",
                             onClick = {
-                                navController.navigate("main?initialPage=2") {
-                                    popUpTo("main?initialPage=0") { inclusive = false }
+                                navController.navigate(MainScreen(2)) {
+                                    popUpTo(MainScreen(0)) { inclusive = false }
                                 }
                             },
                             icon = Icons.Default.Settings
@@ -253,7 +256,7 @@ fun HomeScreen(
         }
     }, floatingActionButton = {
         FloatingActionButton(
-            onClick = { navController.navigate("searchUsers") },
+            onClick = { navController.navigate(SearchUsersScreenDC) },
             modifier = Modifier.padding(bottom = 20.dp, end = 5.dp)
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add Chat")
