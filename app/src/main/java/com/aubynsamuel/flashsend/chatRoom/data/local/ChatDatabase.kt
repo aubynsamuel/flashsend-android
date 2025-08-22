@@ -12,7 +12,6 @@ import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.LocationConv
 import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.ReactionConverter
 import com.aubynsamuel.flashsend.chatRoom.data.model.MessageEntity
 
-internal const val ChatDataBaseLogs = "ChatDatabase"
 
 @Database(entities = [MessageEntity::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class, LocationConverter::class, ReactionConverter::class)
@@ -20,27 +19,29 @@ abstract class ChatDatabase : RoomDatabase() {
     abstract fun messageDao(): MessageDao
 
     companion object {
+        private const val CHAT_DATABASE_LOGS = "ChatDatabase"
+
         @Volatile
         private var INSTANCE: ChatDatabase? = null
 
         fun getDatabase(context: Context): ChatDatabase {
             return INSTANCE ?: synchronized(this) {
-                Log.d(ChatDataBaseLogs, "Creating new ChatDatabase instance")
+                Log.d(CHAT_DATABASE_LOGS, "Creating new ChatDatabase instance")
                 val instance = Room.databaseBuilder(
                     context.applicationContext, ChatDatabase::class.java, "chat_database"
                 ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        Log.d(ChatDataBaseLogs, "onCreate: Database created at path: ${db.path}")
+                        Log.d(CHAT_DATABASE_LOGS, "onCreate: Database created at path: ${db.path}")
                     }
 
                     override fun onOpen(db: SupportSQLiteDatabase) {
                         super.onOpen(db)
-                        Log.d(ChatDataBaseLogs, "onOpen: Database opened at path: ${db.path}")
+                        Log.d(CHAT_DATABASE_LOGS, "onOpen: Database opened at path: ${db.path}")
                     }
                 }).build()
                 INSTANCE = instance
-                Log.d(ChatDataBaseLogs, "ChatDatabase instance created and assigned")
+                Log.d(CHAT_DATABASE_LOGS, "ChatDatabase instance created and assigned")
                 instance
             }
         }
