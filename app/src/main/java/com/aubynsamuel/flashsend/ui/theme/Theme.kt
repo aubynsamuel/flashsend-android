@@ -16,24 +16,16 @@ import androidx.compose.ui.platform.LocalContext
 import com.aubynsamuel.flashsend.core.model.ThemeMode
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+private val DarkColorScheme = darkColorScheme()
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-)
+private val LightColorScheme = lightColorScheme()
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FlashSendTheme(
     themeMode: ThemeMode = ThemeMode.SYSTEM,
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit,
 ) {
     val darkTheme = when (themeMode) {
         ThemeMode.DARK -> true
@@ -46,14 +38,13 @@ fun FlashSendTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
-    // Get the SystemUiController instance from Accompanist
     val systemUiController = rememberSystemUiController()
 
-    // Update the status bar color and icon style
     SideEffect {
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
