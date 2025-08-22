@@ -56,11 +56,6 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    implementation(libs.androidx.camera.mlkit.vision)
-    implementation(libs.barcode.scanning)
-
-    // Credentials Manager
-    implementation(libs.androidx.credentials)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
