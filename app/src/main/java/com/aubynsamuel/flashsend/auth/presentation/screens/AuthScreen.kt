@@ -37,6 +37,9 @@ import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.components.AuthForm
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.domain.showToast
+import com.aubynsamuel.flashsend.navigation.AuthScreen
+import com.aubynsamuel.flashsend.navigation.MainScreen
+import com.aubynsamuel.flashsend.navigation.SetUserDetailsDC
 
 @Composable
 fun AuthScreen(
@@ -51,12 +54,12 @@ fun AuthScreen(
     LaunchedEffect(authState) {
         if (authState) {
             if (isLogin) {
-                navController.navigate("main?initialPage=0") {
-                    popUpTo("auth") { inclusive = true }
+                navController.navigate(MainScreen(0)) {
+                    popUpTo(AuthScreen) { inclusive = true }
                 }
             } else {
-                navController.navigate("setUserDetails") {
-                    popUpTo("auth") { inclusive = true }
+                navController.navigate(SetUserDetailsDC) {
+                    popUpTo(AuthScreen) { inclusive = true }
                 }
             }
         }

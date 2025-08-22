@@ -38,8 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.home.presentation.components.SearchedUserItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.SearchUsersViewModel
-import com.aubynsamuel.flashsend.navigation.Screen
-import java.net.URLEncoder
+import com.aubynsamuel.flashsend.navigation.ChatRoomScreen
 
 @Composable
 fun SearchUsersScreen(
@@ -125,14 +124,12 @@ fun SearchUsersScreen(
                 if (uiState.filteredUsers.isNotEmpty()) {
                     items(uiState.filteredUsers) { user ->
                         SearchedUserItem(user = user, onClick = {
-                            val encodedUsername = URLEncoder.encode(user.username, "UTF-8")
-                            val encodedProfileUrl = URLEncoder.encode(user.profileUrl, "UTF-8")
                             navController.navigate(
-                                Screen.ChatRoom.createRoute(
-                                    username = encodedUsername,
+                                ChatRoomScreen(
+                                    username = user.username,
                                     userId = user.userId,
                                     deviceToken = user.deviceToken,
-                                    profileUrl = encodedProfileUrl,
+                                    profileUrl = user.profileUrl,
                                 )
                             )
                         })

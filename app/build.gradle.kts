@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
     id("com.google.gms.google-services")
 }
 
@@ -123,6 +124,8 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     implementation(libs.material3)
+
+    implementation(libs.kotlinx.serialization.json)
 
     // Default libs
     implementation(libs.androidx.core.ktx)

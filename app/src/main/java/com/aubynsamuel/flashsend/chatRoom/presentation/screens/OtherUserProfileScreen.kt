@@ -47,7 +47,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.core.model.User
-import java.net.URLDecoder
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +56,6 @@ fun OtherUserProfileScreen(
     userData: User,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val decodedUsername = URLDecoder.decode(userData.username, "UTF-8")
 
     Scaffold(
         topBar = {
@@ -120,7 +118,7 @@ fun OtherUserProfileScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = decodedUsername,
+                        text = userData.username,
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -138,7 +136,7 @@ fun OtherUserProfileScreen(
                     ProfileDetailItem(
                         icon = Icons.Default.Person,
                         label = "Username",
-                        value = decodedUsername
+                        value = userData.username
                     )
                 }
             }
