@@ -1,10 +1,11 @@
 package com.aubynsamuel.flashsend.notifications.data.api
 
+import com.aubynsamuel.flashsend.BuildConfig
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://chat-server-xet3.onrender.com"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     val apiService: ApiService by lazy {
         Retrofit.Builder()
