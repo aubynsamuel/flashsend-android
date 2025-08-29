@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom.data.local
 
 import com.aubynsamuel.flashsend.chatRoom.data.model.MessageEntity
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 
 fun ChatMessage.toMessageEntity(roomId: String): MessageEntity {
     return MessageEntity(

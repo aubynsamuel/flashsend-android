@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.DateConverter
 import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.LocationConverter
 import com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters.ReactionConverter
-import com.aubynsamuel.flashsend.core.model.Location
+import com.aubynsamuel.flashsend.core.domain.model.Location
 import java.util.Date
 
 @Entity(tableName = "messages")

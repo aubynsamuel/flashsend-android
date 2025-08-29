@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.core.data.mock
 
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import java.util.Date
 import java.util.Random
 

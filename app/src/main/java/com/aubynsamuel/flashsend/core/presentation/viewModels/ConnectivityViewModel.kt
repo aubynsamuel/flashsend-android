@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.core.presentation
+package com.aubynsamuel.flashsend.core.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

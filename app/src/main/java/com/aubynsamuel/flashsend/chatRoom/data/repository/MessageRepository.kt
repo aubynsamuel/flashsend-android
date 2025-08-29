@@ -7,9 +7,9 @@ import com.aubynsamuel.flashsend.chatRoom.data.local.MessageDao
 import com.aubynsamuel.flashsend.chatRoom.data.local.toChatMessage
 import com.aubynsamuel.flashsend.chatRoom.data.local.toMessageEntity
 import com.aubynsamuel.flashsend.chatRoom.data.model.MessageEntity
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.model.ChatMessage
-import com.aubynsamuel.flashsend.core.model.Location
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.Location
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore

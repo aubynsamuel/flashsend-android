@@ -4,7 +4,7 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.aubynsamuel.flashsend.core.domain.logger
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

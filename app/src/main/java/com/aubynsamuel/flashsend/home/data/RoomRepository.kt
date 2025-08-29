@@ -2,9 +2,9 @@ package com.aubynsamuel.flashsend.home.data
 
 import android.content.Context
 import com.aubynsamuel.flashsend.core.data.MediaCacheManager
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.model.RoomData
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.RoomData
+import com.aubynsamuel.flashsend.core.domain.model.User
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

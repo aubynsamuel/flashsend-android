@@ -13,8 +13,8 @@ import androidx.core.app.RemoteInput
 import androidx.core.net.toUri
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.domain.showToast
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.aubynsamuel.flashsend.notifications.presentation.groupKey
 import kotlinx.coroutines.DelicateCoroutinesApi

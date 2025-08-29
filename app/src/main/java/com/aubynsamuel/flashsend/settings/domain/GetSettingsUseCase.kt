@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.settings.domain
 
-import com.aubynsamuel.flashsend.core.model.SettingsState
+import com.aubynsamuel.flashsend.core.domain.model.SettingsState
 import com.aubynsamuel.flashsend.settings.data.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

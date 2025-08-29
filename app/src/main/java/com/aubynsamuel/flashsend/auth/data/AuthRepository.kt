@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.auth.data
 
-import com.aubynsamuel.flashsend.core.model.NewUser
+import com.aubynsamuel.flashsend.core.domain.model.NewUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

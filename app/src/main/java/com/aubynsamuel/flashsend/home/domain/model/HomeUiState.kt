@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.home.domain.model
 
-import com.aubynsamuel.flashsend.core.model.RoomData
+import com.aubynsamuel.flashsend.core.domain.model.RoomData
 
 data class HomeUiState(
     val rooms: List<RoomData> = emptyList(),

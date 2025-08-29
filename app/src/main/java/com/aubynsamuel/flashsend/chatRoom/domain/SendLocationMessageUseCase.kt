@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.chatRoom.domain
 
 import com.aubynsamuel.flashsend.chatRoom.data.repository.SendMessageRepository
-import com.aubynsamuel.flashsend.core.model.Location
+import com.aubynsamuel.flashsend.core.domain.model.Location
 import javax.inject.Inject
 
 class SendLocationMessageUseCase @Inject constructor(

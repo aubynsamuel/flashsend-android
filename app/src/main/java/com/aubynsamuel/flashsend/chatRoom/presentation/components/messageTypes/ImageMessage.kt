@@ -27,7 +27,7 @@ import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.chatRoom.presentation.utils.vibrateDevice
 import com.aubynsamuel.flashsend.core.data.MediaCacheManager
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 
 @Composable
 fun ImageMessage(

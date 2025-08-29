@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.home.data
 
 import android.util.Log
-import com.aubynsamuel.flashsend.core.domain.logger
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration

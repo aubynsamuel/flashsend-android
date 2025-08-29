@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.core.data.mock
 
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.User
 
 val mockUsers = listOf(
     User(

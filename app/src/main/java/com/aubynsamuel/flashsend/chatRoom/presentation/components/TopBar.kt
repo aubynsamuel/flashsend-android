@@ -35,7 +35,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.DropMenu
+import com.aubynsamuel.flashsend.core.domain.model.User
+import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
 import com.aubynsamuel.flashsend.navigation.OtherProfileScreenDC
 import com.google.gson.Gson
 

@@ -2,8 +2,8 @@ package com.aubynsamuel.flashsend.settings.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aubynsamuel.flashsend.core.model.SettingsState
-import com.aubynsamuel.flashsend.core.model.ThemeMode
+import com.aubynsamuel.flashsend.core.domain.model.SettingsState
+import com.aubynsamuel.flashsend.core.domain.model.ThemeMode
 import com.aubynsamuel.flashsend.settings.domain.GetSettingsUseCase
 import com.aubynsamuel.flashsend.settings.domain.ResetSettingsUseCase
 import com.aubynsamuel.flashsend.settings.domain.UpdateFontSizeUseCase

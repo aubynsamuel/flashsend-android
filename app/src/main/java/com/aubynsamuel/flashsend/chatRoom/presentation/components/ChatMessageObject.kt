@@ -36,13 +36,15 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.A
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.TextMessage
+import com.aubynsamuel.flashsend.chatRoom.presentation.utils.copyTextToClipboard
 import com.aubynsamuel.flashsend.chatRoom.presentation.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.mock.messageExample
-import com.aubynsamuel.flashsend.core.domain.copyTextToClipboard
-import com.aubynsamuel.flashsend.core.domain.formatMessageTime
-import com.aubynsamuel.flashsend.core.model.ChatMessage
-import com.aubynsamuel.flashsend.core.presentation.ConnectivityViewModel
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.DropMenu
+import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
+import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
+import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
 
 @Composable
 fun ChatMessageObject(

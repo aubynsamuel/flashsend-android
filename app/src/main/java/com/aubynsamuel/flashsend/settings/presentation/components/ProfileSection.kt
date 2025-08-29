@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.aubynsamuel.flashsend.core.model.SettingsState
+import com.aubynsamuel.flashsend.core.domain.model.SettingsState
 
 @Composable
 fun ProfileSection(

@@ -23,9 +23,9 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ChatScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ImagePreviewScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.screens.OtherUserProfileScreen
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.domain.showToast
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.User
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel

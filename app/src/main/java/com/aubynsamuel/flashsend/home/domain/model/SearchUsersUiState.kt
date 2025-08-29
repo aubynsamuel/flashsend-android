@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.home.domain.model
 
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.User
 
 data class SearchUsersUiState(
     val searchText: String = "",

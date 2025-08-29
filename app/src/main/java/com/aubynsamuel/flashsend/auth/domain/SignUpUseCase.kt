@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.auth.domain
 
 import com.aubynsamuel.flashsend.auth.data.AuthRepository
-import com.aubynsamuel.flashsend.core.model.NewUser
+import com.aubynsamuel.flashsend.core.domain.model.NewUser
 import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(

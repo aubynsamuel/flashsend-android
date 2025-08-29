@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.home.domain.usecase
 
 
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.User
 import com.aubynsamuel.flashsend.home.data.SearchUsersRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -35,7 +35,7 @@ import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
-import com.aubynsamuel.flashsend.core.domain.showToast
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.home.presentation.screens.HomeScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.ProfileScreen
 import com.aubynsamuel.flashsend.settings.presentation.screens.SettingsScreen

@@ -19,8 +19,8 @@ import com.aubynsamuel.flashsend.chatRoom.domain.SendLocationMessageUseCase
 import com.aubynsamuel.flashsend.chatRoom.domain.SendTextMessageUseCase
 import com.aubynsamuel.flashsend.chatRoom.domain.UpdateMessageUseCase
 import com.aubynsamuel.flashsend.chatRoom.domain.UploadImageUseCase
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

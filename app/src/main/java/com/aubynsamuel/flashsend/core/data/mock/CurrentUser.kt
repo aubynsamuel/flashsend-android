@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.core.data.mock
 
-import com.aubynsamuel.flashsend.core.model.NewUser
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.NewUser
+import com.aubynsamuel.flashsend.core.domain.model.User
 
 val CurrentUser = User(
     userId = "12345",
