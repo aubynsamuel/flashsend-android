@@ -78,11 +78,23 @@ fun HomeScreen(
     val homeViewModel: HomeViewModel = hiltViewModel()
     val notificationRepository = ApiRequestsRepository()
     val user = FirebaseAuth.getInstance().currentUser
-    var retrievedToken by remember { mutableStateOf("") }
+    val notificationTokenManager = NotificationTokenManager()
     val tag = "homeLogs"
 
-    fun getFCMToken() {
-        homeViewModel.getFCMToken { value -> retrievedToken = value }
+    fun updateFCMToken() {
+        homeViewModel.getFCMToken { token ->
+            try {
+                if (user != null) {
+                    notificationTokenManager.initializeAndUpdateToken(
+                        context, user.uid, token
+                    )
+                } else {
+                    Log.w(tag, "User not signed in; cannot update token.")
+                }
+            } catch (e: Exception) {
+                logger(tag, e.message.toString())
+            }
+        }
     }
 
     val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
@@ -112,12 +124,13 @@ fun HomeScreen(
         if (connectivityStatus is ConnectivityStatus.Available) {
             netActivity = ""
             homeViewModel.retryLoadRooms()
-            getFCMToken()
         } else {
             netActivity = "Connecting..."
         }
     }
+
     LaunchedEffect(Unit) {
+        updateFCMToken()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (!hasNotificationPermission) {
                 permissionRequest.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -126,38 +139,6 @@ fun HomeScreen(
         authViewModel.loadUserData()
         try {
             notificationRepository.checkServerHealth()
-        } catch (e: Exception) {
-            logger(tag, e.message.toString())
-        }
-    }
-    LaunchedEffect(retrievedToken) {
-        try {
-            if (user != null) {
-                NotificationTokenManager.initializeAndUpdateToken(
-                    context, user.uid, retrievedToken
-                )
-            } else {
-                Log.w(tag, "User not signed in; cannot update token.")
-            }
-        } catch (e: Exception) {
-            logger(tag, e.message.toString())
-        }
-        try {
-            getFCMToken()
-            notificationRepository.checkServerHealth()
-        } catch (e: Exception) {
-            logger(tag, e.message.toString())
-        }
-    }
-    LaunchedEffect(retrievedToken) {
-        try {
-            if (user != null) {
-                NotificationTokenManager.initializeAndUpdateToken(
-                    context, user.uid, retrievedToken
-                )
-            } else {
-                Log.w(tag, "User not signed in; cannot update token.")
-            }
         } catch (e: Exception) {
             logger(tag, e.message.toString())
         }
@@ -182,13 +163,14 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row {
+            Row(modifier = Modifier.weight(1f)) {
                 Text(
                     "Flash Send",
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 24.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
                 )
                 if (netActivity.isNotBlank()) {
                     Text(
@@ -239,11 +221,6 @@ fun HomeScreen(
                             },
                             icon = Icons.Default.Settings
                         ),
-//                        DropMenu(
-//                            text = "notifications",
-//                            onClick = { navController.navigate("notifications") },
-//                            icon = Icons.Default.QrCodeScanner
-//                        ),
                         DropMenu(
                             text = "Logout",
                             onClick = { authViewModel.logout() },

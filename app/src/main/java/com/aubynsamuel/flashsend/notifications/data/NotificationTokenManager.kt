@@ -5,27 +5,31 @@ import android.util.Log
 import androidx.core.content.edit
 import com.google.firebase.firestore.FirebaseFirestore
 
-object NotificationTokenManager {
-    private const val PREFS_NAME = "notification_prefs"
-    private const val TOKEN_KEY = "deviceToken"
-    private const val TAG = "NotificationTokenManager"
+class NotificationTokenManager {
+    companion object {
+        private const val PREFS_NAME = "notification_prefs"
+        private const val TOKEN_KEY = "deviceToken"
+        private const val USER_ID_KEY = "userIdKey"
+        private const val TAG = "NotificationTokenManager"
+    }
 
     /**
-     * Initializes and updates the token if it has changed.
+     * Initializes and updates the token if it has changed or userId has changed.
      */
-    fun initializeAndUpdateToken(context: Context, userId: String, newToken: String) {
+    fun initializeAndUpdateToken(context: Context, newUserId: String, newToken: String) {
         val cachedToken = getStoredToken(context)
-        if (cachedToken == newToken) {
-            Log.d(TAG, "Token has not changed, no updates needed.")
+        val cachedUserId = getStoredUserId(context)
+        if (cachedToken == newToken && cachedUserId == newUserId) {
+            Log.d(TAG, "Token/UserId has not changed, no updates needed.")
             return
         }
-        updateUserToken(context, userId, newToken)
+        updateUserToken(context, newUserId, newToken)
     }
 
     /**
      * Updates the user document in Firestore with the new FCM token and caches it locally.
      */
-    fun updateUserToken(context: Context, userId: String, token: String) {
+    private fun updateUserToken(context: Context, userId: String, token: String) {
         if (userId.isEmpty() || token.isEmpty()) return
 
         val firestore = FirebaseFirestore.getInstance()
@@ -35,6 +39,7 @@ object NotificationTokenManager {
             .addOnSuccessListener {
                 Log.d(TAG, "FCM token updated successfully.")
                 cacheToken(context, token)
+                cacheUserId(context, userId)
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error updating user token", e)
@@ -44,16 +49,32 @@ object NotificationTokenManager {
     /**
      * Retrieves the stored token from SharedPreferences.
      */
-    fun getStoredToken(context: Context): String? {
+    private fun getStoredToken(context: Context): String? {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getString(TOKEN_KEY, null)
     }
 
     /**
+     * Retrieves the stored userId from SharedPreferences.
+     */
+    private fun getStoredUserId(context: Context): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(USER_ID_KEY, null)
+    }
+
+    /**
      * Caches the token in SharedPreferences.
      */
-    fun cacheToken(context: Context, token: String) {
+    private fun cacheToken(context: Context, token: String) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit { putString(TOKEN_KEY, token) }
+    }
+
+    /**
+     * Caches userId in SharedPreferences.
+     */
+    private fun cacheUserId(context: Context, userId: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(USER_ID_KEY, userId) }
     }
 }
