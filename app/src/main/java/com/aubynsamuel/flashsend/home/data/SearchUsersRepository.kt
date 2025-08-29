@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.home.data
 
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

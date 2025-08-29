@@ -1,7 +1,7 @@
 package com.aubynsamuel.flashsend.settings.domain
 
-import com.aubynsamuel.flashsend.core.model.SettingsState
-import com.aubynsamuel.flashsend.core.model.ThemeMode
+import com.aubynsamuel.flashsend.core.domain.model.SettingsState
+import com.aubynsamuel.flashsend.core.domain.model.ThemeMode
 import javax.inject.Inject
 
 class UpdateThemeModeUseCase @Inject constructor(

@@ -36,7 +36,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.components.AuthForm
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
-import com.aubynsamuel.flashsend.core.domain.showToast
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.navigation.AuthScreen
 import com.aubynsamuel.flashsend.navigation.MainScreen
 import com.aubynsamuel.flashsend.navigation.SetUserDetailsDC

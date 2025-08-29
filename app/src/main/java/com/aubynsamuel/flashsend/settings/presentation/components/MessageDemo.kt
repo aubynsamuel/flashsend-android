@@ -21,10 +21,8 @@ import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.A
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.TextMessage
-import com.aubynsamuel.flashsend.core.model.ChatMessage
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
 
 @Composable
 fun DemoMessage(
@@ -113,9 +111,4 @@ fun DemoMessage(
         }
 
     }
-}
-
-fun formatMessageTime(date: Date): String {
-    val formater = SimpleDateFormat("h:m a", Locale.US)
-    return formater.format(date).lowercase()
 }

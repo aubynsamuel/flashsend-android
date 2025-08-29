@@ -46,7 +46,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
-import com.aubynsamuel.flashsend.core.model.User
+import com.aubynsamuel.flashsend.core.domain.model.User
 
 
 @OptIn(ExperimentalMaterial3Api::class)

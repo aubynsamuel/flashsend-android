@@ -48,7 +48,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.chatRoom.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
-import com.aubynsamuel.flashsend.core.state.CurrentUser
+import com.aubynsamuel.flashsend.core.data.CurrentUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -36,7 +36,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.aubynsamuel.flashsend.core.data.MediaCacheManager
 import com.aubynsamuel.flashsend.core.data.mock.messageExample
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import kotlinx.coroutines.delay
 
 @Composable

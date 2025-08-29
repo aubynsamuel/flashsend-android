@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.home.domain.usecase
 
-import com.aubynsamuel.flashsend.core.model.RoomData
+import com.aubynsamuel.flashsend.core.domain.model.RoomData
 import com.aubynsamuel.flashsend.home.data.RoomRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

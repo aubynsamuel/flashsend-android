@@ -1,6 +1,6 @@
 package com.aubynsamuel.flashsend.core.data.mock
 
-import com.aubynsamuel.flashsend.core.model.RoomData
+import com.aubynsamuel.flashsend.core.domain.model.RoomData
 import com.google.firebase.Timestamp
 
 @Suppress("unused")

@@ -1,9 +1,9 @@
 package com.aubynsamuel.flashsend.chatRoom.data.repository
 
 import android.util.Log
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.model.ChatMessage
-import com.aubynsamuel.flashsend.core.model.Location
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.Location
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

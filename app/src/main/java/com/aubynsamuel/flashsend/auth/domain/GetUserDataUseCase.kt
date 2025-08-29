@@ -3,7 +3,7 @@ package com.aubynsamuel.flashsend.auth.domain
 import android.content.Context
 import com.aubynsamuel.flashsend.auth.data.AuthUserRepository
 import com.aubynsamuel.flashsend.core.data.MediaCacheManager
-import com.aubynsamuel.flashsend.core.model.NewUser
+import com.aubynsamuel.flashsend.core.domain.model.NewUser
 import javax.inject.Inject
 
 class GetUserDataUseCase @Inject constructor(

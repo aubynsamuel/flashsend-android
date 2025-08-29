@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.aubynsamuel.flashsend.chatRoom.data.local.ChatDatabase
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

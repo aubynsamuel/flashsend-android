@@ -47,7 +47,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
-import com.aubynsamuel.flashsend.core.state.CurrentUser
+import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.home.presentation.components.ProfileDetailItem
 import com.aubynsamuel.flashsend.navigation.EditProfileDC
 

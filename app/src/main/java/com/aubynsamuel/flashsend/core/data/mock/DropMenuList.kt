@@ -5,7 +5,7 @@ import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.DropMenu
+import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 
 @Suppress("unused")
 val optionsListExample: List<DropMenu> = listOf(

@@ -1,8 +1,8 @@
 package com.aubynsamuel.flashsend.chatRoom.data.local.typeconverters
 
 import androidx.room.TypeConverter
-import com.aubynsamuel.flashsend.core.domain.logger
-import com.aubynsamuel.flashsend.core.model.Location
+import com.aubynsamuel.flashsend.core.domain.model.Location
+import com.aubynsamuel.flashsend.core.presentation.utils.logger
 
 class LocationConverter {
     @TypeConverter

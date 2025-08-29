@@ -49,7 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.aubynsamuel.flashsend.core.data.getCurrentLocation
-import com.aubynsamuel.flashsend.core.model.NewUser
+import com.aubynsamuel.flashsend.core.domain.model.NewUser
 
 @Composable
 fun MessageInput(

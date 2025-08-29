@@ -1,6 +1,6 @@
-package com.aubynsamuel.flashsend.core.state
+package com.aubynsamuel.flashsend.core.data
 
-import com.aubynsamuel.flashsend.core.model.NewUser
+import com.aubynsamuel.flashsend.core.domain.model.NewUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

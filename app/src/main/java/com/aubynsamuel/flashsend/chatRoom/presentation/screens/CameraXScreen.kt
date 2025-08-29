@@ -70,7 +70,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
-import com.aubynsamuel.flashsend.core.domain.createFile
+import com.aubynsamuel.flashsend.chatRoom.presentation.utils.createFile
 import com.aubynsamuel.flashsend.navigation.ImagePreviewScreen
 import kotlinx.coroutines.launch
 

@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
-import com.aubynsamuel.flashsend.core.model.ChatMessage
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 
 @Composable
 fun TextMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16) {
