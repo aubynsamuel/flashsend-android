@@ -21,13 +21,12 @@ import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 fun EditMessageDialog(
     roomId: String,
     message: ChatMessage,
-    initialText: String,
     onDismiss: () -> Unit,
     onMessageEdited: (ChatMessage) -> Unit,
     chatViewModel: ChatViewModel,
     connectivityStatus: ConnectivityStatus,
 ) {
-    var editText by remember { mutableStateOf(initialText) }
+    var editText by remember { mutableStateOf(message.content) }
     val context = LocalContext.current
 
     AlertDialog(

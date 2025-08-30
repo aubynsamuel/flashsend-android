@@ -25,9 +25,10 @@ class SendMessageRepository @Inject constructor(
                 tag,
                 "Sending message: content='$content', senderId=$senderId, senderName=$senderName, roomId=$roomId"
             )
+            val time = Timestamp.now()
             val messageData = hashMapOf(
                 "content" to content,
-                "createdAt" to Timestamp.now(),
+                "createdAt" to time,
                 "senderId" to senderId,
                 "senderName" to senderName,
                 "type" to "text",
@@ -41,7 +42,7 @@ class SendMessageRepository @Inject constructor(
             Log.d(tag, "Message sent to Firestore with document id=${addedDoc.id}")
 
             // Update room's last message
-            updateRoomLastMessage(roomId, content, senderId)
+            updateRoomLastMessage(roomId, content, senderId, time)
         } catch (e: Exception) {
             logger(tag, "Error sending message $e")
             throw e
@@ -57,9 +58,10 @@ class SendMessageRepository @Inject constructor(
         duration: Long,
     ) {
         try {
+            val time = Timestamp.now()
             val messageData = hashMapOf(
                 "content" to content,
-                "createdAt" to Timestamp.now(),
+                "createdAt" to time,
                 "senderId" to senderId,
                 "senderName" to senderName,
                 "type" to "audio",
@@ -72,7 +74,7 @@ class SendMessageRepository @Inject constructor(
             firestore.collection("rooms").document(roomId).collection("messages")
                 .add(messageData).await()
 
-            updateRoomLastMessage(roomId, content, senderId)
+            updateRoomLastMessage(roomId, content, senderId, time)
         } catch (e: Exception) {
             Log.e(tag, "Error sending audio message", e)
             throw e
@@ -87,9 +89,10 @@ class SendMessageRepository @Inject constructor(
         senderName: String,
     ) {
         try {
+            val time = Timestamp.now()
             val messageData = hashMapOf(
                 "content" to caption,
-                "createdAt" to Timestamp.now(),
+                "createdAt" to time,
                 "senderId" to senderId,
                 "senderName" to senderName,
                 "type" to "image",
@@ -102,7 +105,7 @@ class SendMessageRepository @Inject constructor(
                 .add(messageData).await()
             Log.d(tag, "Image message sent with id=${addedDoc.id}")
 
-            updateRoomLastMessage(roomId, "📷 Sent an image", senderId)
+            updateRoomLastMessage(roomId, "📷 Sent an image", senderId, time)
         } catch (e: Exception) {
             Log.e(tag, "Error sending image message", e)
             throw e
@@ -116,6 +119,7 @@ class SendMessageRepository @Inject constructor(
         location: Location,
     ) {
         try {
+            val time = Timestamp.now()
             // Create a map for the location data
             val locationData = mapOf(
                 "latitude" to location.latitude,
@@ -124,7 +128,7 @@ class SendMessageRepository @Inject constructor(
 
             val messageData = hashMapOf(
                 "content" to "$locationData",
-                "createdAt" to Timestamp.now(),
+                "createdAt" to time,
                 "senderId" to senderId,
                 "senderName" to senderName,
                 "type" to "location",
@@ -137,7 +141,7 @@ class SendMessageRepository @Inject constructor(
                 .add(messageData).await()
             Log.d(tag, "Location message sent with id=${addedDoc.id}")
 
-            updateRoomLastMessage(roomId, "Shared a location", senderId)
+            updateRoomLastMessage(roomId, "Shared a location", senderId, time)
         } catch (e: Exception) {
             Log.e(tag, "Error sending location message", e)
             throw e
@@ -199,12 +203,13 @@ class SendMessageRepository @Inject constructor(
         roomId: String,
         lastMessage: String,
         senderId: String,
+        time: Timestamp,
     ) {
         try {
             firestore.collection("rooms").document(roomId).update(
                 mapOf(
                     "lastMessage" to lastMessage,
-                    "lastMessageTimestamp" to Timestamp.now(),
+                    "lastMessageTimestamp" to time,
                     "lastMessageSenderId" to senderId
                 )
             ).await()
