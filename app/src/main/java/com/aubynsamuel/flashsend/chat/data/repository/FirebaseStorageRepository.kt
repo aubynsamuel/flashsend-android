@@ -29,7 +29,7 @@ class FirebaseStorageRepository @Inject constructor(
             if (file == null) return null
 
             val storageRef =
-                firebaseStorage.reference.child("chatAudio/${username}_${System.currentTimeMillis()}}")
+                firebaseStorage.reference.child("chatAudio/${username}_${file.name}")
             storageRef.putFile(Uri.fromFile(file)).await()
             storageRef.downloadUrl.await().toString()
         } catch (e: Exception) {

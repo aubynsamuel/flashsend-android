@@ -145,7 +145,8 @@ fun EditProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Username Input
-        BasicTextField(value = username,
+        BasicTextField(
+            value = username,
             onValueChange = { username = it },
             textStyle = TextStyle(fontSize = 16.sp),
             keyboardOptions = KeyboardOptions(
@@ -191,7 +192,7 @@ fun EditProfileScreen(
                     // Upload new profile picture if selected.
                     if (profileUri != null) {
                         val imageRef =
-                            storageRef.child("profilePictures/${System.currentTimeMillis()}.jpg")
+                            storageRef.child("profilePictures/${username}_profile_pic.jpg")
                         imageRef.putFile(profileUri!!).await()
                         val profileUrl = imageRef.downloadUrl.await().toString()
                         newData["profileUrl"] = profileUrl

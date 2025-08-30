@@ -13,6 +13,7 @@ import com.aubynsamuel.flashsend.chat.data.local.ChatDatabase
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -75,6 +76,11 @@ private fun handleDelete(
 ) {
     try {
         val db = FirebaseFirestore.getInstance()
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.getReferenceFromUrl(
+            if (message.type == "image") message.image.toString()
+            else message.audio.toString()
+        )
         val roomRef = db.collection("rooms").document(roomId)
         val messageRef = roomRef.collection("messages").document(message.id)
         val messageDao = ChatDatabase.Companion.getDatabase(context).messageDao()
@@ -83,6 +89,9 @@ private fun handleDelete(
             .addOnSuccessListener {
                 onMessageDeleted()
                 GlobalScope.launch { messageDao.deleteMessage(message.id) }
+                if (message.type == "image" || message.type == "audio") {
+                    storageRef.delete()
+                }
             }
             .addOnFailureListener { error ->
                 onDeletionFailure()

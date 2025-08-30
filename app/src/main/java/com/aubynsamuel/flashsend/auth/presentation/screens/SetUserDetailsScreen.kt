@@ -176,7 +176,7 @@ fun SetUserDetailsScreen(
                 try {
                     val profileUrl = profileUri?.let { uri ->
                         val imageRef =
-                            storageRef.child("profilePictures/${System.currentTimeMillis()}.jpg")
+                            storageRef.child("profilePictures/${username}_profile_pic.jpg")
                         imageRef.putFile(uri).await()
                         imageRef.downloadUrl.await().toString()
                     } ?: ""
