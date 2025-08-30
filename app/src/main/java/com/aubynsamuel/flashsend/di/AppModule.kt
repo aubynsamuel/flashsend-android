@@ -3,8 +3,8 @@ package com.aubynsamuel.flashsend.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.aubynsamuel.flashsend.chatRoom.data.local.ChatDatabase
-import com.aubynsamuel.flashsend.chatRoom.data.local.MessageDao
+import com.aubynsamuel.flashsend.chat.data.local.ChatDatabase
+import com.aubynsamuel.flashsend.chat.data.local.MessageDao
 import com.aubynsamuel.flashsend.core.data.dataStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

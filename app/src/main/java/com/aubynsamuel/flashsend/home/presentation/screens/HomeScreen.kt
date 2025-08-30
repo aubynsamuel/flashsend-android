@@ -51,8 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.EmptyChatPlaceholder
-import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
+import com.aubynsamuel.flashsend.chat.presentation.components.EmptyChatPlaceholder
+import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu

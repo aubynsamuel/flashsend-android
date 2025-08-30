@@ -51,7 +51,7 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
-import com.aubynsamuel.flashsend.chatRoom.presentation.utils.CropImageContract
+import com.aubynsamuel.flashsend.chat.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.google.firebase.ktx.Firebase
