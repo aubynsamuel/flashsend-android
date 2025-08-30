@@ -3,7 +3,7 @@ package com.aubynsamuel.flashsend.core.data.mock
 import com.aubynsamuel.flashsend.core.domain.model.NewUser
 import com.aubynsamuel.flashsend.core.domain.model.User
 
-val CurrentUser = User(
+val UserProfile = User(
     userId = "12345",
     username = "Samuel",
     profileUrl = "",

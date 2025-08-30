@@ -31,15 +31,14 @@ android {
             localProperties.load(localPropertiesFile.inputStream())
         }
 
-        // Add as BuildConfig fields
         buildConfigField("String", "BASE_URL", "\"${localProperties.getProperty("BASE_URL", "")}\"")
     }
 
     buildTypes {
         release {
-            val boolean = false
-            isMinifyEnabled = boolean
-            isShrinkResources = boolean
+            val minify = libs.versions.minify.get().toBoolean()
+            isMinifyEnabled = minify
+            isShrinkResources = minify
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -62,6 +61,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
     // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
