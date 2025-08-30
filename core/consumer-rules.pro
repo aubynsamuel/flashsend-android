@@ -1,0 +1,2 @@
+-keep class com.aubynsamuel.flashsend.core.domain.model.ChatMessage { *; }
+-keep class com.aubynsamuel.flashsend.core.domain.model.Location { *; }

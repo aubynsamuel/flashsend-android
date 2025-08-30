@@ -1,9 +1,7 @@
 package com.aubynsamuel.flashsend.core.domain.model
 
-import androidx.annotation.Keep
 import java.util.Date
 
-@Keep
 data class ChatMessage(
     var id: String = "",
     var content: String = "",
