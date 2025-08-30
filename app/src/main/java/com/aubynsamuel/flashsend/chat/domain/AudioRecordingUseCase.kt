@@ -62,7 +62,9 @@ class AudioRecordingUseCase @Inject constructor(
         recipientsToken: String,
     ) {
         try {
-            val audioUrl = firebaseStorageRepository.uploadAudio(audioFile)
+            val audioUrl = firebaseStorageRepository.uploadAudio(
+                audioFile, senderName
+            )
             val duration = stopTime - startTime
             val content = "🔊 ${formatAudioTime(duration)}"
 

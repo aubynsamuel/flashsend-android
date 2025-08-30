@@ -44,9 +44,9 @@ class MessageRepository @Inject constructor(
                 Log.d(tag, "Room does not exist. Creating new room with roomId=$roomId")
                 val roomData = hashMapOf(
                     "participants" to listOf(currentUserId, otherUserId),
-                    "createdAt" to Timestamp.Companion.now(),
+                    "createdAt" to Timestamp.now(),
                     "lastMessage" to "",
-                    "lastMessageTimestamp" to Timestamp.Companion.now()
+                    "lastMessageTimestamp" to Timestamp.now()
                 )
                 roomRef.set(roomData).await()
                 Log.d(tag, "Room created successfully for roomId=$roomId")
@@ -199,7 +199,7 @@ class MessageRepository @Inject constructor(
         onFailure: (Exception) -> Unit,
         context: Context,
     ) {
-        val messageDao = ChatDatabase.Companion.getDatabase(context).messageDao()
+        val messageDao = ChatDatabase.getDatabase(context).messageDao()
         val db = FirebaseFirestore.getInstance()
 
         val messageRef = db.collection("rooms")

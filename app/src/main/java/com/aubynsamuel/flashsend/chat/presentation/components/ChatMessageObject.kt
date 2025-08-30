@@ -92,7 +92,6 @@ fun ChatMessageObject(
                 connectivityStatus = connectivityStatus,
                 roomId = roomId,
                 message = message,
-                initialText = message.content,
                 onDismiss = { showEditDialog = false },
                 onMessageEdited = { updatedMessage ->
                     showEditDialog = false

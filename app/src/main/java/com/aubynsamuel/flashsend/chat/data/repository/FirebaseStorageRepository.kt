@@ -11,6 +11,7 @@ class FirebaseStorageRepository @Inject constructor(
     private val firebaseStorage: FirebaseStorage,
 ) {
     private val tag = "MessageRepository"
+
     suspend fun uploadImage(imageUri: Uri, username: String): String? {
         return try {
             val storageRef =
@@ -23,11 +24,12 @@ class FirebaseStorageRepository @Inject constructor(
         }
     }
 
-    suspend fun uploadAudio(file: File?): String? {
+    suspend fun uploadAudio(file: File?, username: String): String? {
         return try {
             if (file == null) return null
 
-            val storageRef = firebaseStorage.reference.child("chatAudio/${file.name}")
+            val storageRef =
+                firebaseStorage.reference.child("chatAudio/${username}_${System.currentTimeMillis()}}")
             storageRef.putFile(Uri.fromFile(file)).await()
             storageRef.downloadUrl.await().toString()
         } catch (e: Exception) {
