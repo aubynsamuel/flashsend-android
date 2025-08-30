@@ -17,10 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.AudioMessage
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.ImageMessage
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.LocationMessage
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.messageTypes.TextMessage
+import com.aubynsamuel.flashsend.chat.presentation.components.messageTypes.AudioMessage
+import com.aubynsamuel.flashsend.chat.presentation.components.messageTypes.ImageMessage
+import com.aubynsamuel.flashsend.chat.presentation.components.messageTypes.LocationMessage
+import com.aubynsamuel.flashsend.chat.presentation.components.messageTypes.TextMessage
 import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
 

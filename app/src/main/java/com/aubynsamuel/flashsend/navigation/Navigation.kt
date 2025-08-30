@@ -18,11 +18,11 @@ import com.aubynsamuel.flashsend.LoadingScreen
 import com.aubynsamuel.flashsend.auth.presentation.screens.AuthScreen
 import com.aubynsamuel.flashsend.auth.presentation.screens.SetUserDetailsScreen
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
-import com.aubynsamuel.flashsend.chatRoom.presentation.screens.CameraXScreen
-import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ChatScreen
-import com.aubynsamuel.flashsend.chatRoom.presentation.screens.ImagePreviewScreen
-import com.aubynsamuel.flashsend.chatRoom.presentation.screens.OtherUserProfileScreen
-import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
+import com.aubynsamuel.flashsend.chat.presentation.screens.CameraXScreen
+import com.aubynsamuel.flashsend.chat.presentation.screens.ChatScreen
+import com.aubynsamuel.flashsend.chat.presentation.screens.ImagePreviewScreen
+import com.aubynsamuel.flashsend.chat.presentation.screens.OtherUserProfileScreen
+import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.model.User
 import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast

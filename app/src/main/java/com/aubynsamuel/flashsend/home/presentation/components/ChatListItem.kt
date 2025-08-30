@@ -35,8 +35,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chatRoom.presentation.components.FullScreenImageViewer
-import com.aubynsamuel.flashsend.chatRoom.presentation.viewmodels.ChatViewModel
+import com.aubynsamuel.flashsend.chat.presentation.components.FullScreenImageViewer
+import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.model.RoomData
 import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
