@@ -56,13 +56,13 @@ import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
+import com.aubynsamuel.flashsend.core.presentation.navigation.AuthScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.MainScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.SearchUsersScreenDC
 import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
 import com.aubynsamuel.flashsend.home.presentation.components.ChatListItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
-import com.aubynsamuel.flashsend.navigation.AuthScreen
-import com.aubynsamuel.flashsend.navigation.MainScreen
-import com.aubynsamuel.flashsend.navigation.SearchUsersScreenDC
 import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -146,7 +146,7 @@ fun HomeScreen(
 
     LaunchedEffect(authState) {
         if (!authState) {
-            navController.navigate(AuthScreen) {
+            navController.navigate(AuthScreenDC) {
                 popUpTo(MainScreen(0)) { inclusive = true }
             }
         }

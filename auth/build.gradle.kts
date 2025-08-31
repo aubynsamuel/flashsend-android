@@ -6,11 +6,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.aubynsamuel.flashsend.core"
+    namespace = "com.aubynsamuel.flashsend.auth"
     compileSdk = 36
 
     defaultConfig {
@@ -33,7 +32,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
     kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
@@ -45,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
     // Default libs
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
@@ -62,10 +61,9 @@ dependencies {
 
     // Firebase libs
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
-
-    //Datastore
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.firebase.storage.ktx)
 
     // Material 3
     implementation(libs.material3)
@@ -73,16 +71,17 @@ dependencies {
     // Material Icons
     implementation(libs.androidx.material.icons.extended)
 
-    // Google maps
-    implementation(libs.play.services.location)
-
     // Dependency Injection
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
 
-    // Gson
-    implementation(libs.gson)
+    // Lottie animations
+    implementation(libs.lottie.compose)
 
-    implementation(libs.kotlinx.serialization.json)
+    // Navigation lib
+    implementation(libs.androidx.navigation.compose)
+
+    // Async Image
+    implementation(libs.coil.compose)
 }

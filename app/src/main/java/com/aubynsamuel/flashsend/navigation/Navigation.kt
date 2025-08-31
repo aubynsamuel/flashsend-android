@@ -24,6 +24,16 @@ import com.aubynsamuel.flashsend.chat.presentation.screens.ImagePreviewScreen
 import com.aubynsamuel.flashsend.chat.presentation.screens.OtherUserProfileScreen
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.model.User
+import com.aubynsamuel.flashsend.core.presentation.navigation.AuthScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.CameraXScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.EditProfileDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.ImagePreviewScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.LoadingScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.MainScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.OtherProfileScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.SearchUsersScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.SetUserDetailsDC
 import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
@@ -46,7 +56,7 @@ fun ChatAppNavigation() {
         startDestination = LoadingScreen,
         modifier = Modifier.background(MaterialTheme.colorScheme.background)
     ) {
-        composable<AuthScreen> {
+        composable<AuthScreenDC> {
             AuthScreen(navController, authViewModelInstance)
         }
 

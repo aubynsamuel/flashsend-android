@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.navigation
+package com.aubynsamuel.flashsend.core.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * This is where users log in or sign up.
  */
 @Serializable
-object AuthScreen
+object AuthScreenDC
 
 /**
  * Represents the first screen shown when the app starts.

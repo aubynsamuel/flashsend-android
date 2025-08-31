@@ -71,7 +71,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.chat.presentation.utils.createFile
-import com.aubynsamuel.flashsend.navigation.ImagePreviewScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.ImagePreviewScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

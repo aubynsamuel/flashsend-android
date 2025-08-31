@@ -1,4 +1,4 @@
-package com.aubynsamuel.flashsend.home.data
+package com.aubynsamuel.flashsend.core.data
 
 import android.content.Context
 import androidx.core.content.edit

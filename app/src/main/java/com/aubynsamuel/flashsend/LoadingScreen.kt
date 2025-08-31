@@ -30,9 +30,9 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
-import com.aubynsamuel.flashsend.navigation.AuthScreen
-import com.aubynsamuel.flashsend.navigation.LoadingScreen
-import com.aubynsamuel.flashsend.navigation.MainScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.AuthScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.LoadingScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.MainScreen
 import kotlinx.coroutines.delay
 
 @Composable
@@ -53,7 +53,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                 popUpTo(LoadingScreen) { inclusive = true }
             }
         } else {
-            navController.navigate(AuthScreen) {
+            navController.navigate(AuthScreenDC) {
                 popUpTo(LoadingScreen) { inclusive = true }
             }
         }

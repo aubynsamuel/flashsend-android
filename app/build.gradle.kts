@@ -62,6 +62,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":auth"))
     // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
