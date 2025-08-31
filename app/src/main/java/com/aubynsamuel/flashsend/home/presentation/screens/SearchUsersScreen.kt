@@ -36,9 +36,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
 import com.aubynsamuel.flashsend.home.presentation.components.SearchedUserItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.SearchUsersViewModel
-import com.aubynsamuel.flashsend.navigation.ChatRoomScreen
 
 @Composable
 fun SearchUsersScreen(

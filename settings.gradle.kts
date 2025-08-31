@@ -26,3 +26,4 @@ rootProject.name = "FlashSend"
 include(":app")
 include(":baselineprofile")
 include(":core")
+include(":auth")

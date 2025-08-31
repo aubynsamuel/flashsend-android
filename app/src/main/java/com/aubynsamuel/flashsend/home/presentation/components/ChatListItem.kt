@@ -38,9 +38,9 @@ import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chat.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.model.RoomData
+import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
 import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
-import com.aubynsamuel.flashsend.navigation.ChatRoomScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable

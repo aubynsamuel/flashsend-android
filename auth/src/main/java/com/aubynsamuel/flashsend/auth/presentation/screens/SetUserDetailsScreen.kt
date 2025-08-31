@@ -48,9 +48,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
+import com.aubynsamuel.flashsend.core.presentation.navigation.MainScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.SetUserDetailsDC
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
-import com.aubynsamuel.flashsend.navigation.MainScreen
-import com.aubynsamuel.flashsend.navigation.SetUserDetailsDC
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch

@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.core.data.CurrentUser
-import com.aubynsamuel.flashsend.navigation.EditProfileDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.EditProfileDC
 import com.aubynsamuel.flashsend.settings.presentation.components.AppearanceSection
 import com.aubynsamuel.flashsend.settings.presentation.components.ProfileSection
 import com.aubynsamuel.flashsend.settings.presentation.components.ResetConfirmationDialog

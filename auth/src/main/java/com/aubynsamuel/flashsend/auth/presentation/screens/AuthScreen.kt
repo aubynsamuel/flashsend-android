@@ -33,17 +33,17 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.aubynsamuel.flashsend.R
+import com.aubynsamuel.flashsend.auth.R
 import com.aubynsamuel.flashsend.auth.presentation.components.AuthForm
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
+import com.aubynsamuel.flashsend.core.presentation.navigation.AuthScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.MainScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.SetUserDetailsDC
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
-import com.aubynsamuel.flashsend.navigation.AuthScreen
-import com.aubynsamuel.flashsend.navigation.MainScreen
-import com.aubynsamuel.flashsend.navigation.SetUserDetailsDC
 
 @Composable
 fun AuthScreen(
-    navController: NavController, authViewModel: AuthViewModel
+    navController: NavController, authViewModel: AuthViewModel,
 ) {
     var isLogin by remember { mutableStateOf(true) }
     val title = if (isLogin) "Login" else "Sign Up"
@@ -55,11 +55,11 @@ fun AuthScreen(
         if (authState) {
             if (isLogin) {
                 navController.navigate(MainScreen(0)) {
-                    popUpTo(AuthScreen) { inclusive = true }
+                    popUpTo(AuthScreenDC) { inclusive = true }
                 }
             } else {
                 navController.navigate(SetUserDetailsDC) {
-                    popUpTo(AuthScreen) { inclusive = true }
+                    popUpTo(AuthScreenDC) { inclusive = true }
                 }
             }
         }

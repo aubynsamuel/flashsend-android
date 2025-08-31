@@ -12,7 +12,7 @@ import com.aubynsamuel.flashsend.auth.domain.ResetPasswordUseCase
 import com.aubynsamuel.flashsend.auth.domain.SignUpUseCase
 import com.aubynsamuel.flashsend.auth.domain.UpdateUserDocumentUseCase
 import com.aubynsamuel.flashsend.core.data.CurrentUser
-import com.aubynsamuel.flashsend.home.data.RoomsCache
+import com.aubynsamuel.flashsend.core.data.RoomsCache
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -56,10 +56,10 @@ import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.domain.model.User
+import com.aubynsamuel.flashsend.core.presentation.navigation.CameraXScreenDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.ImagePreviewScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.OtherProfileScreenDC
 import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
-import com.aubynsamuel.flashsend.navigation.CameraXScreenDC
-import com.aubynsamuel.flashsend.navigation.ImagePreviewScreen
-import com.aubynsamuel.flashsend.navigation.OtherProfileScreenDC
 import com.aubynsamuel.flashsend.notifications.data.services.ConversationHistoryManager
 import com.aubynsamuel.flashsend.notifications.data.services.person
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel

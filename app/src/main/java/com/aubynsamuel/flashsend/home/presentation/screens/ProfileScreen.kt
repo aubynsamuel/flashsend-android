@@ -48,8 +48,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.chat.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.core.data.CurrentUser
+import com.aubynsamuel.flashsend.core.presentation.navigation.EditProfileDC
 import com.aubynsamuel.flashsend.home.presentation.components.ProfileDetailItem
-import com.aubynsamuel.flashsend.navigation.EditProfileDC
 
 
 @OptIn(ExperimentalMaterial3Api::class)
