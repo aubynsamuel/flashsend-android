@@ -2,7 +2,7 @@ package com.aubynsamuel.flashsend.navigation
 
 import android.content.Context
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -54,7 +54,11 @@ fun ChatAppNavigation() {
     NavHost(
         navController = navController,
         startDestination = LoadingScreen,
-        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+        exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+        popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+        popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
     ) {
         composable<AuthScreenDC> {
             AuthScreen(navController, authViewModelInstance)
@@ -76,9 +80,7 @@ fun ChatAppNavigation() {
             )
         }
 
-        composable<ChatRoomScreen>(
-            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }
-        ) {
+        composable<ChatRoomScreen> {
             val args = it.toRoute<ChatRoomScreen>()
             ChatScreen(
                 navController = navController,
@@ -90,38 +92,24 @@ fun ChatAppNavigation() {
             )
         }
 
-        composable<SearchUsersScreenDC>(
-            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
+        composable<SearchUsersScreenDC> {
             SearchUsersScreen(navController)
         }
-
-//        composable(
-//            "notifications",
-//            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
-//            NotificationTestScreen(context = context)
-//        }
-
-        composable<SetUserDetailsDC>(
-            enterTransition = { slideInHorizontally(initialOffsetX = { it / 2 }) }) {
+        composable<SetUserDetailsDC> {
             SetUserDetailsScreen(navController, authViewModel = authViewModelInstance)
         }
 
-        composable<EditProfileDC>(
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }) {
+        composable<EditProfileDC> {
             EditProfileScreen(navController, authViewModel = authViewModelInstance)
         }
 
-        composable<OtherProfileScreenDC>(
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
-        ) {
+        composable<OtherProfileScreenDC> {
             val args = it.toRoute<OtherProfileScreenDC>()
             val userData = Gson().fromJson(args.user, User::class.java)
             OtherUserProfileScreen(navController = navController, userData = userData)
         }
 
-        composable<ImagePreviewScreen>(
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
-        ) {
+        composable<ImagePreviewScreen> {
             val args = it.toRoute<ImagePreviewScreen>()
             if (args.imageUri.isEmpty()) {
                 showToast(context, "An error occurred, Invalid image format")
@@ -138,9 +126,7 @@ fun ChatAppNavigation() {
             )
         }
 
-        composable<CameraXScreenDC>(
-            enterTransition = { slideInVertically(initialOffsetY = { it / 2 }) }
-        ) {
+        composable<CameraXScreenDC> {
             val args = it.toRoute<CameraXScreenDC>()
             CameraXScreen(
                 navController = navController,
