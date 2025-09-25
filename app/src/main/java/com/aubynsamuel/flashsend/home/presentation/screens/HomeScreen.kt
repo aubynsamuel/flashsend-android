@@ -251,11 +251,13 @@ fun HomeScreen(
                         .fillMaxSize(),
                 ) {
                     items(homeUiState.rooms) { room ->
-                        ChatListItem(
-                            room, navController,
-                            chatViewModel = chatViewModel,
-                            homeViewModel = homeViewModel
-                        )
+                        if (room?.otherParticipant != null)
+                            ChatListItem(
+                                room = room,
+                                navController = navController,
+                                chatViewModel = chatViewModel,
+                                homeViewModel = homeViewModel
+                            )
                     }
                 }
             } else if (homeUiState.isLoading) {
