@@ -7,6 +7,8 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,13 +69,14 @@ import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
     context: Context,
     chatViewModel: ChatViewModel,
+    animatedScope: AnimatedVisibilityScope,
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val notificationRepository = ApiRequestsRepository()
@@ -101,8 +104,7 @@ fun HomeScreen(
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     val homeUiState by homeViewModel.uiState.collectAsState()
-
-    val authState by authViewModel.authState.collectAsState()
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
     var expanded by remember { mutableStateOf(false) }
     var netActivity by remember { mutableStateOf("") }
@@ -144,8 +146,8 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(authState) {
-        if (!authState) {
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
             navController.navigate(AuthScreenDC) {
                 popUpTo(MainScreen(0)) { inclusive = true }
             }
@@ -256,7 +258,8 @@ fun HomeScreen(
                                 room = room,
                                 navController = navController,
                                 chatViewModel = chatViewModel,
-                                homeViewModel = homeViewModel
+                                homeViewModel = homeViewModel,
+                                animatedScope = animatedScope,
                             )
                     }
                 }

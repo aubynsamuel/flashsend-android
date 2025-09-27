@@ -54,8 +54,8 @@ import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chat.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 

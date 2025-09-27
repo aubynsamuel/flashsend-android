@@ -2,6 +2,8 @@ package com.aubynsamuel.flashsend.navigation
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +45,7 @@ import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewMo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainBottomNavScreen(
     navController: NavController,
@@ -51,6 +54,7 @@ fun MainBottomNavScreen(
     settingsViewModel: SettingsViewModel,
     context: Context,
     initialPage: Int = 0,
+    animatedScope: AnimatedVisibilityScope,
 ) {
     val bottomNavItems = listOf(
         BottomNavItem("home", Icons.AutoMirrored.Default.Chat, "Chats"),
@@ -96,11 +100,13 @@ fun MainBottomNavScreen(
                     navController = navController,
                     context = context,
                     chatViewModel = chatViewModel,
-                    authViewModel = authViewModelInstance
+                    authViewModel = authViewModelInstance,
+                    animatedScope = animatedScope,
                 )
 
                 1 -> ProfileScreen(
                     navController = navController,
+                    animatedScope = animatedScope,
                 )
 
                 2 -> SettingsScreen(

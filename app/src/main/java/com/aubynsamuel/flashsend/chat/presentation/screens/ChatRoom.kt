@@ -60,6 +60,7 @@ import com.aubynsamuel.flashsend.core.presentation.navigation.CameraXScreenDC
 import com.aubynsamuel.flashsend.core.presentation.navigation.ImagePreviewScreen
 import com.aubynsamuel.flashsend.core.presentation.navigation.OtherProfileScreenDC
 import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 import com.aubynsamuel.flashsend.notifications.data.services.ConversationHistoryManager
 import com.aubynsamuel.flashsend.notifications.data.services.person
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
@@ -207,7 +208,7 @@ fun ChatScreen(
                 name = decodedUsername,
                 pic = profileUrl,
                 netActivity = netActivity,
-                goBack = { navController.popBackStack() },
+                goBack = { navController.safePopBackStack() },
                 navController = navController,
                 chatOptionsList = listOf(
                     DropMenu(
@@ -215,8 +216,8 @@ fun ChatScreen(
                         onClick = {
                             val userJson = Gson().toJson(userData)
                             navController.navigate(OtherProfileScreenDC(userJson)) {
-                                launchSingleTop = true
-                                restoreState = true
+//                                launchSingleTop = true
+//                                restoreState = true
                             }
                         },
                         icon = Icons.Default.Person
@@ -240,7 +241,7 @@ fun ChatScreen(
                     } else {
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
-                }
+                },
             )
         },
         floatingActionButton = {

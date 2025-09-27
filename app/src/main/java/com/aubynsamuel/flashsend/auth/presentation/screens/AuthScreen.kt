@@ -33,7 +33,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.aubynsamuel.flashsend.auth.R
+import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.components.AuthForm
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.presentation.navigation.AuthScreenDC
@@ -47,12 +47,12 @@ fun AuthScreen(
 ) {
     var isLogin by remember { mutableStateOf(true) }
     val title = if (isLogin) "Login" else "Sign Up"
-    val authState by authViewModel.authState.collectAsState()
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     val message by authViewModel.message.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    LaunchedEffect(authState) {
-        if (authState) {
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
             if (isLogin) {
                 navController.navigate(MainScreen(0)) {
                     popUpTo(AuthScreenDC) { inclusive = true }

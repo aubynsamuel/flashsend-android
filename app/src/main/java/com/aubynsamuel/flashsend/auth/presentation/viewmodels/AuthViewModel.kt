@@ -33,10 +33,10 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
     //    private val tag = "AuthViewModel"
     private val cacheHelper = RoomsCache(context = context)
-    private val _authState = MutableStateFlow(isUserLoggedInUseCase())
+    private val _isLoggedIn = MutableStateFlow(isUserLoggedInUseCase())
     private val _isLoggingIn = MutableStateFlow(false)
     private val _message = MutableStateFlow<String?>(null)
-    val authState: StateFlow<Boolean> = _authState
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
     val isLoggingIn: StateFlow<Boolean> = _isLoggingIn
     val message: StateFlow<String?> = _message
 
@@ -45,7 +45,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             val result = signUpUseCase(email, password)
             result.onSuccess {
-                _authState.value = true
+                _isLoggedIn.value = true
                 _message.value = it
                 _isLoggingIn.value = false
             }.onFailure {
@@ -94,7 +94,7 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             val result = loginUseCase(email, password)
             result.onSuccess {
-                _authState.value = true
+                _isLoggedIn.value = true
                 _message.value = it
                 _isLoggingIn.value = false
             }.onFailure {
@@ -117,7 +117,7 @@ class AuthViewModel @Inject constructor(
 
     fun logout() {
         logoutUseCase()
-        _authState.value = false
+        _isLoggedIn.value = false
         cacheHelper.clearRooms()
     }
 

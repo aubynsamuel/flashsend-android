@@ -13,7 +13,7 @@ object AuthScreenDC
  * Represents the first screen shown when the app starts.
  */
 @Serializable
-object LoadingScreen
+object LoadingScreenDC
 
 /**
  * Represents the main screen of the app.
@@ -92,3 +92,5 @@ data class ImagePreviewScreen(
 @Serializable
 data class CameraXScreenDC(val roomId: String, val profileUrl: String, val deviceToken: String)
 
+@Serializable
+data class FullScreenImageViewerDC(val imageUri: String)
