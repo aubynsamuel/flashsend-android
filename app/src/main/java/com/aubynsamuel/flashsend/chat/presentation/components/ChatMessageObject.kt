@@ -142,7 +142,6 @@ fun ChatMessageObject(
                     reactions = {
                         ReactionPicker(onReactionSelected = { selectedEmoji ->
                             chatViewModel.addReactionToMessage(
-                                roomId = roomId,
                                 messageId = message.id,
                                 userId = if (isFromMe) currentUserId else message.senderId,
                                 emoji = selectedEmoji,

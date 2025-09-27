@@ -3,7 +3,6 @@ package com.aubynsamuel.flashsend.chat.presentation.viewmodels
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aubynsamuel.flashsend.chat.domain.AddMessageListenerUseCase
@@ -12,13 +11,13 @@ import com.aubynsamuel.flashsend.chat.domain.AudioRecordingUseCase
 import com.aubynsamuel.flashsend.chat.domain.GetMessagesUseCase
 import com.aubynsamuel.flashsend.chat.domain.InitializeChatUseCase
 import com.aubynsamuel.flashsend.chat.domain.MarkMessagesAsReadUseCase
-import com.aubynsamuel.flashsend.chat.domain.PrefetchMessagesUseCase
 import com.aubynsamuel.flashsend.chat.domain.RemoveMessageListenerUseCase
 import com.aubynsamuel.flashsend.chat.domain.SendImageMessageUseCase
 import com.aubynsamuel.flashsend.chat.domain.SendLocationMessageUseCase
 import com.aubynsamuel.flashsend.chat.domain.SendTextMessageUseCase
 import com.aubynsamuel.flashsend.chat.domain.UpdateMessageUseCase
 import com.aubynsamuel.flashsend.chat.domain.UploadImageUseCase
+import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +28,7 @@ import javax.inject.Inject
 
 sealed class ChatState {
     object Loading : ChatState()
-    data class Success(val messages: List<ChatMessage>) : ChatState()
+    object Success : ChatState()
     data class Error(val message: String) : ChatState()
 }
 
@@ -45,12 +44,10 @@ class ChatViewModel @Inject constructor(
     private val sendLocationMessageUseCase: SendLocationMessageUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
     private val addReactionUseCase: AddReactionUseCase,
-    private val prefetchMessagesUseCase: PrefetchMessagesUseCase,
     private val audioRecordingUseCase: AudioRecordingUseCase,
     private val updateMessageUseCase: UpdateMessageUseCase,
 ) : ViewModel() {
     private val tag = "ChatViewModel"
-    val unreadRoomIds = mutableStateListOf<String>()
     private var messageListener: Any? = null
     private val _chatState = MutableStateFlow<ChatState>(ChatState.Loading)
     val chatState: StateFlow<ChatState> = _chatState
@@ -81,7 +78,7 @@ class ChatViewModel @Inject constructor(
                 val retrievedMessages: List<ChatMessage> = getMessagesUseCase(roomId)
                 Log.d(tag, "Received ${retrievedMessages.size} messages from localdb")
                 _messages.value = retrievedMessages
-                _chatState.value = ChatState.Success(retrievedMessages)
+                _chatState.value = ChatState.Success
 
                 // Create the room if needed
                 initializeChatUseCase(roomId, currentUserId, otherUserId)
@@ -103,7 +100,7 @@ class ChatViewModel @Inject constructor(
                     roomId = roomId,
                     onMessagesUpdated = { messages ->
                         _messages.value = messages
-                        _chatState.value = ChatState.Success(messages)
+                        _chatState.value = ChatState.Success
                     },
                     onError = { errorMessage ->
                         _chatState.value = ChatState.Error(errorMessage)
@@ -151,7 +148,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(
-        content: String, senderName: String, recipientsToken: String, profileUrl: String,
+        content: String, recipientsToken: String,
     ) {
         viewModelScope.launch {
             try {
@@ -161,10 +158,10 @@ class ChatViewModel @Inject constructor(
                             roomId = roomId,
                             content = content,
                             senderId = userId,
-                            senderName = senderName,
+                            senderName = CurrentUser.userData.value?.username ?: "",
                             recipientsToken = recipientsToken,
                             otherUserId = otherUserId ?: "",
-                            profileUrl = profileUrl
+                            profileUrl = CurrentUser.userData.value?.profileUrl ?: ""
                         )
                     }
                 }
@@ -175,7 +172,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendAudioMessage(senderName: String, profileUrl: String, recipientsToken: String) {
+    fun sendAudioMessage(recipientsToken: String) {
         viewModelScope.launch {
             roomId?.let { roomId ->
                 currentUserId?.let { userId ->
@@ -183,9 +180,9 @@ class ChatViewModel @Inject constructor(
                         audioRecordingUseCase.sendAudioMessage(
                             roomId = roomId,
                             senderId = userId,
-                            senderName = senderName,
+                            senderName = CurrentUser.userData.value?.username ?: "",
                             otherUserId = otherUserId ?: "",
-                            profileUrl = profileUrl,
+                            profileUrl = CurrentUser.userData.value?.profileUrl ?: "",
                             recipientsToken = recipientsToken
                         )
                     } catch (e: Exception) {
@@ -199,10 +196,6 @@ class ChatViewModel @Inject constructor(
     fun sendImageMessage(
         caption: String,
         imageUrl: String,
-        senderName: String,
-        roomId: String,
-        currentUserId: String,
-        profileUrl: String,
         recipientsToken: String,
     ) {
         viewModelScope.launch {
@@ -210,11 +203,11 @@ class ChatViewModel @Inject constructor(
                 sendImageMessageUseCase(
                     caption = caption,
                     imageUrl = imageUrl,
-                    senderName = senderName,
-                    roomId = roomId,
-                    senderId = currentUserId,
+                    senderName = CurrentUser.userData.value?.username ?: "",
+                    roomId = roomId.toString(),
+                    senderId = currentUserId.toString(),
                     otherUserId = otherUserId ?: "",
-                    profileUrl = profileUrl,
+                    profileUrl = CurrentUser.userData.value?.profileUrl ?: "",
                     recipientsToken = recipientsToken
                 )
             } catch (e: Exception) {
@@ -226,10 +219,6 @@ class ChatViewModel @Inject constructor(
     fun sendLocationMessage(
         latitude: Double,
         longitude: Double,
-        senderName: String,
-        roomId: String,
-        currentUserId: String,
-        profileUrl: String,
         recipientsToken: String,
     ) {
         viewModelScope.launch {
@@ -237,11 +226,11 @@ class ChatViewModel @Inject constructor(
                 sendLocationMessageUseCase(
                     latitude = latitude,
                     longitude = longitude,
-                    senderName = senderName,
-                    roomId = roomId,
-                    senderId = currentUserId,
+                    senderName = CurrentUser.userData.value?.username ?: "",
+                    roomId = roomId.toString(),
+                    senderId = currentUserId.toString(),
                     otherUserId = otherUserId ?: "",
-                    profileUrl = profileUrl,
+                    profileUrl = CurrentUser.userData.value?.profileUrl ?: "",
                     recipientsToken = recipientsToken
                 )
             } catch (e: Exception) {
@@ -255,16 +244,15 @@ class ChatViewModel @Inject constructor(
     }
 
     fun addReactionToMessage(
-        roomId: String,
         messageId: String,
-        userId: String,
         emoji: String,
         messageContent: String,
+        userId: String,
     ) {
         viewModelScope.launch {
             try {
                 addReactionUseCase(
-                    roomId = roomId,
+                    roomId = roomId.toString(),
                     messageId = messageId,
                     userId = userId,
                     emoji = emoji,
@@ -277,23 +265,18 @@ class ChatViewModel @Inject constructor(
     }
 
     fun updateMessage(
-        roomId: String,
         messageId: String,
         newContent: String,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit,
     ) {
         updateMessageUseCase(
-            roomId,
+            roomId.toString(),
             messageId,
             newContent,
             onSuccess,
             onFailure,
         )
-    }
-
-    suspend fun prefetchNewMessagesForRoom(roomId: String) {
-        prefetchMessagesUseCase(roomId)
     }
 
     override fun onCleared() {

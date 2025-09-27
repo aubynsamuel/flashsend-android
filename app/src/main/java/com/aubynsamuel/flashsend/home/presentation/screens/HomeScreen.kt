@@ -54,7 +54,6 @@ import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chat.presentation.components.EmptyChatPlaceholder
-import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
@@ -75,10 +74,9 @@ fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
     context: Context,
-    chatViewModel: ChatViewModel,
     animatedScope: AnimatedVisibilityScope,
+    homeViewModel: HomeViewModel,
 ) {
-    val homeViewModel: HomeViewModel = hiltViewModel()
     val notificationRepository = ApiRequestsRepository()
     val user = FirebaseAuth.getInstance().currentUser
     val notificationTokenManager = NotificationTokenManager()
@@ -257,7 +255,6 @@ fun HomeScreen(
                             ChatListItem(
                                 room = room,
                                 navController = navController,
-                                chatViewModel = chatViewModel,
                                 homeViewModel = homeViewModel,
                                 animatedScope = animatedScope,
                             )

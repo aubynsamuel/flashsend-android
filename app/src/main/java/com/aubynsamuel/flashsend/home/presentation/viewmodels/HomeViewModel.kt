@@ -1,8 +1,10 @@
 package com.aubynsamuel.flashsend.home.presentation.viewmodels
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aubynsamuel.flashsend.chat.domain.PrefetchMessagesUseCase
 import com.aubynsamuel.flashsend.core.data.RoomsCache
 import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.aubynsamuel.flashsend.home.domain.model.HomeUiState
@@ -23,6 +25,7 @@ class HomeViewModel @Inject constructor(
     private val getUnreadMessagesUseCase: GetUnreadMessagesUseCase,
     private val getFCMTokenUseCase: GetFCMTokenUseCase,
     private val listenToRoomsUseCase: ListenToRoomsUseCase,
+    private val prefetchMessagesUseCase: PrefetchMessagesUseCase,
     context: Context,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -31,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val auth = FirebaseAuth.getInstance()
     private var roomsListenerJob = viewModelScope.launch { } // Initialize an empty job
     val uiState: StateFlow<HomeUiState> = _uiState
+    val unreadRoomIds = mutableStateListOf<String>()
 
     private fun loadCachedRooms() {
         viewModelScope.launch {
@@ -85,6 +89,10 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun prefetchNewMessagesForRoom(roomId: String) {
+        prefetchMessagesUseCase(roomId)
     }
 
     fun retryLoadRooms() {

@@ -121,9 +121,7 @@ fun ChatScreen(
         uri?.let {
             val route = ImagePreviewScreen(
                 imageUri = it.toString(),
-                roomId = roomId,
                 takenFromCamera = false,
-                profileUrl = userData?.profileUrl.orEmpty(),
                 recipientsToken = deviceToken
             )
             navController.navigate(route) {
@@ -149,7 +147,6 @@ fun ChatScreen(
         if (isGranted) {
             val route = CameraXScreenDC(
                 roomId = roomId,
-                profileUrl = userData?.profileUrl ?: "",
                 deviceToken = deviceToken
             )
             navController.navigate(route) {
@@ -216,8 +213,8 @@ fun ChatScreen(
                         onClick = {
                             val userJson = Gson().toJson(userData)
                             navController.navigate(OtherProfileScreenDC(userJson)) {
-//                                launchSingleTop = true
-//                                restoreState = true
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         },
                         icon = Icons.Default.Person
@@ -231,7 +228,6 @@ fun ChatScreen(
                     ) {
                         val route = CameraXScreenDC(
                             roomId = roomId,
-                            profileUrl = userData.profileUrl,
                             deviceToken = deviceToken
                         )
                         navController.navigate(route) {
@@ -311,8 +307,6 @@ fun ChatScreen(
                             if (messageText.isNotBlank()) {
                                 chatViewModel.sendMessage(
                                     content = messageText,
-                                    senderName = userData?.username ?: "",
-                                    profileUrl = userData?.profileUrl ?: "",
                                     recipientsToken = deviceToken
                                 )
                                 vibrateDevice(context)
@@ -340,8 +334,6 @@ fun ChatScreen(
                             }
                         },
                         sendLocationMessage = chatViewModel::sendLocationMessage,
-                        userData = userData,
-                        roomId = roomId,
                         recipientToken = deviceToken
                     )
                 }
@@ -357,8 +349,6 @@ fun ChatScreen(
                         resetRecording = { chatViewModel.resetRecording() },
                         sendAudioMessage = {
                             chatViewModel.sendAudioMessage(
-                                senderName = userData?.username ?: "",
-                                profileUrl = userData?.profileUrl ?: "",
                                 recipientsToken = deviceToken
                             )
                         },

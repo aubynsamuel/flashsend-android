@@ -36,7 +36,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.model.RoomData
 import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
 import com.aubynsamuel.flashsend.core.presentation.navigation.FullScreenImageViewerDC
@@ -50,7 +49,6 @@ import com.google.firebase.auth.FirebaseAuth
 fun ChatListItem(
     room: RoomData,
     navController: NavController,
-    chatViewModel: ChatViewModel,
     homeViewModel: HomeViewModel,
     animatedScope: AnimatedVisibilityScope,
 ) {
@@ -60,13 +58,13 @@ fun ChatListItem(
     val sharedTransitionScope = LocalSharedTransitionScope.current
 
     LaunchedEffect(unreadCount) {
-        chatViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
+        homeViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
         if (unreadCount > 0) {
-            if (!chatViewModel.unreadRoomIds.contains(room.roomId)) {
-                chatViewModel.unreadRoomIds.add(room.roomId)
+            if (!homeViewModel.unreadRoomIds.contains(room.roomId)) {
+                homeViewModel.unreadRoomIds.add(room.roomId)
             }
         } else {
-            chatViewModel.unreadRoomIds.remove(room.roomId)
+            homeViewModel.unreadRoomIds.remove(room.roomId)
         }
     }
 

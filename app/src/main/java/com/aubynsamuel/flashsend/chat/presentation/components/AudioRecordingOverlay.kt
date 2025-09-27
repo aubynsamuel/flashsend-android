@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -155,4 +156,15 @@ fun formatAudioTime(milliseconds: Long): String {
     val seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
             TimeUnit.MINUTES.toSeconds(minutes)
     return String.format(Locale.US, "%d:%02d", minutes, seconds)
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PrevAudioRecordingOverlay() {
+    AudioRecordingOverlay(
+        isRecording = true,
+        resetRecording = {},
+        recordingStartTime = 1292L,
+        sendAudioMessage = {},
+    )
 }

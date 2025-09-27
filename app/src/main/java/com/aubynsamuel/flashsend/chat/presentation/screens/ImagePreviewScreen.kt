@@ -49,6 +49,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.chat.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.CurrentUser
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,9 +60,7 @@ fun ImagePreviewScreen(
     imageUri: Uri,
     chatViewModel: ChatViewModel,
     navController: NavController,
-    roomId: String,
     takenFromCamera: String?,
-    profileUrl: String,
     recipientsToken: String,
 ) {
     var caption by remember { mutableStateOf("") }
@@ -99,23 +98,19 @@ fun ImagePreviewScreen(
     }
 
     fun onCancel() {
-        navController.popBackStack()
+        navController.safePopBackStack()
     }
 
     fun onSend(imageUrl: String) {
         chatViewModel.sendImageMessage(
             caption = caption,
             imageUrl = imageUrl,
-            senderName = userData?.username ?: "",
-            roomId = roomId,
-            currentUserId = userData?.userId ?: "",
-            profileUrl = profileUrl,
             recipientsToken = recipientsToken
         )
         if (takenFromCamera == "1") {
-            navController.popBackStack()
-            navController.popBackStack()
-        } else navController.popBackStack()
+            navController.safePopBackStack()
+            navController.safePopBackStack()
+        } else navController.safePopBackStack()
     }
 
     Column(

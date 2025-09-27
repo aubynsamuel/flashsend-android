@@ -69,28 +69,23 @@ data class ChatRoomScreen(
 /**
  * Represents the screen for previewing an image before sending.
  * @param imageUri The URI of the image to be previewed.
- * @param roomId The identifier of the chat room where the image will be sent.
  * @param takenFromCamera Indicates whether the image was captured directly from the camera.
- * @param profileUrl The profile URL of the currentUser, used for display.
  * @param recipientsToken The device token of the recipient, for notifications.
  */
 @Serializable
 data class ImagePreviewScreen(
     val imageUri: String,
-    val roomId: String,
     val takenFromCamera: Boolean,
-    val profileUrl: String = "",
     val recipientsToken: String = "",
 )
 
 /**
  * Represents the camera screen integrated with CameraX.
  * @param roomId The identifier of the chat room the captured media will be associated with.
- * @param profileUrl The profile URL of the current user.
  * @param deviceToken The device token of the recipient for notifications.
  */
 @Serializable
-data class CameraXScreenDC(val roomId: String, val profileUrl: String, val deviceToken: String)
+data class CameraXScreenDC(val roomId: String, val deviceToken: String)
 
 @Serializable
 data class FullScreenImageViewerDC(val imageUri: String)

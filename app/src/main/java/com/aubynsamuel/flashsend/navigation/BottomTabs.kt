@@ -33,13 +33,14 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
-import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.home.presentation.screens.HomeScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.ProfileScreen
+import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
 import com.aubynsamuel.flashsend.settings.presentation.screens.SettingsScreen
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import kotlinx.coroutines.delay
@@ -50,12 +51,12 @@ import kotlinx.coroutines.launch
 fun MainBottomNavScreen(
     navController: NavController,
     authViewModelInstance: AuthViewModel,
-    chatViewModel: ChatViewModel,
     settingsViewModel: SettingsViewModel,
     context: Context,
     initialPage: Int = 0,
     animatedScope: AnimatedVisibilityScope,
 ) {
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val bottomNavItems = listOf(
         BottomNavItem("home", Icons.AutoMirrored.Default.Chat, "Chats"),
         BottomNavItem("profileScreen", Icons.Default.Person, "Profile"),
@@ -99,8 +100,8 @@ fun MainBottomNavScreen(
                 0 -> HomeScreen(
                     navController = navController,
                     context = context,
-                    chatViewModel = chatViewModel,
                     authViewModel = authViewModelInstance,
+                    homeViewModel = homeViewModel,
                     animatedScope = animatedScope,
                 )
 
@@ -135,11 +136,11 @@ fun MainBottomNavScreen(
                     icon = {
                         BadgedBox(
                             badge = {
-                                if (item.route == "home" && chatViewModel.unreadRoomIds.isNotEmpty()) {
+                                if (item.route == "home" && homeViewModel.unreadRoomIds.isNotEmpty()) {
                                     Badge(
                                         contentColor = Color.White,
                                         containerColor = Color.Red
-                                    ) { Text(chatViewModel.unreadRoomIds.size.toString()) }
+                                    ) { Text(homeViewModel.unreadRoomIds.size.toString()) }
                                 }
                             }
                         ) {

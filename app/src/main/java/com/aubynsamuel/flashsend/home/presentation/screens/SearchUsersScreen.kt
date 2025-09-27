@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
 import com.aubynsamuel.flashsend.home.presentation.components.SearchedUserItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.SearchUsersViewModel
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 
 @Composable
 fun SearchUsersScreen(
@@ -66,7 +67,7 @@ fun SearchUsersScreen(
                 .padding(top = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.safePopBackStack() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = "Back",

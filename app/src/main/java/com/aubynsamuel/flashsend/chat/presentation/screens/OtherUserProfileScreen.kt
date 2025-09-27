@@ -47,6 +47,7 @@ import com.aubynsamuel.flashsend.core.domain.model.User
 import com.aubynsamuel.flashsend.core.presentation.navigation.FullScreenImageViewerDC
 import com.aubynsamuel.flashsend.home.presentation.components.ProfileDetailItem
 import com.aubynsamuel.flashsend.navigation.LocalSharedTransitionScope
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -72,7 +73,7 @@ fun OtherUserProfileScreen(
                         modifier = Modifier
                             .padding(start = 10.dp)
                             .size(25.dp)
-                            .clickable(onClick = { navController.popBackStack() })
+                            .clickable(onClick = { navController.safePopBackStack() })
                     )
                 }
             )
@@ -161,7 +162,7 @@ fun OtherUserProfileScreen(
                     contentDescription = "",
                     modifier = Modifier
                         .size(70.dp)
-                        .clickable(onClick = { navController.popBackStack() })
+                        .clickable(onClick = { navController.safePopBackStack() })
                         .padding(10.dp)
                 )
             }

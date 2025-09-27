@@ -48,7 +48,6 @@ fun EditMessageDialog(
                     if (connectivityStatus is ConnectivityStatus.Available) {
                         if (editText.isNotBlank()) {
                             chatViewModel.updateMessage(
-                                roomId = roomId,
                                 messageId = message.id,
                                 newContent = editText,
                                 onSuccess = {

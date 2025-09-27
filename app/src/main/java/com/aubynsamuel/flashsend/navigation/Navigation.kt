@@ -54,10 +54,10 @@ import com.google.gson.Gson
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope =
-    compositionLocalOf<SharedTransitionScope> { error("No SharedTransitionScope found!") }
+    compositionLocalOf<SharedTransitionScope> { error("No SharedTransitionScope found") }
 val LocalNavController = compositionLocalOf<NavController> { error("NavController is required") }
 val LocalChatRoomAnimatedVisibilityScope =
-    compositionLocalOf<AnimatedVisibilityScope> { error("") }
+    compositionLocalOf<AnimatedVisibilityScope> { error("No AnimatedVisibilityScope found") }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -98,7 +98,6 @@ fun ChatAppNavigation() {
                     MainBottomNavScreen(
                         navController = navController,
                         authViewModelInstance = authViewModelInstance,
-                        chatViewModel = chatViewModel,
                         settingsViewModel = settingsViewModel,
                         context = context,
                         initialPage = args.initialPage,
@@ -166,9 +165,7 @@ fun ChatAppNavigation() {
                         navController = navController,
                         chatViewModel = chatViewModel,
                         imageUri = args.imageUri.toUri(),
-                        roomId = args.roomId,
                         takenFromCamera = args.takenFromCamera.toString(),
-                        profileUrl = args.profileUrl,
                         recipientsToken = args.recipientsToken
                     )
                 }
@@ -178,7 +175,6 @@ fun ChatAppNavigation() {
                     CameraXScreen(
                         navController = navController,
                         roomId = args.roomId,
-                        profileUrl = args.profileUrl,
                         deviceToken = args.deviceToken,
                         onError = { error ->
                             logger(tag, error.message.toString())

@@ -79,7 +79,6 @@ import kotlinx.coroutines.launch
 fun CameraXScreen(
     navController: NavController,
     roomId: String,
-    profileUrl: String?,
     deviceToken: String,
     onError: (Throwable) -> Unit = {},
 ) {
@@ -330,9 +329,7 @@ fun CameraXScreen(
                                         onImageCaptured = { savedUri ->
                                             val route = ImagePreviewScreen(
                                                 imageUri = savedUri.toString(),
-                                                roomId = roomId,
                                                 takenFromCamera = true,
-                                                profileUrl = profileUrl.orEmpty(),
                                                 recipientsToken = deviceToken
                                             )
                                             navController.navigate(route)

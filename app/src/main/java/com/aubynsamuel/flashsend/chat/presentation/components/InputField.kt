@@ -49,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.aubynsamuel.flashsend.core.data.getCurrentLocation
-import com.aubynsamuel.flashsend.core.domain.model.NewUser
 
 @Composable
 fun MessageInput(
@@ -62,14 +61,9 @@ fun MessageInput(
     sendLocationMessage: (
         latitude: Double,
         longitude: Double,
-        senderName: String,
-        roomId: String,
-        currentUserId: String,
-        profileUrl: String,
         recipientsToken: String,
     ) -> Unit,
-    roomId: String,
-    userData: NewUser?, recipientToken: String,
+    recipientToken: String,
 ) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -86,10 +80,6 @@ fun MessageInput(
                         sendLocationMessage(
                             lat,
                             lon,
-                            userData?.username ?: "",
-                            roomId,
-                            userData?.userId ?: "",
-                            userData?.profileUrl ?: "",
                             recipientToken
                         )
                     } else {
@@ -259,10 +249,6 @@ fun MessageInput(
                                 sendLocationMessage(
                                     lat,
                                     lon,
-                                    userData?.username ?: "",
-                                    roomId,
-                                    userData?.userId ?: "",
-                                    userData?.profileUrl ?: "",
                                     recipientToken
                                 )
                             } else {
@@ -301,16 +287,10 @@ fun PrevInputToolBar() {
         sendLocationMessage = {
                 latitude: Double,
                 longitude: Double,
-                senderName: String,
-                roomId: String,
-                currentUserId: String,
-                profileUrl: String,
                 recipientsToken: String,
             ->
             {}
         },
-        roomId = "",
-        userData = NewUser(),
         recipientToken = ""
     )
 }

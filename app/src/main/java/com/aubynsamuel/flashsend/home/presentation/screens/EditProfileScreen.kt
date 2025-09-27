@@ -54,6 +54,7 @@ import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chat.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
@@ -103,7 +104,7 @@ fun EditProfileScreen(
             contentDescription = "",
             modifier = Modifier
                 .align(Alignment.Start)
-                .clickable(onClick = { navController.popBackStack() }),
+                .clickable(onClick = { navController.safePopBackStack() }),
             tint = MaterialTheme.colorScheme.onBackground
         )
         Text(
