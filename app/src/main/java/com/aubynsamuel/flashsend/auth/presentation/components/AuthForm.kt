@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.auth.presentation.components
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -149,9 +148,7 @@ fun AuthForm(
                     if (email.isNotBlank()) {
                         authViewModel.resetPassword(email)
                     } else {
-                        Toast.makeText(
-                            context, "Please enter your email address", Toast.LENGTH_LONG
-                        ).show()
+                        showToast(context, "Please enter your email address")
                     }
                 }, color = MaterialTheme.colorScheme.onBackground
         )

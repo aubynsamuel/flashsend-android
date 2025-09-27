@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chat.presentation.components
 
-import android.widget.Toast
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -16,6 +15,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 
 @Composable
 fun EditMessageDialog(
@@ -54,24 +54,15 @@ fun EditMessageDialog(
                                     // Create a copy of the message with updated content.
                                     val updatedMessage = message.copy(content = editText)
                                     onMessageEdited(updatedMessage)
-                                    Toast.makeText(
-                                        context,
-                                        "Message edited successfully",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    showToast(context, "Message edited successfully")
                                 },
                                 onFailure = { e ->
-                                    Toast.makeText(
-                                        context,
-                                        "Failed to update message",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    showToast(context, "Failed to update message")
                                 },
                             )
                         }
                     } else {
-                        Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show()
+                        showToast(context, "No internet connection")
                     }
                     onDismiss()
                 }

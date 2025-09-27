@@ -2,7 +2,6 @@ package com.aubynsamuel.flashsend.chat.presentation.components
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -49,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.aubynsamuel.flashsend.core.data.getCurrentLocation
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 
 @Composable
 fun MessageInput(
@@ -83,19 +83,17 @@ fun MessageInput(
                             recipientToken
                         )
                     } else {
-                        Toast.makeText(
+                        showToast(
                             context,
                             "Unable to retrieve location",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        )
                     }
                 })
         } else {
-            Toast.makeText(
+            showToast(
                 context,
                 "Location permission denied",
-                Toast.LENGTH_SHORT
-            ).show()
+            )
         }
     }
 //    Check if keyboard is shown
@@ -252,11 +250,10 @@ fun MessageInput(
                                     recipientToken
                                 )
                             } else {
-                                Toast.makeText(
+                                showToast(
                                     context,
-                                    "Unable to retrieve location",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                    "Unable to retrieve location"
+                                )
                             }
                         }
                     } else {

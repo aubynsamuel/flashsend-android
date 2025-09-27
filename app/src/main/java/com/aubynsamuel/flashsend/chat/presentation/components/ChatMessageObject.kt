@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chat.presentation.components
 
-import android.widget.Toast
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +43,7 @@ import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
 import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
 
 @Composable
@@ -78,12 +78,10 @@ fun ChatMessageObject(
                 showDeleteDialog = false
             },
             onMessageDeleted = {
-                Toast.makeText(context, "Message has been deleted", Toast.LENGTH_SHORT).show()
+                showToast(context, "Message has been deleted")
             },
             onDeletionFailure = {
-                Toast.makeText(
-                    context, "Message could not be deleted, Try again", Toast.LENGTH_SHORT
-                ).show()
+                showToast(context, "Message could not be deleted, Try again")
             },
             showDialog = showDeleteDialog,
         )

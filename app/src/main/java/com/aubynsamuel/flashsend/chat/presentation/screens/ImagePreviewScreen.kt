@@ -1,7 +1,6 @@
 package com.aubynsamuel.flashsend.chat.presentation.screens
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -49,6 +48,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.chat.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.CurrentUser
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.navigation.safePopBackStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +94,7 @@ fun ImagePreviewScreen(
     fun onCrop() {
         selectedPicture?.let { uri ->
             cropImageLauncher.launch(uri)
-        } ?: Toast.makeText(context, "Please select an image first", Toast.LENGTH_SHORT).show()
+        } ?: showToast(context, "Please select an image first")
     }
 
     fun onCancel() {
@@ -204,9 +204,7 @@ fun ImagePreviewScreen(
                                     if (imageUrl != null) {
                                         onSend(imageUrl)
                                     } else {
-                                        Toast.makeText(
-                                            context, "Failed to upload image", Toast.LENGTH_SHORT
-                                        ).show()
+                                        showToast(context, "Failed to upload image")
                                     }
                                     loading
                                 }
