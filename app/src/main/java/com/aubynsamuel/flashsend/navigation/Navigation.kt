@@ -174,7 +174,6 @@ fun ChatAppNavigation() {
                     val args = it.toRoute<CameraXScreenDC>()
                     CameraXScreen(
                         navController = navController,
-                        roomId = args.roomId,
                         deviceToken = args.deviceToken,
                         onError = { error ->
                             logger(tag, error.message.toString())

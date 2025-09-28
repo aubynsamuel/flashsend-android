@@ -35,19 +35,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -74,11 +77,10 @@ import com.aubynsamuel.flashsend.chat.presentation.utils.createFile
 import com.aubynsamuel.flashsend.core.presentation.navigation.ImagePreviewScreen
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CameraXScreen(
     navController: NavController,
-    roomId: String,
     deviceToken: String,
     onError: (Throwable) -> Unit = {},
 ) {
@@ -301,7 +303,7 @@ fun CameraXScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Flash toggle button
-                IconButton(onClick = {
+                ElevatedButton(onClick = {
                     flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF)
                         ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
                     imageCapture?.flashMode = flashMode
@@ -317,8 +319,9 @@ fun CameraXScreen(
                 // Capture button
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
-                        .background(Color.White, CircleShape)
+                        .size(80.dp)
+                        .background(Color.White, MaterialShapes.Sunny.toShape())
+                        .clip(MaterialShapes.Sunny.toShape())
                         .clickable(onClick = {
                             if (!isCapturing) {
                                 isCapturing = true
@@ -347,19 +350,19 @@ fun CameraXScreen(
                     Box(
                         modifier = Modifier
                             .animateContentSize()
-                            .size(if (isCapturing) 55.dp else 60.dp)
+                            .size(if (isCapturing) 75.dp else 80.dp)
                             .align(Alignment.Center)
-                            .background(Color.White, CircleShape)
+                            .background(Color.White, MaterialShapes.Sunny.toShape())
                             .border(
                                 width = 4.dp,
-                                shape = CircleShape,
+                                shape = MaterialShapes.Sunny.toShape(),
                                 color = if (isCapturing) Color.Black else Color.White
                             )
                     ) {}
                 }
 
                 // Camera flip button
-                IconButton(onClick = {
+                ElevatedButton(onClick = {
                     if (lensFacing == CameraSelector.LENS_FACING_BACK) {
                         lensFacing = CameraSelector.LENS_FACING_FRONT
                         rotateValue = 180f
