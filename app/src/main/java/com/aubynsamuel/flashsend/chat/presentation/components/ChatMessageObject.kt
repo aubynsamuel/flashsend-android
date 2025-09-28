@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +64,8 @@ fun ChatMessageObject(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var longPressOffset by remember { mutableStateOf(Offset.Zero) }
+    val density = LocalDensity.current
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     Row(
@@ -99,15 +104,24 @@ fun ChatMessageObject(
         }
 //       Content
         Surface(
-            Modifier.pointerInput(Unit) {
-                detectTapGestures(onLongPress = {
-                    vibrateDevice(context)
-                    showPopup = !showPopup
-                })
-            }, color = if (isFromMe) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(16.dp)
+            Modifier
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = {
+                        longPressOffset = it
+                        vibrateDevice(context)
+                        showPopup = !showPopup
+                    })
+                },
+            color = if (isFromMe) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.surfaceVariant,
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Box(modifier = Modifier.absoluteOffset(x = 30.dp, y = 30.dp)) {
+            Box(
+                modifier = Modifier.offset(
+                    x = with(density) { longPressOffset.x.toDp() },
+                    y = with(density) { longPressOffset.y.toDp() }
+                )
+            ) {
                 val myMessageOptionsList = listOf(
                     DropMenu(
                         text = "Copy",
@@ -161,7 +175,8 @@ fun ChatMessageObject(
                             )
                             showPopup = false
                         })
-                    })
+                    }
+                )
             }
 //            different rendering for different message types
             Column(
