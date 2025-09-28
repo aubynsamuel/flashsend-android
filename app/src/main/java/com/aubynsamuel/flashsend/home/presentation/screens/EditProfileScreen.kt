@@ -22,7 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,6 +61,7 @@ import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun EditProfileScreen(
     navController: NavController,
@@ -215,8 +217,9 @@ fun EditProfileScreen(
             }
         }) {
             if (isLoading) {
-                CircularProgressIndicator(
-                    color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
+                CircularWavyProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
             } else {
                 Text("Save", fontSize = 18.sp)

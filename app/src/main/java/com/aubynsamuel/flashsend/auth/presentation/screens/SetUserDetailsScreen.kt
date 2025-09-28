@@ -22,9 +22,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +58,7 @@ import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SetUserDetailsScreen(
     navController: NavController,
@@ -72,137 +75,139 @@ fun SetUserDetailsScreen(
     ) { uri: Uri? ->
         profileUri = uri
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
-            .padding(top = 30.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Let Others Recognize You Easily",
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Set Your Username and Profile Picture",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(140.dp))
-
-        // Profile Picture
-        Box(modifier = Modifier.clickable { imagePickerLauncher.launch("image/*") }) {
-            if (profileUri == null) {
-                Icon(
-                    Icons.Default.AccountCircle,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(200.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-                AsyncImage(
-                    model = profileUri, contentDescription = "Selected image",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(200.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .align(Alignment.Center),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Choose a profile picture",
-            modifier = Modifier.clickable { imagePickerLauncher.launch("image/*") })
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Username Input
-        BasicTextField(
-            value = username,
-            onValueChange = { username = it },
-            textStyle = TextStyle(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Sentences
-            ),
+    Scaffold { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray, shape = MaterialTheme.shapes.medium)
-                .padding(12.dp),
-            decorationBox = { innerTextField ->
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                        .padding(horizontal = 10.dp)
-                ) {
-                    if (username.isEmpty()) {
-                        Text(
-                            text = "Username",
-                            color = Color.Black
-                        )
-                    }
-                    innerTextField()
-                }
-            })
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
+                .padding(16.dp)
+                .padding(top = 30.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Let Others Recognize You Easily",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Set Your Username and Profile Picture",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(140.dp))
 
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Save Button
-        Button(onClick = {
-            if (username.isBlank()) {
-                showToast(context, "Username cannot be empty")
-                return@Button
-            }
-
-            isLoading = true
-            coroutineScope.launch {
-                try {
-                    val profileUrl = profileUri?.let { uri ->
-                        val imageRef =
-                            storageRef.child("profilePictures/${username}_profile_pic.jpg")
-                        imageRef.putFile(uri).await()
-                        imageRef.downloadUrl.await().toString()
-                    } ?: ""
-
-                    val newData = mapOf(
-                        "username" to username,
-                        "profileUrl" to profileUrl
+            // Profile Picture
+            Box(modifier = Modifier.clickable { imagePickerLauncher.launch("image/*") }) {
+                if (profileUri == null) {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(200.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-
-                    authViewModel.updateUserDocument(newData)
-
-                    showToast(context, "Profile updated successfully!")
-                    navController.navigate(MainScreen(0)) {
-                        popUpTo(SetUserDetailsDC) { inclusive = true }
-                    }
-                } catch (e: Exception) {
-                    showToast(context, "Error: ${e.message}", true)
-                } finally {
-                    isLoading = false
+                } else {
+                    AsyncImage(
+                        model = profileUri, contentDescription = "Selected image",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(200.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .align(Alignment.Center),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
-        }) {
-            if (isLoading) {
-                CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp)
-            } else {
-                Text("Save", fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Choose a profile picture",
+                modifier = Modifier.clickable { imagePickerLauncher.launch("image/*") })
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Username Input
+            BasicTextField(
+                value = username,
+                onValueChange = { username = it },
+                textStyle = TextStyle(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray, shape = MaterialTheme.shapes.medium)
+                    .padding(12.dp),
+                decorationBox = { innerTextField ->
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(30.dp)
+                            .padding(horizontal = 10.dp)
+                    ) {
+                        if (username.isEmpty()) {
+                            Text(
+                                text = "Username",
+                                color = Color.Black
+                            )
+                        }
+                        innerTextField()
+                    }
+                })
+
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Save Button
+            Button(onClick = {
+                if (username.isBlank()) {
+                    showToast(context, "Username cannot be empty")
+                    return@Button
+                }
+
+                isLoading = true
+                coroutineScope.launch {
+                    try {
+                        val profileUrl = profileUri?.let { uri ->
+                            val imageRef =
+                                storageRef.child("profilePictures/${username}_profile_pic.jpg")
+                            imageRef.putFile(uri).await()
+                            imageRef.downloadUrl.await().toString()
+                        } ?: ""
+
+                        val newData = mapOf(
+                            "username" to username,
+                            "profileUrl" to profileUrl
+                        )
+
+                        authViewModel.updateUserDocument(newData)
+
+                        showToast(context, "Profile updated successfully!")
+                        navController.navigate(MainScreen(0)) {
+                            popUpTo(SetUserDetailsDC) { inclusive = true }
+                        }
+                    } catch (e: Exception) {
+                        showToast(context, "Error: ${e.message}", true)
+                    } finally {
+                        isLoading = false
+                    }
+                }
+            }) {
+                if (isLoading) {
+                    CircularWavyProgressIndicator(color = Color.White)
+                } else {
+                    Text("Save", fontSize = 18.sp)
+                }
             }
         }
     }
