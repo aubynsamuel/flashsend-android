@@ -163,7 +163,6 @@ fun HomeScreen(
                             "Flash Send",
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold,
-//                            fontSize = 24.sp,
                             maxLines = 1
                         )
                         if (netActivity.isNotBlank()) {

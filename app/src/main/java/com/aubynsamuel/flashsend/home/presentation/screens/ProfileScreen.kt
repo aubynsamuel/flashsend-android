@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -149,7 +150,7 @@ fun ProfileScreen(
                     with(sharedTransitionScope) {
                         Text(
                             "Profile",
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier.sharedBounds(
                                 sharedContentState = rememberSharedContentState(key = "text/editProfileScreenTitle"),
                                 animatedVisibilityScope = animatedScope
