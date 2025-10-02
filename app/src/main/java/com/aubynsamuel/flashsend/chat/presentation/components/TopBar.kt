@@ -59,7 +59,6 @@ fun HeaderBar(
     var expanded by remember { mutableStateOf(false) }
     val sharedTransitionScope = LocalSharedTransitionScope.current
 
-
     Row(
         modifier = Modifier
             .height(80.dp)
@@ -74,15 +73,21 @@ fun HeaderBar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            Icon(
-                Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = "back button",
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .size(25.dp)
-                    .clickable(onClick = goBack),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            with(sharedTransitionScope) {
+                Icon(
+                    Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = "back button",
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .size(25.dp)
+                        .clickable(onClick = goBack)
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "icon/otherUserProfileToChatRoom"),
+                            animatedVisibilityScope = LocalChatRoomAnimatedVisibilityScope.current
+                        ),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
             Spacer(modifier = Modifier.width(5.dp))
 //                profile pic and name/network status
             Row(
@@ -112,12 +117,19 @@ fun HeaderBar(
                 }
 
                 Column {
-                    Text(
-                        text = name,
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(start = 10.dp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    with(sharedTransitionScope) {
+                        Text(
+                            text = name,
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "text/${userData.username}"),
+                                    animatedVisibilityScope = LocalChatRoomAnimatedVisibilityScope.current
+                                ),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                     if (netActivity.isNotEmpty()) {
                         Text(
                             text = netActivity,
