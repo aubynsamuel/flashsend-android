@@ -7,6 +7,8 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,8 +27,9 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +55,6 @@ import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.chat.presentation.components.EmptyChatPlaceholder
-import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
@@ -67,15 +69,18 @@ import com.aubynsamuel.flashsend.notifications.data.NotificationTokenManager
 import com.aubynsamuel.flashsend.notifications.data.api.ApiRequestsRepository
 import com.google.firebase.auth.FirebaseAuth
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
     context: Context,
-    chatViewModel: ChatViewModel,
+    animatedScope: AnimatedVisibilityScope,
+    homeViewModel: HomeViewModel,
 ) {
-    val homeViewModel: HomeViewModel = hiltViewModel()
     val notificationRepository = ApiRequestsRepository()
     val user = FirebaseAuth.getInstance().currentUser
     val notificationTokenManager = NotificationTokenManager()
@@ -101,8 +106,7 @@ fun HomeScreen(
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     val homeUiState by homeViewModel.uiState.collectAsState()
-
-    val authState by authViewModel.authState.collectAsState()
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
     var expanded by remember { mutableStateOf(false) }
     var netActivity by remember { mutableStateOf("") }
@@ -144,8 +148,8 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(authState) {
-        if (!authState) {
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
             navController.navigate(AuthScreenDC) {
                 popUpTo(MainScreen(0)) { inclusive = true }
             }
@@ -255,18 +259,17 @@ fun HomeScreen(
                             ChatListItem(
                                 room = room,
                                 navController = navController,
-                                chatViewModel = chatViewModel,
-                                homeViewModel = homeViewModel
+                                homeViewModel = homeViewModel,
+                                animatedScope = animatedScope,
                             )
                     }
                 }
             } else if (homeUiState.isLoading) {
-                CircularProgressIndicator(
+                CircularWavyProgressIndicator(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(16.dp),
                     color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 2.dp
                 )
             } else {
                 EmptyChatPlaceholder(

@@ -36,7 +36,7 @@ android {
 
     buildTypes {
         release {
-            val minify = libs.versions.minify.get().toBoolean()
+            val minify = false
             isMinifyEnabled = minify
             isShrinkResources = minify
             proguardFiles(
@@ -52,6 +52,7 @@ android {
     kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
+            freeCompilerArgs = listOf("-Xcontext-parameters")
         }
     }
     buildFeatures {
@@ -61,8 +62,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":auth"))
     // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -133,6 +132,9 @@ dependencies {
     implementation(libs.material3)
 
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.androidx.animation.core)
+    implementation(libs.androidx.animation)
 
     // Default libs
     implementation(libs.androidx.core.ktx)

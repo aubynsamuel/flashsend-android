@@ -1,5 +1,7 @@
 package com.aubynsamuel.flashsend.home.presentation.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,34 +36,35 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chat.presentation.components.FullScreenImageViewer
-import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.domain.model.RoomData
 import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.FullScreenImageViewerDC
 import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
+import com.aubynsamuel.flashsend.navigation.LocalSharedTransitionScope
 import com.google.firebase.auth.FirebaseAuth
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ChatListItem(
     room: RoomData,
     navController: NavController,
-    chatViewModel: ChatViewModel,
     homeViewModel: HomeViewModel,
+    animatedScope: AnimatedVisibilityScope,
 ) {
     var unreadCount by remember { mutableIntStateOf(0) }
-    var isExpanded by remember { mutableStateOf(false) }
     val auth = FirebaseAuth.getInstance()
     val currentUserId = auth.currentUser?.uid ?: return
+    val sharedTransitionScope = LocalSharedTransitionScope.current
 
     LaunchedEffect(unreadCount) {
-        chatViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
+        homeViewModel.prefetchNewMessagesForRoom(roomId = room.roomId)
         if (unreadCount > 0) {
-            if (!chatViewModel.unreadRoomIds.contains(room.roomId)) {
-                chatViewModel.unreadRoomIds.add(room.roomId)
+            if (!homeViewModel.unreadRoomIds.contains(room.roomId)) {
+                homeViewModel.unreadRoomIds.add(room.roomId)
             }
         } else {
-            chatViewModel.unreadRoomIds.remove(room.roomId)
+            homeViewModel.unreadRoomIds.remove(room.roomId)
         }
     }
 
@@ -72,7 +74,6 @@ fun ChatListItem(
             room.otherParticipant.userId
         ) { value -> unreadCount = value }
     }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -103,21 +104,27 @@ fun ChatListItem(
                 modifier = Modifier.fillMaxWidth(0.85f),
             ) {
                 //profile pic, username and last message
-                AsyncImage(
-                    model = room.otherParticipant.profileUrl,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(50.dp)
-                        .align(Alignment.CenterVertically)
-                        .clickable(onClick = { isExpanded = true }),
-                    contentScale = ContentScale.Crop,
-                    error = rememberAsyncImagePainter(R.drawable.person)
-                )
-                if (isExpanded) {
-                    FullScreenImageViewer(
-                        imageUri = room.otherParticipant.profileUrl,
-                        onDismiss = { isExpanded = false }
+                with(sharedTransitionScope) {
+                    val imageUri = room.otherParticipant.profileUrl
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
+                        error = rememberAsyncImagePainter(R.drawable.person),
+                        modifier = Modifier
+                            .clickable(onClick = {
+                                navController.navigate(
+                                    FullScreenImageViewerDC(
+                                        imageUri = imageUri,
+                                    )
+                                )
+                            })
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "image/$imageUri"),
+                                animatedVisibilityScope = animatedScope
+                            )
+                            .clip(CircleShape)
+                            .size(50.dp),
                     )
                 }
 

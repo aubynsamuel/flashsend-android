@@ -1,7 +1,6 @@
 package com.aubynsamuel.flashsend.chat.presentation.screens
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -26,7 +25,8 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,19 +49,20 @@ import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.chat.presentation.utils.CropImageContract
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.CurrentUser
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ImagePreviewScreen(
     imageUri: Uri,
     chatViewModel: ChatViewModel,
     navController: NavController,
-    roomId: String,
     takenFromCamera: String?,
-    profileUrl: String,
     recipientsToken: String,
 ) {
     var caption by remember { mutableStateOf("") }
@@ -95,27 +96,23 @@ fun ImagePreviewScreen(
     fun onCrop() {
         selectedPicture?.let { uri ->
             cropImageLauncher.launch(uri)
-        } ?: Toast.makeText(context, "Please select an image first", Toast.LENGTH_SHORT).show()
+        } ?: showToast(context, "Please select an image first")
     }
 
     fun onCancel() {
-        navController.popBackStack()
+        navController.safePopBackStack()
     }
 
     fun onSend(imageUrl: String) {
         chatViewModel.sendImageMessage(
             caption = caption,
             imageUrl = imageUrl,
-            senderName = userData?.username ?: "",
-            roomId = roomId,
-            currentUserId = userData?.userId ?: "",
-            profileUrl = profileUrl,
             recipientsToken = recipientsToken
         )
         if (takenFromCamera == "1") {
-            navController.popBackStack()
-            navController.popBackStack()
-        } else navController.popBackStack()
+            navController.safePopBackStack()
+            navController.safePopBackStack()
+        } else navController.safePopBackStack()
     }
 
     Column(
@@ -159,7 +156,7 @@ fun ImagePreviewScreen(
                     modifier = Modifier.fillMaxSize()
                 )
                 if (loading) {
-                    CircularProgressIndicator(
+                    CircularWavyProgressIndicator(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -209,9 +206,7 @@ fun ImagePreviewScreen(
                                     if (imageUrl != null) {
                                         onSend(imageUrl)
                                     } else {
-                                        Toast.makeText(
-                                            context, "Failed to upload image", Toast.LENGTH_SHORT
-                                        ).show()
+                                        showToast(context, "Failed to upload image")
                                     }
                                     loading
                                 }

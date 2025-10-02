@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.chat.presentation.components
 
-import android.widget.Toast
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,8 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +46,7 @@ import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
 import com.aubynsamuel.flashsend.core.presentation.utils.formatMessageTime
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
 
 @Composable
@@ -61,6 +64,8 @@ fun ChatMessageObject(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var longPressOffset by remember { mutableStateOf(Offset.Zero) }
+    val density = LocalDensity.current
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     Row(
@@ -78,12 +83,10 @@ fun ChatMessageObject(
                 showDeleteDialog = false
             },
             onMessageDeleted = {
-                Toast.makeText(context, "Message has been deleted", Toast.LENGTH_SHORT).show()
+                showToast(context, "Message has been deleted")
             },
             onDeletionFailure = {
-                Toast.makeText(
-                    context, "Message could not be deleted, Try again", Toast.LENGTH_SHORT
-                ).show()
+                showToast(context, "Message could not be deleted, Try again")
             },
             showDialog = showDeleteDialog,
         )
@@ -101,15 +104,24 @@ fun ChatMessageObject(
         }
 //       Content
         Surface(
-            Modifier.pointerInput(Unit) {
-                detectTapGestures(onLongPress = {
-                    vibrateDevice(context)
-                    showPopup = !showPopup
-                })
-            }, color = if (isFromMe) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(16.dp)
+            Modifier
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = {
+                        longPressOffset = it
+                        vibrateDevice(context)
+                        showPopup = !showPopup
+                    })
+                },
+            color = if (isFromMe) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.surfaceVariant,
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Box(modifier = Modifier.absoluteOffset(x = 30.dp, y = 30.dp)) {
+            Box(
+                modifier = Modifier.offset(
+                    x = with(density) { longPressOffset.x.toDp() },
+                    y = with(density) { longPressOffset.y.toDp() }
+                )
+            ) {
                 val myMessageOptionsList = listOf(
                     DropMenu(
                         text = "Copy",
@@ -142,7 +154,6 @@ fun ChatMessageObject(
                     reactions = {
                         ReactionPicker(onReactionSelected = { selectedEmoji ->
                             chatViewModel.addReactionToMessage(
-                                roomId = roomId,
                                 messageId = message.id,
                                 userId = if (isFromMe) currentUserId else message.senderId,
                                 emoji = selectedEmoji,
@@ -164,7 +175,8 @@ fun ChatMessageObject(
                             )
                             showPopup = false
                         })
-                    })
+                    }
+                )
             }
 //            different rendering for different message types
             Column(

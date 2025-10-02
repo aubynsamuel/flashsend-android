@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -59,7 +58,9 @@ import com.aubynsamuel.flashsend.core.domain.model.User
 import com.aubynsamuel.flashsend.core.presentation.navigation.CameraXScreenDC
 import com.aubynsamuel.flashsend.core.presentation.navigation.ImagePreviewScreen
 import com.aubynsamuel.flashsend.core.presentation.navigation.OtherProfileScreenDC
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 import com.aubynsamuel.flashsend.notifications.data.services.ConversationHistoryManager
 import com.aubynsamuel.flashsend.notifications.data.services.person
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
@@ -120,9 +121,7 @@ fun ChatScreen(
         uri?.let {
             val route = ImagePreviewScreen(
                 imageUri = it.toString(),
-                roomId = roomId,
                 takenFromCamera = false,
-                profileUrl = userData?.profileUrl.orEmpty(),
                 recipientsToken = deviceToken
             )
             navController.navigate(route) {
@@ -138,7 +137,7 @@ fun ChatScreen(
         if (isGranted) {
             chatViewModel.toggleRecording(context)
         } else {
-            Toast.makeText(context, "Audio recording permission denied", Toast.LENGTH_SHORT).show()
+            showToast(context, "Audio recording permission denied")
         }
     }
 
@@ -148,7 +147,6 @@ fun ChatScreen(
         if (isGranted) {
             val route = CameraXScreenDC(
                 roomId = roomId,
-                profileUrl = userData?.profileUrl ?: "",
                 deviceToken = deviceToken
             )
             navController.navigate(route) {
@@ -156,7 +154,7 @@ fun ChatScreen(
                 restoreState = true
             }
         } else {
-            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+            showToast(context, "Camera permission denied")
         }
     }
 
@@ -207,7 +205,7 @@ fun ChatScreen(
                 name = decodedUsername,
                 pic = profileUrl,
                 netActivity = netActivity,
-                goBack = { navController.popBackStack() },
+                goBack = { navController.safePopBackStack() },
                 navController = navController,
                 chatOptionsList = listOf(
                     DropMenu(
@@ -230,7 +228,6 @@ fun ChatScreen(
                     ) {
                         val route = CameraXScreenDC(
                             roomId = roomId,
-                            profileUrl = userData.profileUrl,
                             deviceToken = deviceToken
                         )
                         navController.navigate(route) {
@@ -240,7 +237,7 @@ fun ChatScreen(
                     } else {
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -310,8 +307,6 @@ fun ChatScreen(
                             if (messageText.isNotBlank()) {
                                 chatViewModel.sendMessage(
                                     content = messageText,
-                                    senderName = userData?.username ?: "",
-                                    profileUrl = userData?.profileUrl ?: "",
                                     recipientsToken = deviceToken
                                 )
                                 vibrateDevice(context)
@@ -339,8 +334,6 @@ fun ChatScreen(
                             }
                         },
                         sendLocationMessage = chatViewModel::sendLocationMessage,
-                        userData = userData,
-                        roomId = roomId,
                         recipientToken = deviceToken
                     )
                 }
@@ -356,8 +349,6 @@ fun ChatScreen(
                         resetRecording = { chatViewModel.resetRecording() },
                         sendAudioMessage = {
                             chatViewModel.sendAudioMessage(
-                                senderName = userData?.username ?: "",
-                                profileUrl = userData?.profileUrl ?: "",
                                 recipientsToken = deviceToken
                             )
                         },

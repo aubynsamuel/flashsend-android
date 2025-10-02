@@ -2,7 +2,6 @@ package com.aubynsamuel.flashsend.chat.presentation.components
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -49,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.aubynsamuel.flashsend.core.data.getCurrentLocation
-import com.aubynsamuel.flashsend.core.domain.model.NewUser
+import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 
 @Composable
 fun MessageInput(
@@ -62,14 +61,9 @@ fun MessageInput(
     sendLocationMessage: (
         latitude: Double,
         longitude: Double,
-        senderName: String,
-        roomId: String,
-        currentUserId: String,
-        profileUrl: String,
         recipientsToken: String,
     ) -> Unit,
-    roomId: String,
-    userData: NewUser?, recipientToken: String,
+    recipientToken: String,
 ) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -86,26 +80,20 @@ fun MessageInput(
                         sendLocationMessage(
                             lat,
                             lon,
-                            userData?.username ?: "",
-                            roomId,
-                            userData?.userId ?: "",
-                            userData?.profileUrl ?: "",
                             recipientToken
                         )
                     } else {
-                        Toast.makeText(
+                        showToast(
                             context,
                             "Unable to retrieve location",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        )
                     }
                 })
         } else {
-            Toast.makeText(
+            showToast(
                 context,
                 "Location permission denied",
-                Toast.LENGTH_SHORT
-            ).show()
+            )
         }
     }
 //    Check if keyboard is shown
@@ -259,18 +247,13 @@ fun MessageInput(
                                 sendLocationMessage(
                                     lat,
                                     lon,
-                                    userData?.username ?: "",
-                                    roomId,
-                                    userData?.userId ?: "",
-                                    userData?.profileUrl ?: "",
                                     recipientToken
                                 )
                             } else {
-                                Toast.makeText(
+                                showToast(
                                     context,
-                                    "Unable to retrieve location",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                    "Unable to retrieve location"
+                                )
                             }
                         }
                     } else {
@@ -301,16 +284,10 @@ fun PrevInputToolBar() {
         sendLocationMessage = {
                 latitude: Double,
                 longitude: Double,
-                senderName: String,
-                roomId: String,
-                currentUserId: String,
-                profileUrl: String,
                 recipientsToken: String,
             ->
             {}
         },
-        roomId = "",
-        userData = NewUser(),
         recipientToken = ""
     )
 }

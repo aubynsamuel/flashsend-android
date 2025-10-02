@@ -31,7 +31,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.presentation.navigation.AuthScreenDC
-import com.aubynsamuel.flashsend.core.presentation.navigation.LoadingScreen
+import com.aubynsamuel.flashsend.core.presentation.navigation.LoadingScreenDC
 import com.aubynsamuel.flashsend.core.presentation.navigation.MainScreen
 import kotlinx.coroutines.delay
 
@@ -44,17 +44,17 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
         speed = 2.0f
     )
 
-    val authState by authViewModel.authState.collectAsState()
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
-    LaunchedEffect(authState) {
+    LaunchedEffect(Unit) {
         delay(500)
-        if (authState) {
+        if (isLoggedIn) {
             navController.navigate(MainScreen(0)) {
-                popUpTo(LoadingScreen) { inclusive = true }
+                popUpTo(LoadingScreenDC) { inclusive = true }
             }
         } else {
             navController.navigate(AuthScreenDC) {
-                popUpTo(LoadingScreen) { inclusive = true }
+                popUpTo(LoadingScreenDC) { inclusive = true }
             }
         }
     }

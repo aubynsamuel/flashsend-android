@@ -1,6 +1,7 @@
 package com.aubynsamuel.flashsend.chat.presentation.components.messageTypes
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
@@ -24,20 +25,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import com.aubynsamuel.flashsend.chat.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.chat.presentation.utils.vibrateDevice
 import com.aubynsamuel.flashsend.core.data.MediaCacheManager
 import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
+import com.aubynsamuel.flashsend.core.presentation.navigation.FullScreenImageViewerDC
+import com.aubynsamuel.flashsend.navigation.LocalChatRoomAnimatedVisibilityScope
+import com.aubynsamuel.flashsend.navigation.LocalNavController
+import com.aubynsamuel.flashsend.navigation.LocalSharedTransitionScope
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ImageMessage(
-    message: ChatMessage, isFromMe: Boolean, fontSize: Int = 16, showPopUp: () -> Unit,
+    message: ChatMessage,
+    isFromMe: Boolean,
+    fontSize: Int = 16,
+    showPopUp: () -> Unit,
 ) {
     val tag = "ImageMessage"
-    var isExpanded by remember { mutableStateOf(false) }
     message.image?.let { imageUrl ->
         val context = LocalContext.current
         var mediaUri by remember { mutableStateOf(imageUrl.toUri()) }
+        val sharedTransitionScope = LocalSharedTransitionScope.current
+        val navController = LocalNavController.current
 
         LaunchedEffect(imageUrl) {
             val cachedUri = MediaCacheManager.getMediaUri(context, imageUrl)
@@ -46,21 +55,32 @@ fun ImageMessage(
         }
 
         Column {
-            AsyncImage(
-                model = mediaUri, contentDescription = "Image message", modifier = Modifier
-                    .heightIn(min = 30.dp, max = 250.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
-                    )
-                    .fillMaxWidth()
-                    .pointerInput(Unit) {
-                        detectTapGestures(onLongPress = {
-                            vibrateDevice(context)
-                            showPopUp()
-                        }, onTap = { isExpanded = true })
-                    },
-                contentScale = ContentScale.FillWidth
-            )
+            with(sharedTransitionScope) {
+                AsyncImage(
+                    model = mediaUri,
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)
+                        )
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = {
+                                    vibrateDevice(context)
+                                    showPopUp()
+                                },
+                                onTap = { navController.navigate(FullScreenImageViewerDC(mediaUri.toString())) })
+                        }
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "image/$mediaUri"),
+                            animatedVisibilityScope = LocalChatRoomAnimatedVisibilityScope.current
+                        )
+                        .heightIn(min = 30.dp, max = 250.dp)
+                        .fillMaxWidth(),
+                    contentDescription = "Image message",
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+
             if (message.content.isNotEmpty()) {
                 Text(
                     text = message.content,
@@ -74,12 +94,6 @@ fun ImageMessage(
                     modifier = Modifier
                         .padding(top = 2.dp)
                         .padding(horizontal = 5.dp)
-                )
-            }
-            if (isExpanded) {
-                FullScreenImageViewer(
-                    imageUri = mediaUri.toString(),
-                    onDismiss = { isExpanded = false },
                 )
             }
         }

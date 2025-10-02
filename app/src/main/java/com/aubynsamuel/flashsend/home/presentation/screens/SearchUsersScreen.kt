@@ -15,7 +15,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +40,9 @@ import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.core.presentation.navigation.ChatRoomScreen
 import com.aubynsamuel.flashsend.home.presentation.components.SearchedUserItem
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.SearchUsersViewModel
+import com.aubynsamuel.flashsend.navigation.safePopBackStack
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SearchUsersScreen(
     navController: NavController,
@@ -66,7 +69,7 @@ fun SearchUsersScreen(
                 .padding(top = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.safePopBackStack() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = "Back",
@@ -115,7 +118,7 @@ fun SearchUsersScreen(
                     .padding(20.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+                CircularWavyProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
             }
         } else {
             LazyColumn(

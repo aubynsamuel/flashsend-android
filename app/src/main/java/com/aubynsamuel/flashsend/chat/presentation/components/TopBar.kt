@@ -1,5 +1,6 @@
 package com.aubynsamuel.flashsend.chat.presentation.components
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +40,11 @@ import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.domain.model.User
 import com.aubynsamuel.flashsend.core.presentation.components.PopUpMenu
 import com.aubynsamuel.flashsend.core.presentation.navigation.OtherProfileScreenDC
+import com.aubynsamuel.flashsend.navigation.LocalChatRoomAnimatedVisibilityScope
+import com.aubynsamuel.flashsend.navigation.LocalSharedTransitionScope
 import com.google.gson.Gson
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HeaderBar(
     name: String,
@@ -53,6 +57,9 @@ fun HeaderBar(
     onImageClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+
+
     Row(
         modifier = Modifier
             .height(80.dp)
@@ -71,7 +78,7 @@ fun HeaderBar(
                 Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = "back button",
                 modifier = Modifier
-                    .padding(start = 5.dp)
+                    .padding(start = 10.dp)
                     .size(25.dp)
                     .clickable(onClick = goBack),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
@@ -87,16 +94,22 @@ fun HeaderBar(
                     })
                     .weight(1f)
             ) {
-                AsyncImage(
-                    model = pic,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(45.dp)
-                        .align(Alignment.CenterVertically),
-                    contentScale = ContentScale.Crop,
-                    error = rememberAsyncImagePainter(R.drawable.person)
-                )
+                with(sharedTransitionScope) {
+                    AsyncImage(
+                        model = pic,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedContentState =
+                                    rememberSharedContentState(key = "image/$pic"),
+                                animatedVisibilityScope = LocalChatRoomAnimatedVisibilityScope.current
+                            )
+                            .clip(CircleShape)
+                            .size(45.dp),
+                        contentScale = ContentScale.Crop,
+                        error = rememberAsyncImagePainter(R.drawable.person)
+                    )
+                }
 
                 Column {
                     Text(
@@ -149,3 +162,4 @@ fun HeaderBar(
         }
     }
 }
+

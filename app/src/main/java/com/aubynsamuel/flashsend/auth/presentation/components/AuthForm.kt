@@ -1,6 +1,5 @@
 package com.aubynsamuel.flashsend.auth.presentation.components
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,7 +17,8 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +47,7 @@ import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
 import kotlinx.coroutines.DelicateCoroutinesApi
 
-@OptIn(DelicateCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AuthForm(
     isLogin: Boolean, onToggleMode: () -> Unit, authViewModel: AuthViewModel,
@@ -149,9 +150,7 @@ fun AuthForm(
                     if (email.isNotBlank()) {
                         authViewModel.resetPassword(email)
                     } else {
-                        Toast.makeText(
-                            context, "Please enter your email address", Toast.LENGTH_LONG
-                        ).show()
+                        showToast(context, "Please enter your email address")
                     }
                 }, color = MaterialTheme.colorScheme.onBackground
         )
@@ -179,17 +178,15 @@ fun AuthForm(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(50.dp),
-            shape = fieldShape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             if (isLoggingIn) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.align(
-                        Alignment.CenterVertically
-                    )
+                CircularWavyProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(35.dp)
                 )
             } else {
                 Text(text = if (isLogin) "Login" else "Sign Up", fontSize = 20.sp)

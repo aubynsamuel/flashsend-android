@@ -1,10 +1,11 @@
 package com.aubynsamuel.flashsend.home.presentation.screens
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,9 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,20 +44,22 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.aubynsamuel.flashsend.R
-import com.aubynsamuel.flashsend.chat.presentation.components.FullScreenImageViewer
 import com.aubynsamuel.flashsend.core.data.CurrentUser
 import com.aubynsamuel.flashsend.core.presentation.navigation.EditProfileDC
+import com.aubynsamuel.flashsend.core.presentation.navigation.FullScreenImageViewerDC
 import com.aubynsamuel.flashsend.home.presentation.components.ProfileDetailItem
+import com.aubynsamuel.flashsend.navigation.LocalSharedTransitionScope
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-) {
-    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
+    animatedScope: AnimatedVisibilityScope,
 
-    var isExpanded by remember { mutableStateOf(false) }
+    ) {
+    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
+    val sharedTransitionScope = LocalSharedTransitionScope.current
 
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
@@ -79,51 +79,55 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Profile Header
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                    ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Profile Picture
+                // Profile Picture
+                with(sharedTransitionScope) {
+                    val imageUri = userData?.profileUrl
                     AsyncImage(
-                        model = userData?.profileUrl ?: "",
+                        model = imageUri,
                         contentDescription = "Profile picture",
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                            .clickable(onClick = { isExpanded = true }),
                         contentScale = ContentScale.Crop,
-                        error = rememberAsyncImagePainter(R.drawable.person)
-                    )
-
-                    if (isExpanded) {
-                        FullScreenImageViewer(
-                            imageUri = userData?.profileUrl.toString(),
-                            onDismiss = { isExpanded = false }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = userData?.username ?: "Username",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-
-                    Text(
-                        text = userData?.email ?: "Email",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        error = rememberAsyncImagePainter(R.drawable.person),
+                        modifier = Modifier
+                            .clickable(onClick = {
+                                navController.navigate(
+                                    FullScreenImageViewerDC(
+                                        imageUri = imageUri ?: "",
+                                    )
+                                )
+                            })
+                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "image/${imageUri}"),
+                                animatedVisibilityScope = animatedScope
+                            )
+                            .clip(CircleShape)
+                            .size(120.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = userData?.username ?: "Username",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+
+                Text(
+                    text = userData?.email ?: "Email",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                )
             }
 
             // Profile Details Card

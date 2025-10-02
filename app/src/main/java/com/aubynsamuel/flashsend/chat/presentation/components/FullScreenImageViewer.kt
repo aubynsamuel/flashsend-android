@@ -1,83 +1,129 @@
 package com.aubynsamuel.flashsend.chat.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
+import com.aubynsamuel.flashsend.navigation.LocalSharedTransitionScope
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun FullScreenImageViewer(imageUri: String, onDismiss: () -> Unit) {
+fun FullScreenImageViewer(
+    imageUri: String,
+    onDismiss: () -> Unit,
+    animatedScope: AnimatedVisibilityScope,
+) {
     var dragOffset by remember { mutableFloatStateOf(0f) }
+    var isUIVisible by remember { mutableStateOf(false) }
     val dragThreshold = 200f
-
+    val sharedTransitionScope = LocalSharedTransitionScope.current
     val computedAlpha by animateFloatAsState(
         targetValue = (1f - (abs(dragOffset) / dragThreshold)).coerceIn(0.5f, 1f)
     )
 
-    Popup(onDismissRequest = onDismiss) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background.copy(alpha = computedAlpha))
-                .pointerInput(Unit) {
-                    detectVerticalDragGestures(onVerticalDrag = { _: PointerInputChange, dragAmount: Float ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                MaterialTheme.colorScheme.background
+//                    .copy(alpha = computedAlpha)
+            )
+            .pointerInput(Unit) {
+                detectVerticalDragGestures(
+                    onVerticalDrag = { _: PointerInputChange, dragAmount: Float ->
                         dragOffset += dragAmount
-                    }, onDragEnd = {
-                        if (abs(dragOffset) > dragThreshold) {
+                    },
+                    onDragEnd = {
+                        if (abs(dragOffset) > dragThreshold)
                             onDismiss()
-                        } else {
+                        else
                             dragOffset = 0f
-                        }
-                    })
-                }) {
-            Column {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = "Close Button",
-                    modifier = Modifier
-                        .clickable(onClick = { onDismiss() })
-                        .size(40.dp)
-                        .align(Alignment.End)
-                        .absolutePadding(right = 15.dp, top = 10.dp)
-                        .alpha(computedAlpha)
-                        .offset { IntOffset(x = 0, y = dragOffset.roundToInt()) },
-                    tint = MaterialTheme.colorScheme.onBackground
+                    }
                 )
-                AsyncImage(
-                    model = imageUri,
-                    contentDescription = "Expanded Image",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .offset { IntOffset(x = 0, y = dragOffset.roundToInt()) }
-                        .alpha(computedAlpha),
-                    contentScale = ContentScale.Fit)
+            }
+            .clickable {
+                isUIVisible = !isUIVisible
+            }
+    ) {
+        with(sharedTransitionScope) {
+            AsyncImage(
+                model = imageUri,
+                contentDescription = "Expanded Image",
+                modifier = Modifier
+                    .offset { IntOffset(x = 0, y = dragOffset.roundToInt()) }
+//                    .alpha(computedAlpha)
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = "image/$imageUri"),
+                        animatedVisibilityScope = animatedScope
+                    )
+                    .fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        }
+
+        // Header bar with back button (animated visibility)
+        AnimatedVisibility(
+            visible = isUIVisible,
+            enter = fadeIn(animationSpec = tween(500)),
+            exit = fadeOut(animationSpec = tween(500)),
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
     }
