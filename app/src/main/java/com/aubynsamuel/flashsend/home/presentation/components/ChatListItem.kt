@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -112,13 +113,17 @@ fun ChatListItem(
                         contentScale = ContentScale.Crop,
                         error = rememberAsyncImagePainter(R.drawable.person),
                         modifier = Modifier
-                            .clickable(onClick = {
-                                navController.navigate(
-                                    FullScreenImageViewerDC(
-                                        imageUri = imageUri,
+                            .clickable(
+                                onClick = {
+                                    navController.navigate(
+                                        FullScreenImageViewerDC(
+                                            imageUri = imageUri,
+                                        )
                                     )
-                                )
-                            })
+                                },
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                            )
                             .sharedBounds(
                                 sharedContentState = rememberSharedContentState(key = "image/$imageUri"),
                                 animatedVisibilityScope = animatedScope
@@ -132,17 +137,25 @@ fun ChatListItem(
                     modifier = Modifier.fillMaxWidth(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = room.otherParticipant.username,
-                        modifier = Modifier.padding(start = 7.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    with(sharedTransitionScope) {
+                        Text(
+                            text = room.otherParticipant.username,
+                            modifier = Modifier
+                                .padding(start = 7.dp)
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "text/${room.otherParticipant.username}"),
+                                    animatedVisibilityScope = animatedScope
+                                ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     if (room.lastMessage.isNotEmpty()) {
                         Text(
-                            text = if (room.lastMessageSenderId == currentUserId) "You: ${room.lastMessage}" else room.lastMessage,
+                            text = if (room.lastMessageSenderId == currentUserId) "You: ${room.lastMessage}"
+                            else room.lastMessage,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(start = 7.dp, end = 10.dp),
                             fontSize = 13.sp,
