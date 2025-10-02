@@ -35,16 +35,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -168,7 +172,7 @@ fun CameraXScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
 
         // ─── CAMERA PREVIEW AREA WITH PINCH-ZOOM AND TAP-TO-FOCUS ─────────────────
@@ -236,7 +240,7 @@ fun CameraXScreen(
                             Text(
                                 text = "Aspect: $selectedAspect",
                                 textAlign = TextAlign.End,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     } else {
@@ -259,7 +263,7 @@ fun CameraXScreen(
                                                 selectedAspect = option
                                                 expanded = false
                                             },
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
                             }
@@ -271,9 +275,9 @@ fun CameraXScreen(
                 .fillMaxWidth(),
             colors = TopAppBarDefaults.topAppBarColors().copy(
                 containerColor = Color.Transparent,
-                navigationIconContentColor = Color.White,
-                actionIconContentColor = Color.White,
-                titleContentColor = Color.White,
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
                 scrolledContainerColor = Color.Transparent
             )
         )
@@ -283,8 +287,9 @@ fun CameraXScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(10.dp)
         ) {
+
             Slider(
                 value = zoomRatio,
                 onValueChange = { newVal ->
@@ -292,9 +297,16 @@ fun CameraXScreen(
                     camera?.cameraControl?.setZoomRatio(newVal)
                 },
                 valueRange = 1f..(camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 4f),
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                )
             )
+
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -303,25 +315,29 @@ fun CameraXScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Flash toggle button
-                ElevatedButton(onClick = {
-                    flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF)
-                        ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
-                    imageCapture?.flashMode = flashMode
-                }) {
-                    Icon(
-                        imageVector = if (flashMode == ImageCapture.FLASH_MODE_OFF)
-                            Icons.Default.FlashOff else Icons.Default.FlashOn,
-                        contentDescription = "Toggle Flash",
-                        tint = Color.White
-                    )
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary
+                ) {
+                    IconButton(onClick = {
+                        flashMode = if (flashMode == ImageCapture.FLASH_MODE_OFF)
+                            ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
+                        imageCapture?.flashMode = flashMode
+                    }) {
+                        Icon(
+                            imageVector = if (flashMode == ImageCapture.FLASH_MODE_OFF)
+                                Icons.Default.FlashOff else Icons.Default.FlashOn,
+                            contentDescription = "Toggle Flash",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
+
 
                 // Capture button
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .background(Color.White, MaterialShapes.Sunny.toShape())
-                        .clip(MaterialShapes.Sunny.toShape())
                         .clickable(onClick = {
                             if (!isCapturing) {
                                 isCapturing = true
@@ -346,43 +362,57 @@ fun CameraXScreen(
                             }
 
                         })
+                        .border(
+                            width = 4.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = MaterialShapes.Sunny.toShape()
+                        )
+                        .clip(MaterialShapes.Sunny.toShape()),
+                    contentAlignment = Alignment.Center
                 ) {
                     Box(
                         modifier = Modifier
                             .animateContentSize()
-                            .size(if (isCapturing) 75.dp else 80.dp)
-                            .align(Alignment.Center)
-                            .background(Color.White, MaterialShapes.Sunny.toShape())
-                            .border(
-                                width = 4.dp,
-                                shape = MaterialShapes.Sunny.toShape(),
-                                color = if (isCapturing) Color.Black else Color.White
+                            .size(if (isCapturing) 65.dp else 70.dp)
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialShapes.Sunny.toShape()
                             )
-                    ) {}
+                            .border(
+                                width = 2.dp,
+                                shape = MaterialShapes.Sunny.toShape(),
+                                color = if (isCapturing) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+                            )
+                    )
                 }
 
                 // Camera flip button
-                ElevatedButton(onClick = {
-                    if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-                        lensFacing = CameraSelector.LENS_FACING_FRONT
-                        rotateValue = 180f
-                    } else {
-                        lensFacing = CameraSelector.LENS_FACING_BACK
-                        rotateValue = 0f
-                    }
-                }) {
-                    val rotateX = animateFloatAsState(
-                        rotateValue,
-                        animationSpec = tween(durationMillis = 300)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Cameraswitch,
-                        contentDescription = "Switch Camera",
-                        tint = Color.White,
-                        modifier = Modifier.graphicsLayer {
-                            rotationY = rotateX.value
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary
+                ) {
+                    IconButton(onClick = {
+                        if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+                            lensFacing = CameraSelector.LENS_FACING_FRONT
+                            rotateValue = 180f
+                        } else {
+                            lensFacing = CameraSelector.LENS_FACING_BACK
+                            rotateValue = 0f
                         }
-                    )
+                    }) {
+                        val rotateX = animateFloatAsState(
+                            rotateValue,
+                            animationSpec = tween(durationMillis = 300), label = ""
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Cameraswitch,
+                            contentDescription = "Switch Camera",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.graphicsLayer {
+                                rotationY = rotateX.value
+                            }
+                        )
+                    }
                 }
             }
         }

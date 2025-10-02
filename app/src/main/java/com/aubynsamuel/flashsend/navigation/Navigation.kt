@@ -136,13 +136,12 @@ fun ChatAppNavigation() {
                     SetUserDetailsScreen(navController, authViewModel = authViewModelInstance)
                 }
 
-                composable<EditProfileDC>(
-                    enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
-                    exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
-                    popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
-                    popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-                ) {
-                    EditProfileScreen(navController, authViewModel = authViewModelInstance)
+                composable<EditProfileDC> {
+                    EditProfileScreen(
+                        navController,
+                        authViewModel = authViewModelInstance,
+                        animatedScope = this
+                    )
                 }
 
                 composable<OtherProfileScreenDC> {
