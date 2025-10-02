@@ -31,7 +31,7 @@ fun FontSizeSelector(
             Column {
                 Text(
                     text = "Font Size: ",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )

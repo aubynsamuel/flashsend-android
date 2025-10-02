@@ -52,7 +52,7 @@ fun DarkModeSelector(
             Column {
                 Text(
                     text = "Theme",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(

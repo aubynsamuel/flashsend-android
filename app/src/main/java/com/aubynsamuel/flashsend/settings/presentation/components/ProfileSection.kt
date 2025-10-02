@@ -31,7 +31,7 @@ fun ProfileSection(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = username,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(

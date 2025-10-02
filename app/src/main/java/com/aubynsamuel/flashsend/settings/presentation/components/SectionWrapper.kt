@@ -32,19 +32,20 @@ fun SectionWrapper(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.outlineVariant
         )
+
         content()
     }
 }

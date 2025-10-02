@@ -23,13 +23,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.core.data.CurrentUser
-import com.aubynsamuel.flashsend.core.presentation.navigation.EditProfileDC
 import com.aubynsamuel.flashsend.settings.presentation.components.AppearanceSection
-import com.aubynsamuel.flashsend.settings.presentation.components.ProfileSection
 import com.aubynsamuel.flashsend.settings.presentation.components.ResetConfirmationDialog
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 
@@ -53,9 +52,16 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = {
+                    Text(
+                        "Settings",
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 actions = {
-                    IconButton(onClick = { showResetDialog = true }) {
+                    IconButton(
+                        onClick = { showResetDialog = true },
+                    ) {
                         Icon(Icons.Default.RestartAlt, contentDescription = "Reset Settings")
                     }
                 },
@@ -69,19 +75,19 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
         },
     ) { padding ->
         LazyColumn(
-            contentPadding = PaddingValues(vertical = 10.dp),
+            contentPadding = PaddingValues(top = 10.dp),
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            item {
-                ProfileSection(
-                    state = settingsState,
-                    onEditProfile = { navController.navigate(EditProfileDC) },
-                    username = userData?.username ?: ""
-                )
-            }
+//            item {
+//                ProfileSection(
+//                    state = settingsState,
+//                    onEditProfile = { navController.navigate(EditProfileDC) },
+//                    username = userData?.username ?: ""
+//                )
+//            }
             item { AppearanceSection(settingsState, viewModel) }
 //            item { NotificationsSection(settingsState, viewModel) }
 //            item { PrivacySection(settingsState, viewModel) }
