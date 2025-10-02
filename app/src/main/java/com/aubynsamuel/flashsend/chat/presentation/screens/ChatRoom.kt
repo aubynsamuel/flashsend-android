@@ -163,6 +163,7 @@ fun ChatScreen(
         chatViewModel.initialize(roomId, currentUserId, userId)
     }
     LaunchedEffect(connectivityStatus) {
+        delay(1000)
         if (connectivityStatus is ConnectivityStatus.Available) {
             Log.d(tag, "Re-initializing chatroom listener with roomId: $roomId")
             netActivity = ""
