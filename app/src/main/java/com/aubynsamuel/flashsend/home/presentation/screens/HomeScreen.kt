@@ -11,12 +11,9 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +32,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -156,93 +154,99 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(topBar = {
-        Row(
-            modifier = Modifier
-                .height(80.dp)
-                .fillMaxWidth(1f)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(top = 15.dp)
-                .padding(horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(modifier = Modifier.weight(1f)) {
-                Text(
-                    "Flash Send",
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row(modifier = Modifier) {
+                        Text(
+                            "Flash Send",
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            fontWeight = FontWeight.Bold,
+//                            fontSize = 24.sp,
+                            maxLines = 1
+                        )
+                        if (netActivity.isNotBlank()) {
+                            Text(
+                                text = if (homeUiState.isLoading) "Loading..." else netActivity,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 10.dp),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    Row {
+                        Icon(
+                            Icons.Outlined.Search,
+                            contentDescription = "",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .clickable(onClick = {
+                                    navController.navigate(
+                                        SearchUsersScreenDC
+                                    )
+                                })
+                                .padding(end = 5.dp)
+                        )
+                        Icon(
+                            Icons.Outlined.MoreVert,
+                            contentDescription = "",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .clickable(onClick = { expanded = true })
+                                .padding(horizontal = 10.dp)
+                        )
+                        PopUpMenu(
+                            expanded = expanded,
+                            onDismiss = { expanded = !expanded },
+                            modifier = Modifier,
+                            dropItems = listOf(
+                                DropMenu(
+                                    text = "Profile",
+                                    onClick = {
+                                        navController.navigate(MainScreen(1)) {
+                                            popUpTo(MainScreen(0)) { inclusive = false }
+                                        }
+                                    },
+                                    icon = Icons.Default.Person
+                                ),
+                                DropMenu(
+                                    text = "Settings",
+                                    onClick = {
+                                        navController.navigate(MainScreen(2)) {
+                                            popUpTo(MainScreen(0)) { inclusive = false }
+                                        }
+                                    },
+                                    icon = Icons.Default.Settings
+                                ),
+                                DropMenu(
+                                    text = "Logout",
+                                    onClick = { authViewModel.logout() },
+                                    icon = Icons.AutoMirrored.Default.Logout
+                                ),
+                            ),
+                            reactions = {}
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                if (netActivity.isNotBlank()) {
-                    Text(
-                        text = if (homeUiState.isLoading) "Loading..." else netActivity,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(start = 10.dp, top = 3.dp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(SearchUsersScreenDC) },
+                modifier = Modifier.padding(bottom = 20.dp, end = 5.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Chat")
             }
-            Row {
-                Icon(
-                    Icons.Outlined.Search,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier
-                        .clickable(onClick = { navController.navigate(SearchUsersScreenDC) })
-                        .padding(end = 5.dp)
-                )
-                Icon(
-                    Icons.Outlined.MoreVert,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier
-                        .clickable(onClick = { expanded = true })
-                        .padding(horizontal = 5.dp)
-                )
-                PopUpMenu(
-                    expanded = expanded,
-                    onDismiss = { expanded = !expanded },
-                    modifier = Modifier,
-                    dropItems = listOf(
-                        DropMenu(
-                            text = "Profile",
-                            onClick = {
-                                navController.navigate(MainScreen(1)) {
-                                    popUpTo(MainScreen(0)) { inclusive = false }
-                                }
-                            },
-                            icon = Icons.Default.Person
-                        ),
-                        DropMenu(
-                            text = "Settings",
-                            onClick = {
-                                navController.navigate(MainScreen(2)) {
-                                    popUpTo(MainScreen(0)) { inclusive = false }
-                                }
-                            },
-                            icon = Icons.Default.Settings
-                        ),
-                        DropMenu(
-                            text = "Logout",
-                            onClick = { authViewModel.logout() },
-                            icon = Icons.AutoMirrored.Default.Logout
-                        ),
-                    ),
-                    reactions = {}
-                )
-            }
-        }
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = { navController.navigate(SearchUsersScreenDC) },
-            modifier = Modifier.padding(bottom = 20.dp, end = 5.dp)
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Chat")
-        }
-    }) { paddingValues ->
+        }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
