@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -102,10 +103,10 @@ fun MessageInput(
 //        WindowInsets.ime.getBottom(density) > 0
     val transition =
         updateTransition(targetState = messageText.isNotBlank(), label = "messageTransition")
-    val translateX by transition.animateFloat(
+    val addPhotoTranslation by transition.animateFloat(
         transitionSpec = { tween(200) }, label = "translationX"
     ) { if (it) 45f else 0f }
-    val translate by transition.animateFloat(
+    val shareLocationTranslation by transition.animateFloat(
         transitionSpec = { tween(200) }, label = "translationX"
     ) { if (it) 80f else 0f }
 
@@ -117,8 +118,8 @@ fun MessageInput(
         transitionSpec = { tween(100, delayMillis = 100) }, label = "placeIconScale"
     ) { if (it) 1f else 0.3f }
 
-    val homeIconAlpha by transition.animateFloat(
-        transitionSpec = { tween(150) }, label = "homeIconAlpha"
+    val addPhotoIconAlpha by transition.animateFloat(
+        transitionSpec = { tween(150) }, label = "addPhotoIconAlpha"
     ) { if (it) 0f else 1f }
 
     Row(
@@ -142,19 +143,25 @@ fun MessageInput(
             textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onPrimaryContainer),
             decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(25.dp)
-                        )
-                        .fillMaxWidth()
-                ) {
+//                Box(
+//                    modifier = Modifier
+//                        .background(
+//                            MaterialTheme.colorScheme.surfaceVariant,
+//                            shape = RoundedCornerShape(25.dp)
+//                        )
+//                        .fillMaxWidth()
+//                ) {
+                Column {
+
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(25.dp)
+                            )
                             .padding(vertical = 12.dp, horizontal = 15.dp)
                     ) {
                         Row(modifier = Modifier.weight(1f)) {
@@ -169,11 +176,11 @@ fun MessageInput(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AddLocationAlt,
-                                contentDescription = "More options",
+                                contentDescription = "Share Location",
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier
                                     .graphicsLayer {
-                                        translationX = translate
+                                        translationX = shareLocationTranslation
                                     }
                                     .clickable(onClick = { showDialog = true })
                             )
@@ -183,8 +190,8 @@ fun MessageInput(
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier
                                     .graphicsLayer {
-                                        translationX = translateX
-                                        alpha = homeIconAlpha
+                                        translationX = addPhotoTranslation
+                                        alpha = addPhotoIconAlpha
                                     }
                                     .clickable(onClick = { onImageClick() })
                             )
@@ -193,6 +200,7 @@ fun MessageInput(
                 }
             }
         )
+
 
         IconButton(
             onClick = if (messageText.isNotBlank()) onSend else onRecordAudio,
