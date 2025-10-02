@@ -137,21 +137,16 @@ fun ChatListItem(
                     modifier = Modifier.fillMaxWidth(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    with(sharedTransitionScope) {
-                        Text(
-                            text = room.otherParticipant.username,
-                            modifier = Modifier
-                                .padding(start = 7.dp)
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "text/${room.otherParticipant.username}"),
-                                    animatedVisibilityScope = animatedScope
-                                ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    Text(
+                        text = room.otherParticipant.username,
+                        modifier = Modifier
+                            .padding(start = 7.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
                     if (room.lastMessage.isNotEmpty()) {
                         Text(
                             text = if (room.lastMessageSenderId == currentUserId) "You: ${room.lastMessage}"
