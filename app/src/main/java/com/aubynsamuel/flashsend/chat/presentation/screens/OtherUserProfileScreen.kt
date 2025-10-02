@@ -144,7 +144,7 @@ fun OtherUserProfileScreen(
                 title = {
                     with(sharedTransitionScope) {
                         Text(
-                            userData.username, fontWeight = FontWeight.Medium,
+                            userData.username, fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "text/${userData.username}"),

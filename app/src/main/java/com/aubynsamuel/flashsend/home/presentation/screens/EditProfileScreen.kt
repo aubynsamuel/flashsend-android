@@ -231,7 +231,7 @@ fun EditProfileScreen(
                     with(sharedTransitionScope) {
                         Text(
                             "Edit Profile",
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.Bold,
                             modifier = Modifier.sharedBounds(
                                 sharedContentState = rememberSharedContentState(key = "text/editProfileScreenTitle"),
                                 animatedVisibilityScope = animatedScope
