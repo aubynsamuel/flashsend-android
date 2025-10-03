@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aubynsamuel.flashsend.navigation.ChatAppNavigation
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
 import com.aubynsamuel.flashsend.ui.theme.FlashSendTheme
+import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
         enableEdgeToEdge()
+        FirebaseApp.initializeApp(this)
         FirebaseMessaging.getInstance().token
 
         setContent {
