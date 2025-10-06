@@ -46,8 +46,8 @@ import com.aubynsamuel.flashsend.navigation.safePopBackStack
 @Composable
 fun SearchUsersScreen(
     navController: NavController,
-    viewModel: SearchUsersViewModel = hiltViewModel(),
 ) {
+    val viewModel: SearchUsersViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current

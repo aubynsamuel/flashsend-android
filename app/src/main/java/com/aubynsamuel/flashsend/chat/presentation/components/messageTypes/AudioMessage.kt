@@ -13,7 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -130,7 +130,7 @@ fun AudioMessage(message: ChatMessage, isFromMe: Boolean, fontSize: Int) {
         }
         Slider(
             value = if (duration > 0) currentPosition.toFloat() else 0f,
-            colors = SliderColors(
+            colors = SliderDefaults.colors().copy(
                 thumbColor = if (isFromMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                 activeTrackColor = if (isFromMe) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
                 inactiveTrackColor = MaterialTheme.colorScheme.onBackground,

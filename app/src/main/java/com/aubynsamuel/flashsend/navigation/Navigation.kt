@@ -47,6 +47,7 @@ import com.aubynsamuel.flashsend.core.presentation.navigation.SearchUsersScreenD
 import com.aubynsamuel.flashsend.core.presentation.navigation.SetUserDetailsDC
 import com.aubynsamuel.flashsend.core.presentation.utils.logger
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
+import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
 import com.aubynsamuel.flashsend.home.presentation.screens.EditProfileScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.SearchUsersScreen
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
@@ -69,6 +70,7 @@ fun ChatAppNavigation() {
     val authViewModelInstance: AuthViewModel = hiltViewModel()
     val chatViewModel: ChatViewModel = hiltViewModel()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
 
     SharedTransitionLayout {
         CompositionLocalProvider(
@@ -102,6 +104,7 @@ fun ChatAppNavigation() {
                         context = context,
                         initialPage = args.initialPage,
                         animatedScope = this,
+                        connectivityViewModel = connectivityViewModel,
                     )
                 }
 
@@ -120,6 +123,7 @@ fun ChatAppNavigation() {
                             deviceToken = args.deviceToken,
                             profileUrl = args.profileUrl,
                             settingsViewModel = settingsViewModel,
+                            connectivityViewModel = connectivityViewModel,
                         )
                     }
                 }

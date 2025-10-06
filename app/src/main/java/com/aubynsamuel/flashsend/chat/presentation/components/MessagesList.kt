@@ -30,7 +30,9 @@ fun MessagesList(
     scrollState: LazyListState,
     roomId: String,
     fontSize: Int,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
+    currentSearchIndex: Int,
+    messagesIndex: List<Int>,
 ) {
     val groupedMessages = remember(messages) {
         messages.groupBy { message ->
@@ -51,6 +53,9 @@ fun MessagesList(
                 key = { messagesForDate[it].id }
             ) { index ->
                 val message = messagesForDate[index]
+                val isHighlighted = messagesIndex.isNotEmpty() &&
+                        currentSearchIndex < messagesIndex.size &&
+                        messages.indexOf(message) == messagesIndex[currentSearchIndex]
                 ChatMessageObject(
                     message = message,
                     isFromMe = message.senderId == currentUserId,
@@ -63,7 +68,8 @@ fun MessagesList(
                     roomId = roomId,
                     fontSize = fontSize,
                     chatViewModel = chatViewModel,
-                    currentUserId = currentUserId
+                    currentUserId = currentUserId,
+                    isHighlighted = isHighlighted
                 )
             }
             // Header for Date

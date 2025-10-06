@@ -47,7 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.R
@@ -78,6 +77,7 @@ fun HomeScreen(
     context: Context,
     animatedScope: AnimatedVisibilityScope,
     homeViewModel: HomeViewModel,
+    connectivityViewModel: ConnectivityViewModel,
 ) {
     val notificationRepository = ApiRequestsRepository()
     val user = FirebaseAuth.getInstance().currentUser
@@ -100,13 +100,12 @@ fun HomeScreen(
         }
     }
 
-    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     val homeUiState by homeViewModel.uiState.collectAsState()
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
-    var expanded by remember { mutableStateOf(false) }
+    var popUpMenuExpanded by remember { mutableStateOf(false) }
     var netActivity by remember { mutableStateOf("") }
 
     val permissionRequest = rememberLauncherForActivityResult(
@@ -194,12 +193,12 @@ fun HomeScreen(
                             contentDescription = "",
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
-                                .clickable(onClick = { expanded = true })
+                                .clickable(onClick = { popUpMenuExpanded = true })
                                 .padding(horizontal = 10.dp)
                         )
                         PopUpMenu(
-                            expanded = expanded,
-                            onDismiss = { expanded = !expanded },
+                            expanded = popUpMenuExpanded,
+                            onDismiss = { popUpMenuExpanded = !popUpMenuExpanded },
                             modifier = Modifier,
                             dropItems = listOf(
                                 DropMenu(

@@ -6,16 +6,33 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,7 +50,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -52,7 +72,7 @@ import com.aubynsamuel.flashsend.chat.presentation.utils.vibrateDevice
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatState
 import com.aubynsamuel.flashsend.chat.presentation.viewmodels.ChatViewModel
 import com.aubynsamuel.flashsend.core.data.ConnectivityStatus
-import com.aubynsamuel.flashsend.core.data.CurrentUser
+import com.aubynsamuel.flashsend.core.domain.model.ChatMessage
 import com.aubynsamuel.flashsend.core.domain.model.DropMenu
 import com.aubynsamuel.flashsend.core.domain.model.User
 import com.aubynsamuel.flashsend.core.presentation.navigation.CameraXScreenDC
@@ -70,6 +90,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     navController: NavController,
@@ -78,18 +99,12 @@ fun ChatScreen(
     deviceToken: String,
     profileUrl: String,
     settingsViewModel: SettingsViewModel,
+    connectivityViewModel: ConnectivityViewModel,
 ) {
     val tag = "ChatRoom"
     val context = LocalContext.current
-
-//    initializations
     val auth = FirebaseAuth.getInstance()
     val chatViewModel: ChatViewModel = hiltViewModel()
-    val userData by CurrentUser.userData.collectAsStateWithLifecycle()
-
-    val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
-
-//    state variables
     val currentUserId = auth.currentUser?.uid ?: return
     val roomId by remember { mutableStateOf(createRoomId(userId, currentUserId)) }
     var messageText by remember { mutableStateOf("") }
@@ -103,17 +118,24 @@ fun ChatScreen(
     val chatState by chatViewModel.chatState.collectAsState()
     val messages by chatViewModel.messages.collectAsState()
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
+    val audioPermission = Manifest.permission.RECORD_AUDIO
+    var showEmptyMessagesAnimation by remember { mutableStateOf(false) }
+    var previousMessageCount by rememberSaveable { mutableIntStateOf(messages.size) }
 
-//     functions
-//    val messages = generateMockMessages(currentUserId)
+    var isSearching by remember { mutableStateOf(false) }
+    var searchTerm by remember { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf(listOf<ChatMessage>()) }
+    var messagesIndex by remember { mutableStateOf(listOf<Int>()) }
+    var currentSearchIndex by remember { mutableIntStateOf(0) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val showScrollToBottom by remember {
         derivedStateOf {
             val firstVisibleIndex = listState.firstVisibleItemIndex
             firstVisibleIndex - 1 > 0
         }
     }
-
-    val audioPermission = Manifest.permission.RECORD_AUDIO
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -176,8 +198,6 @@ fun ChatScreen(
             chatViewModel.markMessagesAsRead()
         }
     }
-    var previousMessageCount by rememberSaveable { mutableIntStateOf(messages.size) }
-
     LaunchedEffect(messages.size) {
         if (messages.size > previousMessageCount) {
             if (messages.isNotEmpty()) {
@@ -187,10 +207,10 @@ fun ChatScreen(
         previousMessageCount = messages.size
     }
 
-    var showEmptyMessagesAnimation by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(500)
-        showEmptyMessagesAnimation = true
+        if (messages.isEmpty())
+            showEmptyMessagesAnimation = true
     }
 
     Scaffold(
@@ -201,45 +221,115 @@ fun ChatScreen(
                 profileUrl = profileUrl,
                 deviceToken = deviceToken,
             )
-            HeaderBar(
-                userData = userData,
-                name = decodedUsername,
-                pic = profileUrl,
-                netActivity = netActivity,
-                goBack = { navController.safePopBackStack() },
-                navController = navController,
-                chatOptionsList = listOf(
-                    DropMenu(
-                        text = "View Profile",
-                        onClick = {
-                            val userJson = Gson().toJson(userData)
-                            navController.navigate(OtherProfileScreenDC(userJson)) {
+            if (isSearching) {
+                TopAppBar(
+                    title = { Text("") },
+                    actions = {
+                        Row {
+                            AnimatedVisibility(
+                                isSearching,
+                                modifier = Modifier
+                                    .padding(start = 10.dp)
+                                    .weight(0.8f)
+                            ) {
+                                OutlinedTextField(
+                                    value = searchTerm,
+                                    onValueChange = { newValue ->
+                                        searchTerm = newValue
+                                        if (searchTerm.isNotBlank()) {
+                                            searchResults = messages.filter { message ->
+                                                message.toString()
+                                                    .contains(searchTerm, ignoreCase = true)
+                                            }
+                                            messagesIndex = searchResults.map { result ->
+                                                messages.indexOf(result)
+                                            }
+                                            currentSearchIndex = 0
+                                        } else {
+                                            searchResults = emptyList()
+                                            messagesIndex = emptyList()
+                                            currentSearchIndex = 0
+                                        }
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors()
+                                        .copy(
+                                            focusedIndicatorColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            disabledIndicatorColor = Color.Transparent,
+                                            errorContainerColor = Color.Transparent,
+                                        ),
+                                    placeholder = { Text("Search...") },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                                )
+                            }
+
+                            IconButton(onClick = {
+                                isSearching = !isSearching
+                                if (!isSearching) {
+                                    // Reset search state when closing
+                                    searchTerm = ""
+                                    searchResults = emptyList()
+                                    messagesIndex = emptyList()
+                                    currentSearchIndex = 0
+                                }
+                            }) {
+                                Icon(
+                                    if (isSearching) Icons.Default.Close else Icons.Default.Search,
+                                    contentDescription = if (isSearching) "Close search" else "Open search"
+                                )
+                            }
+                        }
+                    }
+                )
+            } else {
+                HeaderBar(
+                    userData = userData,
+                    name = decodedUsername,
+                    pic = profileUrl,
+                    netActivity = netActivity,
+                    goBack = { navController.safePopBackStack() },
+                    navController = navController,
+                    chatOptionsList = listOf(
+                        DropMenu(
+                            text = "View Profile",
+                            onClick = {
+                                val userJson = Gson().toJson(userData)
+                                navController.navigate(OtherProfileScreenDC(userJson)) {
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = Icons.Default.Person
+                        ),
+                        DropMenu(
+                            text = "Search",
+                            onClick = {
+                                isSearching = true
+                            },
+                            icon = Icons.Default.Search
+                        )
+                    ),
+                    onImageClick = {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            val route = CameraXScreenDC(
+                                roomId = roomId,
+                                deviceToken = deviceToken
+                            )
+                            navController.navigate(route) {
                                 launchSingleTop = true
                                 restoreState = true
                             }
-                        },
-                        icon = Icons.Default.Person
-                    )
-                ),
-                onImageClick = {
-                    if (ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        val route = CameraXScreenDC(
-                            roomId = roomId,
-                            deviceToken = deviceToken
-                        )
-                        navController.navigate(route) {
-                            launchSingleTop = true
-                            restoreState = true
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                         }
-                    } else {
-                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                },
-            )
+                    },
+                )
+            }
         },
         floatingActionButton = {
             if (showScrollToBottom) {
@@ -251,110 +341,189 @@ fun ChatScreen(
             }
         },
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Box {
+        Box {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                Box {
 //                Background Image
-                Image(
-                    painterResource(id = R.drawable.chat_room_background),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .fillMaxSize(), contentScale = ContentScale.FillBounds,
-                    alpha = 0.3f
-                )
+                    Image(
+                        painterResource(id = R.drawable.chat_room_background),
+                        contentDescription = "",
+                        modifier = Modifier
+
+                            .fillMaxSize(), contentScale = ContentScale.FillBounds,
+                        alpha = 0.3f
+                    )
 //                Background Image filter
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.6f)
-                        .background(Color.Black)
-                )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .alpha(0.6f)
+                            .background(Color.Black)
+                    )
 //                Chat list and input field
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 0.dp, bottom = 5.dp)
-                ) {
-                    if (messages.isEmpty() && showEmptyMessagesAnimation) {
-                        EmptyChatPlaceholder(
-                            lottieAnimation = R.raw.chat,
-                            message = "Send a message to start a conversation",
-                            speed = 1f,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 15.dp),
-                            color = Color.White
-                        )
-                    } else {
-                        MessagesList(
-                            messages = messages,
-                            currentUserId = currentUserId,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 15.dp),
-                            scrollState = listState,
-                            roomId = roomId,
-                            fontSize = fontSize.fontSize,
-                            chatViewModel = chatViewModel
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 0.dp, bottom = 5.dp)
+                    ) {
+                        if (messages.isEmpty() && showEmptyMessagesAnimation) {
+                            EmptyChatPlaceholder(
+                                lottieAnimation = R.raw.chat,
+                                message = "Send a message to start a conversation",
+                                speed = 1f,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 15.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            MessagesList(
+                                messages = messages,
+                                currentUserId = currentUserId,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 15.dp),
+                                scrollState = listState,
+                                roomId = roomId,
+                                fontSize = fontSize.fontSize,
+                                chatViewModel = chatViewModel,
+                                messagesIndex = messagesIndex,
+                                currentSearchIndex = currentSearchIndex
+                            )
+                        }
+                        MessageInput(
+                            messageText = messageText,
+                            onMessageChange = { messageText = it },
+                            onSend = {
+                                if (messageText.isNotBlank()) {
+                                    chatViewModel.sendMessage(
+                                        content = messageText,
+                                        recipientsToken = deviceToken
+                                    )
+                                    vibrateDevice(context)
+                                    val newMessage = NotificationCompat.MessagingStyle.Message(
+                                        messageText, System.currentTimeMillis(), person
+                                    )
+                                    val hasMessages = ConversationHistoryManager.hasMessages(roomId)
+                                    if (hasMessages) {
+                                        ConversationHistoryManager.addMessage(roomId, newMessage)
+                                    }
+                                    messageText = ""
+                                }
+                            },
+                            onImageClick = { imagePickerLauncher.launch("image/*") },
+                            isRecording = isRecording,
+                            onRecordAudio = {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        audioPermission
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    chatViewModel.toggleRecording(context)
+                                } else {
+                                    audioPermissionLauncher.launch(audioPermission)
+                                }
+                            },
+                            sendLocationMessage = chatViewModel::sendLocationMessage,
+                            recipientToken = deviceToken
                         )
                     }
-                    MessageInput(
-                        messageText = messageText,
-                        onMessageChange = { messageText = it },
-                        onSend = {
-                            if (messageText.isNotBlank()) {
-                                chatViewModel.sendMessage(
-                                    content = messageText,
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = showOverlay,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 70.dp)
+                    ) {
+                        AudioRecordingOverlay(
+                            isRecording = isRecording,
+                            resetRecording = { chatViewModel.resetRecording() },
+                            sendAudioMessage = {
+                                chatViewModel.sendAudioMessage(
                                     recipientsToken = deviceToken
                                 )
-                                vibrateDevice(context)
-                                val newMessage = NotificationCompat.MessagingStyle.Message(
-                                    messageText, System.currentTimeMillis(), person
-                                )
-                                val hasMessages = ConversationHistoryManager.hasMessages(roomId)
-                                if (hasMessages) {
-                                    ConversationHistoryManager.addMessage(roomId, newMessage)
-                                }
-                                messageText = ""
-                            }
-                        },
-                        onImageClick = { imagePickerLauncher.launch("image/*") },
-                        isRecording = isRecording,
-                        onRecordAudio = {
-                            if (ContextCompat.checkSelfPermission(
-                                    context,
-                                    audioPermission
-                                ) == PackageManager.PERMISSION_GRANTED
-                            ) {
-                                chatViewModel.toggleRecording(context)
-                            } else {
-                                audioPermissionLauncher.launch(audioPermission)
-                            }
-                        },
-                        sendLocationMessage = chatViewModel::sendLocationMessage,
-                        recipientToken = deviceToken
-                    )
+                            },
+                            recordingStartTime = chatViewModel.recordingStartTime,
+                        )
+                    }
                 }
+            }
 
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = showOverlay,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 70.dp)
+            // Search navigation bar
+            AnimatedVisibility(
+                visible = isSearching && messagesIndex.isNotEmpty(),
+                modifier = Modifier
+                    .offset(y = (-20).dp)
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AudioRecordingOverlay(
-                        isRecording = isRecording,
-                        resetRecording = { chatViewModel.resetRecording() },
-                        sendAudioMessage = {
-                            chatViewModel.sendAudioMessage(
-                                recipientsToken = deviceToken
-                            )
+                    IconButton(
+                        onClick = {
+                            keyboardController?.hide()
+                            if (messagesIndex.isNotEmpty()) {
+                                currentSearchIndex =
+                                    if (currentSearchIndex < messagesIndex.size - 1) {
+                                        currentSearchIndex + 1
+                                    } else {
+                                        0
+                                    }
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(messagesIndex[currentSearchIndex])
+                                }
+                                Log.i("FlashSend", "Current index: $currentSearchIndex")
+                            }
                         },
-                        recordingStartTime = chatViewModel.recordingStartTime,
+                        enabled = messagesIndex.isNotEmpty()
+                    ) {
+                        Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Previous result")
+                    }
+
+                    IconButton(
+                        onClick = {
+                            keyboardController?.hide()
+                            if (messagesIndex.isNotEmpty()) {
+                                currentSearchIndex = if (currentSearchIndex > 0) {
+                                    currentSearchIndex - 1
+                                } else {
+                                    messagesIndex.size - 1
+                                }
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(messagesIndex[currentSearchIndex])
+                                }
+                                Log.i("FlashSend", "Current index: $currentSearchIndex")
+                            }
+                        },
+                        enabled = messagesIndex.isNotEmpty()
+                    ) {
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Next result")
+                    }
+
+                    Text(
+                        "${currentSearchIndex + 1} / ${messagesIndex.size}",
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center
                     )
+
+                    IconButton(
+                        onClick = {
+                            isSearching = false
+                            searchTerm = ""
+                            searchResults = emptyList()
+                            messagesIndex = emptyList()
+                            currentSearchIndex = 0
+                        }
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Close search")
+                    }
                 }
             }
         }
