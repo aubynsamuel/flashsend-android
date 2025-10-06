@@ -23,3 +23,15 @@ data class Location(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
 )
+
+data class ReplyData(
+    var id: String = "",
+    var content: String = "",
+    var image: String? = null,
+    var audio: String? = null,
+    var senderId: String = "",
+    var senderName: String = "",
+    var type: String = "text",
+    var location: Location? = null,
+    var duration: Long? = null,
+)

@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import com.aubynsamuel.flashsend.MainActivity
 import com.aubynsamuel.flashsend.auth.presentation.viewmodels.AuthViewModel
 import com.aubynsamuel.flashsend.core.presentation.utils.showToast
+import com.aubynsamuel.flashsend.core.presentation.viewModels.ConnectivityViewModel
 import com.aubynsamuel.flashsend.home.presentation.screens.HomeScreen
 import com.aubynsamuel.flashsend.home.presentation.screens.ProfileScreen
 import com.aubynsamuel.flashsend.home.presentation.viewmodels.HomeViewModel
@@ -55,6 +56,7 @@ fun MainBottomNavScreen(
     context: Context,
     initialPage: Int = 0,
     animatedScope: AnimatedVisibilityScope,
+    connectivityViewModel: ConnectivityViewModel,
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val bottomNavItems = listOf(
@@ -102,6 +104,7 @@ fun MainBottomNavScreen(
                     context = context,
                     authViewModel = authViewModelInstance,
                     homeViewModel = homeViewModel,
+                    connectivityViewModel = connectivityViewModel,
                     animatedScope = animatedScope,
                 )
 

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -147,13 +146,6 @@ fun HeaderBar(
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.clickable(onClick = { onImageClick() })
-                )
-                Spacer(modifier = Modifier.width(15.dp))
-                Icon(
-                    Icons.Outlined.Call,
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.clickable(onClick = {})
                 )
                 Spacer(modifier = Modifier.width(15.dp))
                 Icon(

@@ -58,6 +58,7 @@ fun ChatMessageObject(
     fontSize: Int,
     chatViewModel: ChatViewModel,
     currentUserId: String,
+    isHighlighted: Boolean = false,
 ) {
     val connectivityViewModel: ConnectivityViewModel = hiltViewModel()
     var showPopup by remember { mutableStateOf(false) }
@@ -69,12 +70,14 @@ fun ChatMessageObject(
     val connectivityStatus by connectivityViewModel.connectivityStatus.collectAsStateWithLifecycle()
 
     Row(
-        modifier = modifier.padding(
-            end = if (!isFromMe && message.type == "image") 30.dp else 0.dp,
-            start = if (isFromMe && message.type == "image") 30.dp else 0.dp
-        ), horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
+        modifier = modifier
+            .padding(
+                end = if (!isFromMe && message.type == "image") 30.dp else 0.dp,
+                start = if (isFromMe && message.type == "image") 30.dp else 0.dp
+            ),
+        horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
     ) {
-//        Action pop ups
+        // Action pop ups
         DeleteMessageDialog(
             connectivityStatus = connectivityStatus,
             message = message,
@@ -102,7 +105,7 @@ fun ChatMessageObject(
                 chatViewModel = chatViewModel
             )
         }
-//       Content
+        // Content
         Surface(
             Modifier
                 .pointerInput(Unit) {
@@ -112,7 +115,8 @@ fun ChatMessageObject(
                         showPopup = !showPopup
                     })
                 },
-            color = if (isFromMe) MaterialTheme.colorScheme.primary
+            color = if (isHighlighted) MaterialTheme.colorScheme.secondaryContainer
+            else if (isFromMe) MaterialTheme.colorScheme.primary
             else MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(16.dp)
         ) {

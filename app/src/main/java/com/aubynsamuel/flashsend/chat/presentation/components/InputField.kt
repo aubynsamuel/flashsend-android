@@ -143,16 +143,7 @@ fun MessageInput(
             textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onPrimaryContainer),
             decorationBox = { innerTextField ->
-//                Box(
-//                    modifier = Modifier
-//                        .background(
-//                            MaterialTheme.colorScheme.surfaceVariant,
-//                            shape = RoundedCornerShape(25.dp)
-//                        )
-//                        .fillMaxWidth()
-//                ) {
                 Column {
-
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -164,11 +155,9 @@ fun MessageInput(
                             )
                             .padding(vertical = 12.dp, horizontal = 15.dp)
                     ) {
-                        Row(modifier = Modifier.weight(1f)) {
-                            Box {
-                                innerTextField()
-                                if (messageText.isBlank()) Text("Type a message")
-                            }
+                        Box(modifier = Modifier.weight(1f)) {
+                            innerTextField()
+                            if (messageText.isBlank()) Text("Type a message")
                         }
                         Row(
                             modifier = Modifier,
