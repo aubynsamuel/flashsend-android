@@ -15,9 +15,9 @@ A modern Android chat application that enables real-time messaging with a clean,
     <img src="screenShots/message_actions-portrait.webp" width="45%" alt="Message Actions & Reactions">
     <img src="screenShots/home_screen-portrait.webp" width="45%" alt="Chats Screen">
     <img src="screenShots/home_screen_dark-portrait.webp" width="45%" alt="Dark Mode">
-    <img src="screenShots/authentication-portrait.webp" width="45%" alt="Authentication Screen">
     <img src="screenShots/profile_screen-portrait.webp" width="45%" alt="Profile Screen">
     <img src="screenShots/settings-portrait.webp" width="45%" alt="Settings Screen">
+    <img src="screenShots/authentication-portrait.webp" width="45%" alt="Authentication Screen">
     <img src="screenShots/notifications-portrait.webp" width="45%" alt="Notifications">
 </div>
 
