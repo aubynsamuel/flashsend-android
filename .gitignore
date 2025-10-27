@@ -16,3 +16,4 @@ local.properties
 /app/google-services.json
 /.idea
 /.kotlin
+keystore

@@ -9,10 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aubynsamuel.flashsend.navigation.ChatAppNavigation
 import com.aubynsamuel.flashsend.settings.presentation.viewmodels.SettingsViewModel
@@ -39,11 +36,6 @@ class MainActivity : ComponentActivity() {
             FlashSendTheme(themeMode = settingsState.themeMode) {
                 ChatAppNavigation()
             }
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            view.updatePadding(bottom = bottom)
-            insets
         }
     }
 
