@@ -11,14 +11,14 @@ A modern Android chat application that enables real-time messaging with a clean,
 ## Screenshots
 
 <div align="center" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;">
-    <img src="screenShots/messages_screen-portrait.webp" width="45%" alt="Chat Room">
-    <img src="screenShots/message_actions-portrait.webp" width="45%" alt="Message Actions & Reactions">
-    <img src="screenShots/home_screen-portrait.webp" width="45%" alt="Chats Screen">
-    <img src="screenShots/home_screen_dark-portrait.webp" width="45%" alt="Dark Mode">
-    <img src="screenShots/profile_screen-portrait.webp" width="45%" alt="Profile Screen">
-    <img src="screenShots/settings-portrait.webp" width="45%" alt="Settings Screen">
-    <img src="screenShots/authentication-portrait.webp" width="45%" alt="Authentication Screen">
-    <img src="screenShots/notifications-portrait.webp" width="45%" alt="Notifications">
+    <img src="screenShots/messages_screen-portrait.webp" width=300 alt="Chat Room">
+    <img src="screenShots/message_actions-portrait.webp" width=300 alt="Message Actions & Reactions">
+    <img src="screenShots/home_screen-portrait.webp" width=300 alt="Chats Screen">
+    <img src="screenShots/home_screen_dark-portrait.webp" width=300 alt="Dark Mode">
+    <img src="screenShots/profile_screen-portrait.webp" width=300 alt="Profile Screen">
+    <img src="screenShots/settings-portrait.webp" width=300 alt="Settings Screen">
+    <img src="screenShots/authentication-portrait.webp" width=300 alt="Authentication Screen">
+    <img src="screenShots/notifications-portrait.webp" width=300 alt="Notifications">
 </div>
 
 ## Features
