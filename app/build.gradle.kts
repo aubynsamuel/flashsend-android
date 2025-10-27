@@ -36,7 +36,7 @@ android {
 
     buildTypes {
         release {
-            val minify = false
+            val minify = true
             isMinifyEnabled = minify
             isShrinkResources = minify
             proguardFiles(
@@ -119,6 +119,7 @@ dependencies {
 
     // Navigation lib
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.lifecycle.viewmodel.compose)
 
     //Retrofit API
     implementation(libs.retrofit)

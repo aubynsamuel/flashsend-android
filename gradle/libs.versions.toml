@@ -2,23 +2,23 @@
 accompanistSystemuicontroller = "0.36.0"
 agp = "8.12.3"
 benchmarkMacroJunit4 = "1.4.1"
-cameraCore = "1.5.0"
+cameraCore = "1.5.1"
 coilCompose = "2.7.0"
 converterGson = "3.0.0"
 datastorePreferences = "1.1.7"
-firebaseBom = "34.3.0"
+firebaseBom = "34.4.0"
 gson = "2.13.1"
 hiltAndroid = "2.57"
 hiltAndroidCompiler = "2.57"
 hiltNavigationCompose = "1.3.0"
-kotlin = "2.2.0"
+kotlin = "2.2.21"
 coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
-composeBom = "2025.09.01"
+composeBom = "2025.10.01"
 lottieCompose = "6.6.7"
 media3Exoplayer = "1.8.0"
 media3Ui = "1.8.0"
@@ -26,18 +26,20 @@ navVersion = "2.9.5"
 playServicesLocation = "21.3.0"
 profileinstaller = "1.4.1"
 retrofit = "3.0.0"
-roomCompilerVersion = "2.8.1"
-roomKtx = "2.8.1"
-roomRuntime = "2.8.1"
+roomCompilerVersion = "2.8.3"
+roomKtx = "2.8.3"
+roomRuntime = "2.8.3"
 ucrop = "2.2.10"
 uiautomator = "2.3.0"
 baselineprofile = "1.4.1"
-material3 = "1.5.0-alpha04"
+material3 = "1.5.0-alpha07"
 hiltPlugin = "2.57.1"
-ksp = "2.2.0-2.0.2"
+ksp = "2.3.0"
 kotlinxSerializationCore = "1.9.0"
-kotlinxSerialization = "2.2.10"
-animationCore = "1.9.2"
+kotlinxSerialization = "2.2.21"
+animationCore = "1.9.4"
+hiltLifecycleViewModelCompose = "1.3.0"
+
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -58,14 +60,11 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx"
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
-
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-
-firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version = "23.2.1" }
-firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx", version = "25.1.4" }
-firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx", version = "24.1.2" }
-firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx", version = "21.0.2" }
-
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore" }
+firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging" }
+firebase-storage-ktx = { module = "com.google.firebase:firebase-storage" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
@@ -91,6 +90,8 @@ material3 = { module = "androidx.compose.material3:material3", version.ref = "ma
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationCore" }
 androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animationCore" }
 androidx-animation-core = { module = "androidx.compose.animation:animation-core", version.ref = "animationCore" }
+hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hiltLifecycleViewModelCompose" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
