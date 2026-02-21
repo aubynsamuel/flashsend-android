@@ -82,10 +82,10 @@ fun ChatAppNavigation() {
                 startDestination = LoadingScreenDC,
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
 
-                enterTransition = { EnterTransition.Companion.None },
-                exitTransition = { ExitTransition.Companion.None },
-                popEnterTransition = { EnterTransition.Companion.None },
-                popExitTransition = { ExitTransition.Companion.None }
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None }
             ) {
                 composable<AuthScreenDC> {
                     AuthScreen(navController, authViewModelInstance)
